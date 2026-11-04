@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#071d18">
+<title>Teen Patti Live Club</title>
+<style>
+:root{--bg:#061712;--panel:#102820;--gold:#f5c65c;--gold2:#b98125;--green:#168044;--text:#fff8e8;--muted:#b9c9bf}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#16442e 0,#071d18 48%,#04110e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+button{font:inherit;cursor:pointer;border:0}.app{max-width:540px;margin:auto;min-height:100vh;padding:14px 13px 90px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#ffe79a,#c18a28);display:grid;place-items:center;color:#183322;font-size:24px;box-shadow:0 4px 18px #0008}
+h1{font-size:17px;line-height:1.1;margin:0;color:#ffe5a0;letter-spacing:.4px}.sub{font-size:10px;color:var(--muted);margin-top:4px}
+.wallet{background:#132d23;border:1px solid #9b762d;border-radius:13px;padding:8px 11px;text-align:right}.wallet small{display:block;color:#cbbd9a;font-size:10px}.wallet strong{color:#ffdb78;font-size:16px}
+.section{background:linear-gradient(145deg,#142f25,#0b211a);border:1px solid #31503d;border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 10px 25px #0003}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}.section-title h2{font-size:15px;margin:0}.pill{font-size:10px;border-radius:30px;padding:5px 9px;background:#1d603c;color:#baffd0}
+.table{position:relative;min-height:340px;border-radius:48%/36%;border:10px solid #74451c;background:radial-gradient(ellipse,#16883e 0,#087036 62%,#064323 100%);box-shadow:inset 0 0 0 4px #e0a94a,inset 0 0 30px #001b0b,0 8px 22px #0009;overflow:hidden}
+.table:before{content:"";position:absolute;inset:12px;border:1px solid #d5b35b88;border-radius:48%/36%;pointer-events:none}
+.pot{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#ffe5a0;text-shadow:0 2px 3px #000}.pot small{display:block;font-size:11px}.pot b{font-size:24px}
+.seat{position:absolute;display:flex;align-items:center;gap:6px;font-size:11px;text-shadow:0 1px 3px #000}.avatar{width:37px;height:37px;border-radius:50%;border:2px solid #e9c15d;background:#263e33;display:grid;place-items:center;font-size:19px;box-shadow:0 2px 8px #0008}.seat .name{font-weight:700}.seat .status{font-size:9px;color:#ffe39a}
+.s1{top:9px;left:50%;transform:translateX(-50%);flex-direction:column}.s2{top:38%;right:8px}.s3{bottom:12px;left:50%;transform:translateX(-50%);flex-direction:column}.s4{top:38%;left:8px;flex-direction:row-reverse}
+.mycards{display:flex;gap:7px;justify-content:center;margin-top:8px}.card{width:47px;height:66px;border-radius:7px;background:#fffdf4;color:#161616;display:flex;flex-direction:column;justify-content:space-between;padding:5px;font-weight:800;box-shadow:0 3px 8px #0018;font-size:16px}.card.red{color:#d32638}.card.back{background:repeating-linear-gradient(45deg,#8c2145,#8c2145 5px,#f2d5dc 5px,#f2d5dc 7px);border:3px solid #fff;color:transparent}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.action{padding:12px 5px;border-radius:12px;background:#183b2b;color:#fff;border:1px solid #6d8d63;font-weight:700;font-size:12px}.action.primary{background:linear-gradient(135deg,#f8d77b,#b77c20);color:#2b210c;border:0}.action:disabled{opacity:.4}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.tile{background:#17372a;border:1px solid #385b43;border-radius:14px;padding:12px;text-align:left;color:white;min-height:78px}.tile .ico{font-size:22px}.tile b{display:block;font-size:12px;margin-top:4px}.tile small{color:#c1d2c5;font-size:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.btn{padding:11px 14px;border-radius:11px;background:linear-gradient(135deg,#f6d57d,#bd852d);color:#2b210c;font-weight:800}.btn.secondary{background:#1a4430;color:#fff;border:1px solid #507b58}
+.refcode{font-size:20px;letter-spacing:2px;color:#ffe18b;font-weight:900;background:#0a1b14;border:1px dashed #c49a42;padding:10px;border-radius:10px;text-align:center}
+.note{font-size:10px;color:#aebfb3;line-height:1.5}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(540px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#071a14ee;backdrop-filter:blur(10px);border-top:1px solid #34513d;padding:8px 5px calc(8px + env(safe-area-inset-bottom));z-index:5}.nav button{background:none;color:#a9b9ae;font-size:10px;padding:5px}.nav button span{display:block;font-size:19px;margin-bottom:2px}.nav button.active{color:#ffdb79}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.show{display:flex}.dialog{width:min(420px,100%);background:#10291f;border:1px solid #9b762d;border-radius:18px;padding:18px}.dialog h3{margin:0 0 10px;color:#ffe09a}.dialog p{font-size:13px;color:#d1ded4;line-height:1.5}.dialog input{width:100%;padding:12px;border-radius:9px;border:1px solid #63836a;background:#071a13;color:#fff;margin:8px 0}
+.toast{position:fixed;top:15px;left:50%;transform:translateX(-50%);background:#f4d47d;color:#241b09;padding:10px 16px;border-radius:30px;font-weight:800;font-size:12px;display:none;z-index:20;box-shadow:0 5px 20px #0008}
+@media(max-width:360px){.table{min-height:310px}.card{width:42px;height:60px}.actions{gap:5px}.action{font-size:11px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="logo">♠</div><div><h1>TEEN PATTI<br>LIVE CLUB</h1><div class="sub">FREE PLAY • FRIENDS • FUN</div></div></div>
+ <div class="wallet"><small>आपके कॉइन</small><strong>🪙 <span id="coins">5000</span></strong></div>
+</header>
+
+<section class="section">
+ <div class="section-title"><h2>🎴 लाइव टेबल</h2><span class="pill" id="gameStatus">प्रैक्टिस मोड</span></div>
+ <div class="table">
+  <div class="seat s1"><div class="avatar">🧔</div><div class="name">Aman</div><div class="status">Blind</div></div>
+  <div class="seat s2"><div class="avatar">👩</div><div><div class="name">Simran</div><div class="status">Seen</div></div></div>
+  <div class="seat s4"><div class="avatar">😎</div><div><div class="name">Rohit</div><div class="status">Blind</div></div></div>
+  <div class="pot"><small>टेबल पॉट</small><b>🪙 <span id="pot">0</span></b><div style="font-size:10px">केवल वर्चुअल कॉइन</div></div>
+  <div class="seat s3"><div class="avatar">🙂</div><div class="name">आप</div><div class="status" id="myStatus">आपकी बारी</div></div>
+ </div>
+ <div class="mycards" id="mycards"><div class="card back">?</div><div class="card back">?</div><div class="card back">?</div></div>
+ <div class="actions">
+  <button class="action" id="blindBtn" onclick="play('Blind')">Blind</button>
+  <button class="action primary" id="chaalBtn" onclick="play('Chaal')">Chaal</button>
+  <button class="action" onclick="play('Pack')">Pack</button>
+ </div>
+ <div class="actions">
+  <button class="action" onclick="showCards()">👁 Seen</button>
+  <button class="action" onclick="sideShow()">↔ Side Show</button>
+  <button class="action" onclick="showResult()">🏆 Show</button>
+ </div>
+ <div class="row" style="margin-top:12px"><span class="note">यह अभी स्थानीय प्रैक्टिस डेमो है। असली लाइव टेबल सर्वर जोड़ने के बाद चलेगी।</span><button class="btn secondary" onclick="newGame()">नई बाज़ी</button></div>
+</section>
+
+<section class="section">
+ <div class="section-title"><h2>🎁 कॉइन कमाएँ</h2><span class="pill">FREE</span></div>
+ <div class="grid">
+  <button class="tile" onclick="dailyBonus()"><span class="ico">📅</span><b>डेली बोनस</b><small>रोज़ाना 500 कॉइन</small></button>
+  <button class="tile" onclick="watchAd()"><span class="ico">▶️</span><b>विज्ञापन देखें</b><small>डेमो में 200 कॉइन</small></button>
+  <button class="tile" onclick="openReferral()"><span class="ico">🤝</span><b>Refer & Earn</b><small>हर सफल दोस्त पर 2,000</small></button>
+  <button class="tile" onclick="missions()"><span class="ico">🏅</span><b>मिशन</b><small>खेलें और इनाम पाएँ</small></button>
+ </div>
+</section>
+
+<section class="section" id="refSection">
+ <div class="section-title"><h2>🤝 अपने दोस्तों को जोड़ें</h2><span class="pill">2,000 कॉइन</span></div>
+ <p class="note">अपना कोड शेयर करें। वास्तविक नए खिलाड़ी के रजिस्ट्रेशन और पहली पूरी बाज़ी के बाद ही रेफरल इनाम मिलेगा।</p>
+ <div class="refcode" id="refCode">TP-CLUB-4821</div>
+ <div class="row" style="margin-top:10px"><button class="btn" onclick="shareCode()">लिंक शेयर करें</button><button class="btn secondary" onclick="copyCode()">कोड कॉपी करें</button></div>
+ <p class="note" style="margin-top:10px">रेफरल इनाम: आमंत्रित करने वाले को 2,000 कॉइन। दुरुपयोग रोकने के लिए सर्वर पर नए अकाउंट और पहली गेम की पुष्टि जरूरी होगी।</p>
+</section>
+
+<section class="section">
+ <div class="section-title"><h2>📊 आपकी प्रोफाइल</h2><span class="pill">नया खिलाड़ी</span></div>
+ <div class="row"><span>गेम खेले</span><b id="played">0</b></div><div class="row" style="margin-top:8px"><span>जीत</span><b id="wins">0</b></div><div class="row" style="margin-top:8px"><span>रेफरल</span><b id="referrals">0</b></div>
+</section>
+<p class="note">सुरक्षा नोट: इस डेमो में कॉइन आपके इसी ब्राउज़र में अस्थायी रूप से सेव होते हैं। विज्ञापन और रेफरल के बटन अभी केवल प्रदर्शन के लिए हैं—वास्तविक कॉइन जारी करने के लिए सुरक्षित सर्वर, लॉगिन और विज्ञापन नेटवर्क की पुष्टि जोड़नी होगी। कॉइन का कोई नकद मूल्य या निकासी सुविधा नहीं है।</p>
+</div>
+<nav class="nav">
+ <button class="active" onclick="goTop()"><span>🏠</span>होम</button>
+ <button onclick="document.getElementById('refSection').scrollIntoView({behavior:'smooth'})"><span>🤝</span>रेफरल</button>
+ <button onclick="document.querySelectorAll('.section')[1].scrollIntoView({behavior:'smooth'})"><span>🎁</span>कमाएँ</button>
+ <button onclick="profileInfo()"><span>👤</span>प्रोफाइल</button>
+</nav>
+<div class="modal" id="modal"><div class="dialog"><h3 id="modalTitle">जानकारी</h3><div id="modalBody"></div><div class="row" style="margin-top:14px"><button class="btn secondary" onclick="closeModal()">बंद करें</button><button class="btn" id="modalAction" onclick="closeModal()">ठीक है</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+let coins=Number(localStorage.getItem('tpc_coins')||5000),pot=0,played=0,wins=0,referrals=0,seen=false,active=true,hand=[],dailyClaim=localStorage.getItem('tpc_daily')||'';
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('tpc_coins',coins);$('coins').textContent=coins.toLocaleString('en-IN');$('pot').textContent=pot.toLocaleString('en-IN');$('played').textContent=played;$('wins').textContent=wins;$('referrals').textContent=referrals}
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
+function modal(title,body,action='ठीक है'){ $('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalAction').textContent=action;$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+function makeHand(){const suits=['♠','♥','♦','♣'],ranks=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];let deck=[];for(let s of suits)for(let r of ranks)deck.push({s,r,v:ranks.indexOf(r)+2});for(let i=deck.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}return deck.slice(0,3)}
+function renderCards(){ $('mycards').innerHTML=hand.map(c=>`<div class="card ${'♥♦'.includes(c.s)?'red':''}">${c.r}<span style="font-size:23px;text-align:center">${c.s}</span></div>`).join('')}
+function newGame(){if(coins<100){toast('कॉइन कम हैं। बोनस लें।');return}hand=makeHand();pot=100;coins-=100;seen=false;active=true;$('myStatus').textContent='आपकी बारी';$('gameStatus').textContent='नई बाज़ी';$('mycards').innerHTML='<div class="card back">?</div><div class="card back">?</div><div class="card back">?</div>';save();toast('नई प्रैक्टिस बाज़ी शुरू हुई')}
+function play(type){if(!active){toast('नई बाज़ी शुरू करें');return}if(type==='Pack'){active=false;played++;$('myStatus').textContent='Pack';save();toast('आपने Pack किया');return}let cost=type==='Blind'?100:200;if(coins<cost){toast('कॉइन कम हैं');return}coins-=cost;pot+=cost;save();$('myStatus').textContent=type==='Blind'?'Blind':'Chaal';toast(type+' — '+cost+' कॉइन')}
+function showCards(){if(!active){toast('पहले नई बाज़ी शुरू करें');return}seen=true;renderCards();$('myStatus').textContent='Seen';toast('आपके कार्ड खुल गए')}
+function sideShow(){if(!active){toast('पहले नई बाज़ी शुरू करें');return}modal('Side Show','प्रैक्टिस डेमो में Side Show का बटन दिखाया गया है। वास्तविक ऑनलाइन मुकाबले में यह नियम सर्वर पर लागू होगा।')}
+function showResult(){if(!active){toast('यह बाज़ी समाप्त हो चुकी है');return}renderCards();let sorted=[...hand].sort((a,b)=>b.v-a.v);let high=sorted[0];let won=Math.random()>.48;played++;active=false;if(won){coins+=pot;wins++;modal('🎉 आप जीत गए!',`आपके कार्ड: <b>${hand.map(c=>c.r+c.s).join(' ')}</b><p>आपको ${pot} कॉइन मिले।</p>`)}else{modal('बाज़ी पूरी',`आपके कार्ड: <b>${hand.map(c=>c.r+c.s).join(' ')}</b><p>इस डेमो राउंड में दूसरा खिलाड़ी जीता। नई बाज़ी खेलें।`)}pot=0;$('myStatus').textContent='बाज़ी समाप्त';save()}
+function dailyBonus(){let today=new Date().toISOString().slice(0,10);if(dailyClaim===today){toast('आज का बोनस पहले ले चुके हैं');return}dailyClaim=today;localStorage.setItem('tpc_daily',today);coins+=500;save();toast('500 डेली बोनस कॉइन मिले!')}
+function watchAd(){modal('विज्ञापन देखकर कॉइन','<p>अभी यह केवल डेमो है। वास्तविक ऐप में Rewarded Ad पूरा देखने और विज्ञापन नेटवर्क से पुष्टि मिलने पर ही 200 कॉइन जोड़े जाएंगे।</p><p><b>इस डेमो में कोई विज्ञापन नहीं चलाया जाएगा और कॉइन नहीं दिए जाएंगे।</b></p>')}
+function openReferral(){document.getElementById('refSection').scrollIntoView({behavior:'smooth'});toast('अपना रेफरल लिंक शेयर करें')}
+function shareCode(){let code=$('refCode').textContent;let link=location.href.split('#')[0]+'?ref='+code;let msg='मेरे साथ Teen Patti Live Club खेलें! फ्री गेम और वर्चुअल कॉइन। मेरा रेफरल कोड: '+code+' '+link;if(navigator.share)navigator.share({title:'Teen Patti Live Club',text:msg,url:link}).catch(()=>{});else copyText(msg)}
+function copyCode(){copyText($('refCode').textContent)}
+function copyText(t){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>toast('कॉपी हो गया')).catch(()=>toast('कॉपी नहीं हुआ'))}else{modal('आपका रेफरल कोड','<b>'+t+'</b><p>इस कोड को दबाकर कॉपी करें या लिख लें।</p>')}}
+function missions(){modal('दैनिक मिशन','<p>• एक प्रैक्टिस बाज़ी पूरी करें</p><p>• अपने कार्ड देखें</p><p>• दोस्त को आमंत्रित करें</p><p>वास्तविक मिशन और इनाम सर्वर जुड़ने के बाद सक्रिय होंगे।</p>')}
+function profileInfo(){modal('आपकी प्रोफाइल',`<p>कॉइन: <b>${coins}</b></p><p>खेले गए राउंड: <b>${played}</b></p><p>जीत: <b>${wins}</b></p><p>रेफरल: <b>${referrals}</b></p>`)}
+function goTop(){window.scrollTo({top:0,behavior:'smooth'})}
+save();newGame();
+</script>
+</body>
+</html>
