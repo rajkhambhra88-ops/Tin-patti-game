@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -111,39 +111,38 @@
     </div>
 
     <div class="flex items-center space-x-1.5 sm:space-x-2">
-      <!-- Balance -->
-      <div class="flex items-center bg-black/80 border border-yellow-500/60 rounded-full px-2.5 py-1 shadow-inner">
-        <span class="text-yellow-400 text-xs sm:text-sm mr-1 font-black">🪙</span>
-        <span id="player-balance" class="font-mono font-bold text-amber-300 text-xs sm:text-sm">10,000</span>
-      </div>
+      <!-- High visibility coin balance -->
+      <button onclick="openRewardsHub()" class="flex items-center bg-gradient-to-r from-amber-950/80 to-stone-950 border border-yellow-400 rounded-full px-2.5 py-1 shadow-lg hover:brightness-110 active:scale-95 transition">
+        <span class="text-yellow-400 text-sm sm:text-base mr-1 font-black animate-pulse">🪙</span>
+        <div class="flex flex-col text-left leading-none">
+          <span class="text-[8px] text-amber-400 font-bold uppercase">My Coins</span>
+          <span id="player-balance" class="font-mono font-black text-yellow-300 text-xs sm:text-sm">10,000</span>
+        </div>
+        <span class="ml-1.5 bg-amber-500 text-stone-950 font-black text-[9px] px-1 py-0.2 rounded-full">+FREE</span>
+      </button>
 
-      <!-- Language -->
+      <!-- Language selector -->
       <select id="lang-switch" class="bg-stone-900 text-amber-300 border border-amber-500/40 text-xs font-semibold rounded-lg px-1.5 py-1 outline-none">
         <option value="en">English</option>
         <option value="hi">हिंदी</option>
         <option value="pa">ਪੰਜਾਬੀ</option>
       </select>
 
+      <!-- Earn Coins / Free Rewards Hub -->
+      <button onclick="openRewardsHub()" title="Free Coins & Rewards Hub" class="bg-gradient-to-b from-yellow-500 to-amber-600 text-stone-950 font-black text-xs px-2.5 py-1 rounded-full shadow border border-yellow-300 hover:brightness-110 active:scale-95 transition flex items-center gap-1">
+        <span>💰</span> <span class="hidden sm:inline" id="txt-earn-btn">Earn Coins</span>
+      </button>
+
       <!-- Withdraw Button -->
       <button onclick="handleWithdrawClick()" class="bg-gradient-to-b from-emerald-600 to-teal-800 text-white font-bold text-xs px-2.5 py-1 rounded-full shadow border border-emerald-400/50 hover:brightness-110 active:scale-95 transition flex items-center gap-1">
         <span>🏦</span> <span class="hidden sm:inline" id="txt-withdraw-btn">Withdraw</span>
-      </button>
-
-      <!-- Daily Bonus -->
-      <button onclick="openBonusModal()" title="Daily Bonus" class="bg-gradient-to-b from-amber-500 to-yellow-600 text-stone-950 font-black text-xs px-2 py-1 rounded-full shadow active:scale-95 transition">
-        🎁
-      </button>
-
-      <!-- Referral Share -->
-      <button onclick="openReferralModal()" title="Share Room" class="bg-stone-800 border border-amber-500/50 text-amber-300 text-xs px-2 py-1 rounded-full shadow hover:bg-stone-700 active:scale-95 transition">
-        🔗
       </button>
     </div>
   </header>
 
   <!-- ================= POKER TABLE ================= -->
   <main class="relative flex-1 flex items-center justify-center px-2 py-2 overflow-hidden">
-    <div class="felt-table relative w-full max-w-4xl h-[500px] sm:h-[550px] rounded-[140px] sm:rounded-[200px] flex items-center justify-center p-3">
+    <div class="felt-table relative w-full max-w-4xl h-[510px] sm:h-[560px] rounded-[140px] sm:rounded-[200px] flex items-center justify-center p-3">
       
       <!-- Watermark Background -->
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-15">
@@ -280,7 +279,7 @@
       </div>
 
       <!-- ================= SEAT 0: USER (Bottom Center) ================= -->
-      <div id="seat-user" class="absolute bottom-2 flex flex-col items-center z-10">
+      <div id="seat-user" class="absolute bottom-1 sm:bottom-2 flex flex-col items-center z-10">
         <div id="user-reaction-slot" class="absolute -top-7 inset-x-0 flex justify-center pointer-events-none"></div>
 
         <!-- 3 Cards -->
@@ -340,7 +339,7 @@
 
           <div class="relative cursor-pointer group" onclick="triggerPhotoUpload()" title="Tap to upload your photo!">
             <input type="file" id="user-photo-input" accept="image/*" class="hidden" onchange="handleUserPhotoSelected(event)">
-            <div id="user-avatar-frame" class="w-11 h-11 rounded-full border-2 border-yellow-400 bg-stone-800 overflow-hidden shadow-lg flex items-center justify-center relative">
+            <div id="user-avatar-frame" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-yellow-400 bg-stone-800 overflow-hidden shadow-lg flex items-center justify-center relative">
               <img id="user-photo-img" class="w-full h-full object-cover hidden" alt="User Photo">
               <span id="user-default-icon" class="text-xl">👤</span>
             </div>
@@ -354,7 +353,12 @@
               <span id="user-display-name">You</span>
               <span class="text-[10px] text-stone-400">(Player)</span>
             </div>
-            <div class="text-[10px] text-amber-200 font-semibold" id="user-hand-name">Blind Player</div>
+            <!-- Prominent user coins badge directly under player -->
+            <div class="bg-black/80 px-2 py-0.5 rounded-md border border-yellow-500/50 flex items-center gap-1 mt-0.5 shadow-sm">
+              <span class="text-xs text-yellow-400">🪙</span>
+              <span id="user-bottom-coins" class="text-xs font-black text-amber-300 font-mono">10,000</span>
+            </div>
+            <div class="text-[10px] text-amber-200/90 font-medium mt-0.5" id="user-hand-name">Blind Player</div>
           </div>
         </div>
       </div>
@@ -373,36 +377,41 @@
   </main>
 
   <!-- ================= ACTION CONTROLS FOOTER ================= -->
-  <footer class="bg-gradient-to-t from-stone-950 via-stone-900 to-stone-950 border-t border-amber-600/40 px-3 py-2.5 z-20">
-    <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
+  <footer class="bg-gradient-to-t from-stone-950 via-stone-900 to-stone-950 border-t border-amber-600/40 px-3 py-2 z-20">
+    <div class="max-w-2xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
       <!-- Pack Button -->
-      <button id="btn-pack" onclick="handleUserPack()" class="flex-1 bg-gradient-to-b from-rose-700 via-red-800 to-red-950 hover:brightness-110 text-white font-black py-2.5 px-3 rounded-xl border border-red-500/80 shadow-lg active:scale-95 transition text-xs sm:text-sm tracking-wider uppercase">
+      <button id="btn-pack" onclick="handleUserPack()" class="flex-1 bg-gradient-to-b from-rose-700 via-red-800 to-red-950 hover:brightness-110 text-white font-black py-2.5 px-2 rounded-xl border border-red-500/80 shadow-lg active:scale-95 transition text-[11px] sm:text-xs tracking-wider uppercase">
         <span id="txt-pack">Pack</span>
       </button>
 
       <!-- Bet Multiplier -->
-      <div class="flex items-center bg-stone-950 border border-amber-500/60 rounded-xl px-2 py-1 shadow-inner">
-        <button onclick="adjustBetMultiplier(-1)" class="w-8 h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700 flex items-center justify-center">-</button>
-        <div class="px-2 text-center">
-          <div class="text-[9px] text-amber-400 font-semibold" id="txt-bet-label">BET</div>
-          <div id="bet-multiplier-label" class="font-bold text-xs text-white">1x (100)</div>
+      <div class="flex items-center bg-stone-950 border border-amber-500/60 rounded-xl px-1.5 py-1 shadow-inner">
+        <button onclick="adjustBetMultiplier(-1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700 flex items-center justify-center">-</button>
+        <div class="px-1.5 text-center">
+          <div class="text-[8px] text-amber-400 font-semibold" id="txt-bet-label">BET</div>
+          <div id="bet-multiplier-label" class="font-bold text-[11px] sm:text-xs text-white">1x (100)</div>
         </div>
-        <button onclick="adjustBetMultiplier(1)" class="w-8 h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700 flex items-center justify-center">+</button>
+        <button onclick="adjustBetMultiplier(1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700 flex items-center justify-center">+</button>
       </div>
 
       <!-- Chaal / Blind Action Button -->
-      <button id="btn-chaal" onclick="handleUserBet()" class="flex-1 bg-gradient-to-b from-yellow-400 via-amber-500 to-yellow-600 hover:brightness-110 text-neutral-950 font-black py-2.5 px-3 rounded-xl border border-yellow-200 shadow-lg active:scale-95 transition text-xs sm:text-sm tracking-wider uppercase">
+      <button id="btn-chaal" onclick="handleUserBet()" class="flex-1 bg-gradient-to-b from-yellow-400 via-amber-500 to-yellow-600 hover:brightness-110 text-neutral-950 font-black py-2.5 px-2 rounded-xl border border-yellow-200 shadow-lg active:scale-95 transition text-[11px] sm:text-xs tracking-wider uppercase">
         <span id="txt-chaal-btn">Blind (100)</span>
       </button>
 
-      <!-- Show Button -->
-      <button id="btn-show" onclick="handleUserShow()" disabled class="flex-1 bg-gradient-to-b from-blue-700 to-indigo-950 text-white font-black py-2.5 px-3 rounded-xl border border-blue-400/50 shadow-lg opacity-40 cursor-not-allowed text-xs sm:text-sm tracking-wider uppercase">
+      <!-- Side Show Button (Slideshow) -->
+      <button id="btn-sideshow" onclick="handleUserSideShow()" disabled class="flex-1 bg-gradient-to-b from-purple-700 via-indigo-800 to-stone-950 text-amber-200 font-black py-2.5 px-2 rounded-xl border border-purple-400/60 shadow-lg opacity-40 cursor-not-allowed text-[11px] sm:text-xs tracking-wider uppercase transition active:scale-95">
+        <span id="txt-sideshow">Side Show</span>
+      </button>
+
+      <!-- Final Show Button -->
+      <button id="btn-show" onclick="handleUserShow()" disabled class="flex-1 bg-gradient-to-b from-blue-700 to-indigo-950 text-white font-black py-2.5 px-2 rounded-xl border border-blue-400/50 shadow-lg opacity-40 cursor-not-allowed text-[11px] sm:text-xs tracking-wider uppercase">
         <span id="txt-show">Show</span>
       </button>
     </div>
 
     <!-- Players and Redeal Hand -->
-    <div class="max-w-xl mx-auto flex items-center justify-between mt-2 pt-1 border-t border-stone-800/80 text-[11px] text-stone-400">
+    <div class="max-w-2xl mx-auto flex items-center justify-between mt-2 pt-1 border-t border-stone-800/80 text-[11px] text-stone-400">
       <div class="flex items-center space-x-1.5">
         <span id="txt-players-lbl">Players:</span>
         <select id="select-player-count" onchange="changePlayerCount(this.value)" class="bg-stone-800 text-amber-300 font-semibold rounded px-2 py-0.5 outline-none text-xs border border-amber-500/30">
@@ -412,13 +421,191 @@
           <option value="6" selected>6 Players</option>
         </select>
       </div>
-      <div>
+      <div class="flex items-center gap-3">
+        <button onclick="openRewardsHub()" class="text-yellow-400 font-bold hover:underline flex items-center gap-1">
+          🪙 <span id="txt-free-coins-link">Free Coins Hub</span>
+        </button>
         <button onclick="startNewHand()" class="text-amber-400 font-bold hover:underline flex items-center gap-1 active:scale-95">
           🔄 <span id="txt-redeal">Redeal Hand</span>
         </button>
       </div>
     </div>
   </footer>
+
+  <!-- ================= MODAL: FREE REWARDS & COIN EARNING HUB ================= -->
+  <div id="modal-rewards-hub" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
+    <div class="bg-gradient-to-b from-stone-900 via-neutral-950 to-black border-2 border-yellow-400 rounded-3xl p-5 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Close Hub Button -->
+      <button onclick="closeModal('modal-rewards-hub')" class="absolute top-4 right-4 text-stone-400 hover:text-white bg-stone-800/80 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+
+      <div class="text-center mb-4">
+        <div class="w-16 h-16 mx-auto mb-1 bg-gradient-to-tr from-yellow-500 via-amber-300 to-yellow-600 rounded-full flex items-center justify-center text-3xl shadow-lg">
+          🪙
+        </div>
+        <h2 class="font-royal text-xl sm:text-2xl font-black bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-500 bg-clip-text text-transparent" id="txt-rewards-title">
+          Free Coins & Rewards Hub
+        </h2>
+        <p class="text-xs text-stone-300" id="txt-rewards-desc">Watch ads, invite friends, or take emergency loan to keep playing!</p>
+        <div class="inline-flex items-center gap-1.5 bg-black/80 border border-yellow-500/50 rounded-full px-4 py-1 mt-2">
+          <span class="text-xs text-stone-400 uppercase font-semibold">Your Balance:</span>
+          <span id="hub-current-coins" class="text-sm font-mono font-black text-yellow-300">10,000</span>
+          <span class="text-xs text-yellow-400">🪙</span>
+        </div>
+      </div>
+
+      <!-- 4 Earning Channels -->
+      <div class="space-y-3">
+        <!-- 1. Watch Video Ad -->
+        <div class="bg-gradient-to-r from-stone-900 to-amber-950/40 border border-yellow-500/40 rounded-2xl p-3 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-red-600/20 border border-red-500/40 rounded-xl flex items-center justify-center text-2xl">
+              📺
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-sm text-yellow-200 flex items-center gap-1">
+                <span id="txt-ad-title">Watch Video Ad</span>
+                <span class="bg-emerald-500 text-stone-950 text-[9px] font-black px-1.5 py-0.2 rounded">+5,000</span>
+              </div>
+              <div class="text-[11px] text-stone-400" id="txt-ad-desc">Watch a 5-sec sponsor ad to earn 5,000 coins instantly.</div>
+            </div>
+          </div>
+          <button onclick="startVideoAdSimulation()" class="bg-gradient-to-r from-yellow-400 to-amber-500 text-stone-950 font-black text-xs px-3 py-2 rounded-xl shadow hover:brightness-110 active:scale-95 transition ml-2 whitespace-nowrap">
+            ▶️ <span id="txt-ad-btn">Watch</span>
+          </button>
+        </div>
+
+        <!-- 2. Udhaar / Emergency Friend Credit Loan -->
+        <div class="bg-gradient-to-r from-stone-900 to-indigo-950/40 border border-indigo-500/40 rounded-2xl p-3 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-indigo-600/20 border border-indigo-500/40 rounded-xl flex items-center justify-center text-2xl">
+              🤝
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-sm text-indigo-200 flex items-center gap-1">
+                <span id="txt-loan-title">Coin Udhaar / Loan</span>
+                <span class="bg-indigo-400 text-stone-950 text-[9px] font-black px-1.5 py-0.2 rounded">+2,000</span>
+              </div>
+              <div class="text-[11px] text-stone-400" id="txt-loan-desc">Emergency coin credit from club. 0% interest!</div>
+            </div>
+          </div>
+          <button id="btn-claim-loan" onclick="claimEmergencyLoan()" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-xs px-3 py-2 rounded-xl shadow hover:brightness-110 active:scale-95 transition ml-2 whitespace-nowrap">
+            🤝 <span id="txt-loan-btn">Request</span>
+          </button>
+        </div>
+
+        <!-- 3. Refer Friends (WhatsApp / Code) -->
+        <div class="bg-gradient-to-r from-stone-900 to-emerald-950/40 border border-emerald-500/40 rounded-2xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center space-x-2">
+              <span class="text-xl">📲</span>
+              <div>
+                <div class="font-bold text-sm text-emerald-300 flex items-center gap-1">
+                  <span id="txt-ref-title">Refer Friends</span>
+                  <span class="bg-emerald-400 text-stone-950 text-[9px] font-black px-1.5 py-0.2 rounded">+10,000</span>
+                </div>
+                <div class="text-[10px] text-stone-400" id="txt-ref-desc">Invite friends on WhatsApp and earn coins when they join!</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-2">
+            <button onclick="shareViaWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 rounded-xl shadow flex items-center justify-center gap-1.5 active:scale-95 transition">
+              <span>💬</span> <span id="txt-ref-wa">Share on WhatsApp</span>
+            </button>
+            <button onclick="copyRoomCode()" class="bg-stone-800 border border-amber-500/40 text-amber-300 text-xs px-3 py-2 rounded-xl font-bold active:scale-95 transition" id="hub-btn-copy">
+              📋 Copy Link
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Daily Bonus -->
+        <div class="bg-gradient-to-r from-stone-900 to-amber-950/40 border border-amber-500/40 rounded-2xl p-3 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-amber-500/20 border border-amber-500/40 rounded-xl flex items-center justify-center text-2xl">
+              🎁
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-sm text-yellow-300 flex items-center gap-1">
+                <span id="txt-daily-title">Daily VIP Bonus</span>
+                <span class="bg-amber-400 text-stone-950 text-[9px] font-black px-1.5 py-0.2 rounded">+2,500</span>
+              </div>
+              <div class="text-[11px] text-stone-400" id="txt-daily-desc">Claim your royal club attendance gift daily.</div>
+            </div>
+          </div>
+          <button id="hub-btn-bonus" onclick="claimDailyBonus()" class="bg-amber-500 text-stone-950 font-black text-xs px-3 py-2 rounded-xl shadow hover:bg-amber-400 active:scale-95 transition ml-2 whitespace-nowrap">
+            🎁 <span id="txt-daily-btn">Claim</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-stone-800 text-center">
+        <button onclick="closeModal('modal-rewards-hub')" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition">
+          Back to Live Table 🃏
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: VIDEO AD SIMULATOR ================= -->
+  <div id="modal-video-ad" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-stone-900 border-2 border-yellow-400 rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl relative overflow-hidden">
+      <!-- Top Ad banner -->
+      <div class="flex items-center justify-between pb-2 border-b border-stone-800 text-xs">
+        <span class="bg-yellow-500 text-stone-950 font-black text-[9px] px-1.5 py-0.5 rounded uppercase">SPONSORED AD</span>
+        <div class="font-mono font-bold text-amber-300 flex items-center gap-1">
+          <span>Reward in:</span>
+          <span id="ad-timer-countdown" class="text-sm text-white bg-black/60 px-2 py-0.5 rounded">5s</span>
+        </div>
+      </div>
+
+      <!-- Animated Ad Showcase Container -->
+      <div class="my-4 bg-gradient-to-br from-indigo-950 via-slate-900 to-black border border-stone-700 rounded-2xl p-5 text-center relative overflow-hidden">
+        <div class="text-5xl animate-bounce my-2">👑</div>
+        <h4 class="font-royal text-base font-extrabold text-amber-300">Royale Vegas Club</h4>
+        <p class="text-xs text-stone-300 mt-1">Play live slots, poker and blackjack with genuine royal experience!</p>
+        
+        <div class="w-full bg-stone-800 h-2 rounded-full mt-4 overflow-hidden border border-stone-700">
+          <div id="ad-progress-bar" class="h-full bg-gradient-to-r from-yellow-400 to-amber-500 w-0 transition-all duration-1000 ease-linear"></div>
+        </div>
+      </div>
+
+      <button id="btn-collect-ad-reward" disabled onclick="collectAdReward()" class="w-full bg-stone-800 text-stone-500 font-black py-2.5 rounded-xl text-xs uppercase tracking-wider shadow cursor-not-allowed transition">
+        Please wait 5s...
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: SIDE SHOW DIALOG ================= -->
+  <div id="modal-sideshow" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-stone-900 via-neutral-950 to-black border-2 border-purple-500 rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto mb-2 bg-purple-500/20 rounded-full flex items-center justify-center text-3xl border border-purple-400">
+        🤝
+      </div>
+      <h3 class="font-royal text-xl font-black text-purple-300" id="txt-sideshow-title">Side Show Request</h3>
+      <p class="text-xs text-stone-300 mt-1" id="txt-sideshow-desc">
+        Requesting side show comparison with <span id="sideshow-target-name" class="font-bold text-yellow-300">Player</span>!
+      </p>
+
+      <div class="bg-black/60 border border-purple-500/40 rounded-2xl p-3 my-3 text-xs text-stone-300 text-left space-y-1">
+        <div>• Both you and the previous player are <strong>SEEN</strong>.</div>
+        <div>• Both hands are compared secretly.</div>
+        <div>• <strong>Player with lower hand will PACK immediately!</strong></div>
+      </div>
+
+      <div id="sideshow-status-text" class="text-xs font-semibold text-amber-300 h-5 mb-2">
+        Awaiting response...
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="confirmSideShow()" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black py-2.5 rounded-xl shadow active:scale-95 transition text-xs uppercase">
+          Confirm Comparison
+        </button>
+        <button onclick="closeModal('modal-sideshow')" class="bg-stone-800 text-stone-300 font-bold px-4 py-2.5 rounded-xl text-xs hover:bg-stone-700">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ================= MODAL: DEALER GIFT ================= -->
   <div id="modal-dealer-gift" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
@@ -547,54 +734,6 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: DAILY BONUS ================= -->
-  <div id="modal-bonus" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-gradient-to-b from-stone-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
-      <div class="w-16 h-16 mx-auto mb-2 bg-amber-500/20 rounded-full flex items-center justify-center text-3xl">
-        🎁
-      </div>
-      <h3 class="font-royal text-xl font-black text-amber-300">Daily Club Bonus</h3>
-      <p class="text-xs text-stone-300 mt-2">Claim your daily royal chips reward to keep the table action going!</p>
-      
-      <div class="bg-black/60 border border-amber-500/40 rounded-2xl p-4 my-4">
-        <div class="text-2xl font-black text-yellow-400 font-mono">+2,500 🪙</div>
-        <div class="text-[10px] text-amber-200 mt-1">Free VIP Coins</div>
-      </div>
-
-      <button id="btn-claim-bonus" onclick="claimDailyBonus()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-950 font-black py-2.5 rounded-xl shadow-lg active:scale-95 transition">
-        <span>Claim Reward</span>
-      </button>
-      <button onclick="closeModal('modal-bonus')" class="mt-3 text-xs text-stone-400 underline">Close</button>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: REFERRAL & SHARE ================= -->
-  <div id="modal-referral" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-gradient-to-b from-stone-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
-      <div class="w-16 h-16 mx-auto mb-2 bg-yellow-500/20 rounded-full flex items-center justify-center text-3xl">
-        👥
-      </div>
-      <h3 class="font-royal text-xl font-black text-amber-300">Invite & Earn</h3>
-      <p class="text-xs text-stone-300 mt-2">Share room code with friends or redeem referral code for 5,000 free coins.</p>
-      
-      <div class="bg-black/60 border border-amber-500/40 rounded-xl p-3 my-3 text-left">
-        <div class="text-[10px] text-amber-400 uppercase font-bold">Your Table Room Code</div>
-        <div class="flex items-center justify-between mt-1">
-          <span id="room-code-val" class="font-mono text-base font-black text-white">TP-9862</span>
-          <button onclick="copyRoomCode()" class="bg-stone-800 text-amber-300 text-xs px-2.5 py-1 rounded border border-amber-500/40 hover:bg-stone-700 active:scale-95" id="btn-copy-code">Copy</button>
-        </div>
-      </div>
-
-      <div class="flex space-x-1.5 my-2">
-        <input type="text" id="friend-code-input" placeholder="Friend's Code" class="flex-1 bg-stone-900 border border-stone-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-amber-400 uppercase">
-        <button onclick="redeemFriendCode()" class="bg-amber-500 text-stone-950 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-amber-400 active:scale-95">Apply</button>
-      </div>
-      <div id="ref-status-msg" class="text-[11px] font-semibold text-emerald-400 h-4 mt-1"></div>
-
-      <button onclick="closeModal('modal-referral')" class="mt-4 text-xs text-stone-400 underline block mx-auto">Close</button>
-    </div>
-  </div>
-
   <!-- ================= MODAL: WINNER SHOW RESULTS ================= -->
   <div id="modal-winner" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 via-stone-950 to-black border-2 border-amber-400 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
@@ -673,21 +812,24 @@
       } catch (e) {}
     }
 
-    // 2. Languages
+    // 2. Multilingual Translations
     const translations = {
       en: {
         room: "Room:",
+        earnCoins: "Earn Coins",
         withdrawBtn: "Withdraw",
         pack: "Pack",
         blindBtn: "Blind",
         chaalBtn: "Chaal",
+        sideshow: "Side Show",
         show: "Show",
         seeCards: "See Cards",
         seenBadge: "Seen Player",
         blindBadge: "Blind Player",
         redeal: "Redeal Hand",
+        freeCoinsLink: "Free Coins Hub",
         playersLbl: "Players:",
-        userTurn: "Your Turn! Chaal, Pack or Show.",
+        userTurn: "Your Turn! Chaal, Side Show, Pack or Show.",
         botTurn: "{name}'s turn...",
         tipDealer: "Tip / Gift",
         dealerModalTitle: "Dealer Simran",
@@ -695,21 +837,38 @@
         playerModalDesc: "Send animated gifts across the table to this player!",
         withdrawTitle: "Wallet & Cashout",
         withdrawDesc: "Your active hand has been safely Folded (Packed). Withdraw your winning coins.",
-        dealNext: "Deal Next Hand"
+        dealNext: "Deal Next Hand",
+        rewardsTitle: "Free Coins & Rewards Hub",
+        rewardsDesc: "Watch ads, invite friends, or take emergency loan to keep playing!",
+        adTitle: "Watch Video Ad",
+        adDesc: "Watch a 5-sec sponsor ad to earn 5,000 coins instantly.",
+        adBtn: "Watch",
+        loanTitle: "Coin Udhaar / Loan",
+        loanDesc: "Emergency coin credit from club. 0% interest!",
+        loanBtn: "Request",
+        refTitle: "Refer Friends",
+        refDesc: "Invite friends on WhatsApp and earn coins when they join!",
+        refWa: "Share on WhatsApp",
+        dailyTitle: "Daily VIP Bonus",
+        dailyDesc: "Claim your royal club attendance gift daily.",
+        dailyBtn: "Claim"
       },
       hi: {
         room: "कमरा:",
+        earnCoins: "कॉइन कमाएँ",
         withdrawBtn: "निकासी",
         pack: "पैक",
         blindBtn: "ब्लाइंड",
         chaalBtn: "चाल",
+        sideshow: "साइड शो",
         show: "शो (पत्ते)",
         seeCards: "पत्ते देखें",
         seenBadge: "सीन खिलाड़ी",
         blindBadge: "ब्लाइंड खिलाड़ी",
         redeal: "नया हाथ बाँटें",
+        freeCoinsLink: "फ्री कॉइन हब",
         playersLbl: "खिलाड़ी:",
-        userTurn: "आपकी बारी! चाल, पैक या शो करें।",
+        userTurn: "आपकी बारी! चाल, साइड शो, पैक या शो करें।",
         botTurn: "{name} की बारी...",
         tipDealer: "गिफ्ट / टिप दें",
         dealerModalTitle: "डीलर सिमरन",
@@ -717,21 +876,38 @@
         playerModalDesc: "इस खिलाड़ी को टेबल पर उड़ने वाले खूबसूरत उपहार भेजें!",
         withdrawTitle: "वॉलेट और निकासी",
         withdrawDesc: "आपका हाथ सुरक्षित पैक (फोल्ड) हो गया है। अपने जीते हुए कॉइन निकालें।",
-        dealNext: "अगला राउंड खेलें"
+        dealNext: "अगला राउंड खेलें",
+        rewardsTitle: "फ्री कॉइन्स और रिवॉर्ड हब",
+        rewardsDesc: "विज्ञापन देखें, दोस्तों को बुलाएँ या कॉइन उधार लेकर खेलें!",
+        adTitle: "विज्ञापन देखें",
+        adDesc: "5 सेकंड का वीडियो विज्ञापन देखकर तुरंत 5,000 कॉइन पाएँ।",
+        adBtn: "देखें",
+        loanTitle: "कॉइन उधार / लोन",
+        loanDesc: "क्लब से तुरंत 2,000 कॉइन का उधार (बिना ब्याज)।",
+        loanBtn: "उधार लें",
+        refTitle: "दोस्तों को रेफर करें",
+        refDesc: "WhatsApp पर दोस्तों को आमंत्रित करें और 10,000 कॉइन कमाएँ!",
+        refWa: "WhatsApp पर शेयर करें",
+        dailyTitle: "दैनिक VIP बोनस",
+        dailyDesc: "रोजाना अपना मुफ्त टेबल बोनस कॉइन प्राप्त करें।",
+        dailyBtn: "प्राप्त करें"
       },
       pa: {
         room: "ਕਮਰਾ:",
+        earnCoins: "ਕੋਇਨ ਕਮਾਓ",
         withdrawBtn: "ਕੈਸ਼ਆਊਟ",
         pack: "ਪੈਕ",
         blindBtn: "ਬਲਾਇੰਡ",
         chaalBtn: "ਚਾਲ",
+        sideshow: "ਸਾਈਡ ਸ਼ੋਅ",
         show: "ਸ਼ੋਅ",
         seeCards: "ਪੱਤੇ ਦੇਖੋ",
         seenBadge: "ਸੀਨ ਖਿਡਾਰੀ",
         blindBadge: "ਬਲਾਇੰਡ ਖਿਡਾਰੀ",
         redeal: "ਨਵਾਂ ਹੱਥ ਵੰਡੋ",
+        freeCoinsLink: "ਮੁਫਤ ਕੋਇਨ ਹੱਬ",
         playersLbl: "ਖਿਡਾਰੀ:",
-        userTurn: "ਤੁਹਾਡੀ ਵਾਰੀ! ਚਾਲ, ਪੈਕ ਜਾਂ ਸ਼ੋਅ ਕਰੋ।",
+        userTurn: "ਤੁਹਾਡੀ ਵਾਰੀ! ਚਾਲ, ਸਾਈਡ ਸ਼ੋਅ, ਪੈਕ ਜਾਂ ਸ਼ੋਅ ਕਰੋ।",
         botTurn: "{name} ਦੀ ਵਾਰੀ ਹੈ...",
         tipDealer: "ਗਿਫਟ / ਟਿੱਪ ਦਿਓ",
         dealerModalTitle: "ਡੀਲਰ ਸਿਮਰਨ",
@@ -739,7 +915,21 @@
         playerModalDesc: "ਇਸ ਖਿਡਾਰੀ ਨੂੰ ਟੇਬਲ 'ਤੇ ਐਨੀਮੇਟਿਡ ਤੋਹਫ਼ੇ ਭੇਜੋ!",
         withdrawTitle: "ਵਾਲਿਟ ਅਤੇ ਨਿਕਾਸੀ",
         withdrawDesc: "ਤੁਹਾਡਾ ਹੱਥ ਸੁਰੱਖਿਅਤ ਪੈਕ ਹੋ ਗਿਆ ਹੈ। ਆਪਣੇ ਜਿੱਤੇ ਹੋਏ ਕੋਇਨ ਕਢਵਾਓ।",
-        dealNext: "ਅਗਲਾ ਰਾਊਂਡ ਖੇਡੋ"
+        dealNext: "ਅਗਲਾ ਰਾਊਂਡ ਖੇਡੋ",
+        rewardsTitle: "ਮੁਫਤ ਕੋਇਨ ਅਤੇ ਇਨਾਮ",
+        rewardsDesc: "ਮਸ਼ਹੂਰੀ ਦੇਖੋ, ਦੋਸਤਾਂ ਨੂੰ ਸੱਦੋ ਜਾਂ ਉਧਾਰ ਲੈ ਕੇ ਖੇਡੋ!",
+        adTitle: "ਮਸ਼ਹੂਰੀ ਦੇਖੋ",
+        adDesc: "5 ਸਕਿੰਟ ਦੀ ਵੀਡੀਓ ਦੇਖ ਕੇ 5,000 ਕੋਇਨ ਤੁਰੰਤ ਪ੍ਰਾਪਤ ਕਰੋ।",
+        adBtn: "ਦੇਖੋ",
+        loanTitle: "ਕੋਇਨ ਉਧਾਰ / ਕਰਜ਼ਾ",
+        loanDesc: "ਕਲੱਬ ਤੋਂ 2,000 ਕੋਇਨਾਂ ਦਾ ਐਮਰਜੈਂਸੀ ਕਰਜ਼ਾ (0% ਵਿਆਜ)।",
+        loanBtn: "ਉਧਾਰ ਲਵੋ",
+        refTitle: "ਦੋਸਤਾਂ ਨੂੰ ਰੈਫਰ ਕਰੋ",
+        refDesc: "WhatsApp 'ਤੇ ਦੋਸਤਾਂ ਨੂੰ ਸੱਦਾ ਦਿਓ ਅਤੇ 10,000 ਕੋਇਨ ਕਮਾਓ!",
+        refWa: "WhatsApp 'ਤੇ ਸ਼ੇਅਰ ਕਰੋ",
+        dailyTitle: "ਰੋਜ਼ਾਨਾ VIP ਬੋਨਸ",
+        dailyDesc: "ਹਰ ਰੋਜ਼ ਆਪਣਾ ਮੁਫਤ ਟੇਬਲ ਇਨਾਮ ਪ੍ਰਾਪਤ ਕਰੋ।",
+        dailyBtn: "ਲਵੋ"
       }
     };
 
@@ -748,19 +938,39 @@
       currentLang = lang;
       const t = translations[lang];
       document.getElementById('txt-room-title').innerText = t.room;
+      document.getElementById('txt-earn-btn').innerText = t.earnCoins;
       document.getElementById('txt-withdraw-btn').innerText = t.withdrawBtn;
       document.getElementById('txt-pack').innerText = t.pack;
+      document.getElementById('txt-sideshow').innerText = t.sideshow;
       document.getElementById('txt-show').innerText = t.show;
       document.getElementById('txt-redeal').innerText = t.redeal;
       document.getElementById('txt-players-lbl').innerText = t.playersLbl;
       document.getElementById('txt-see-cards').innerText = t.seeCards;
       document.getElementById('txt-tip-dealer').innerText = t.tipDealer;
+      document.getElementById('txt-free-coins-link').innerText = t.freeCoinsLink;
       document.getElementById('txt-modal-dealer-title').innerText = t.dealerModalTitle;
       document.getElementById('txt-modal-dealer-desc').innerText = t.dealerModalDesc;
       document.getElementById('txt-modal-player-desc').innerText = t.playerModalDesc;
       document.getElementById('txt-modal-withdraw-title').innerText = t.withdrawTitle;
       document.getElementById('txt-modal-withdraw-desc').innerText = t.withdrawDesc;
       document.getElementById('txt-next-hand').innerText = t.dealNext;
+      
+      // Hub texts
+      document.getElementById('txt-rewards-title').innerText = t.rewardsTitle;
+      document.getElementById('txt-rewards-desc').innerText = t.rewardsDesc;
+      document.getElementById('txt-ad-title').innerText = t.adTitle;
+      document.getElementById('txt-ad-desc').innerText = t.adDesc;
+      document.getElementById('txt-ad-btn').innerText = t.adBtn;
+      document.getElementById('txt-loan-title').innerText = t.loanTitle;
+      document.getElementById('txt-loan-desc').innerText = t.loanDesc;
+      document.getElementById('txt-loan-btn').innerText = t.loanBtn;
+      document.getElementById('txt-ref-title').innerText = t.refTitle;
+      document.getElementById('txt-ref-desc').innerText = t.refDesc;
+      document.getElementById('txt-ref-wa').innerText = t.refWa;
+      document.getElementById('txt-daily-title').innerText = t.dailyTitle;
+      document.getElementById('txt-daily-desc').innerText = t.dailyDesc;
+      document.getElementById('txt-daily-btn').innerText = t.dailyBtn;
+
       updateChaalButtonText();
     }
 
@@ -829,7 +1039,9 @@
     let betMultiplier = 1;
     let gameActive = false;
     let selectedTargetPlayerId = null;
+    let sideShowTargetPlayer = null;
     let botTimer = null;
+    let adCountdownInterval = null;
 
     const BOT_PROFILES = [
       { id: 1, name: 'Vikram', avatar: '🧔', chips: 9400 },
@@ -853,6 +1065,11 @@
 
       setupPlayers();
       startNewHand();
+
+      // Show Rewards Hub automatically on first visit or if coins are low
+      if (userChips <= 1000) {
+        openRewardsHub();
+      }
     }
 
     function setupPlayers() {
@@ -948,6 +1165,7 @@
       highlightActiveSeat();
       updateChaalButtonText();
       checkShowAvailability();
+      checkSideShowAvailability();
       updateControlsState(true);
       updateStatusMsg(translations[currentLang].userTurn);
     }
@@ -975,10 +1193,17 @@
       document.getElementById('btn-see-cards').classList.add('hidden');
       document.getElementById('user-hand-name').innerText = `${translations[currentLang].seenBadge} (${user.handEval.name})`;
       updateChaalButtonText();
+      checkSideShowAvailability();
     }
 
     function updateBalanceUI(chips) {
+      // Top header balance
       document.getElementById('player-balance').innerText = chips.toLocaleString();
+      // Prominent bottom user avatar balance
+      document.getElementById('user-bottom-coins').innerText = chips.toLocaleString();
+      // Hub current balance
+      const hubCoins = document.getElementById('hub-current-coins');
+      if (hubCoins) hubCoins.innerText = chips.toLocaleString();
     }
 
     function updatePotUI() {
@@ -1009,6 +1234,8 @@
         btnPack.disabled = false;
         btnPack.classList.remove('opacity-40', 'cursor-not-allowed');
       }
+
+      checkSideShowAvailability();
     }
 
     function adjustBetMultiplier(delta) {
@@ -1044,7 +1271,91 @@
       }
     }
 
-    // 6. Action Handlers (Pack, Bet, Show)
+    // 6. Side Show Feature (Sideshow / Slideshow)
+    function getPreviousActivePlayer() {
+      let idx = (currentTurnIndex - 1 + players.length) % players.length;
+      while (idx !== currentTurnIndex) {
+        if (!players[idx].isPacked) return players[idx];
+        idx = (idx - 1 + players.length) % players.length;
+      }
+      return null;
+    }
+
+    function checkSideShowAvailability() {
+      const btnSideShow = document.getElementById('btn-sideshow');
+      const user = players[0];
+      const prevPlayer = getPreviousActivePlayer();
+
+      // Side Show allowed if:
+      // 1. It is user's turn
+      // 2. User has SEEN cards
+      // 3. Previous active player is also SEEN
+      // 4. More than 2 active players remain
+      const activeCount = players.filter(p => !p.isPacked).length;
+      if (gameActive && currentTurnIndex === 0 && !user.isPacked && user.isSeen && prevPlayer && prevPlayer.isSeen && activeCount > 2) {
+        btnSideShow.disabled = false;
+        btnSideShow.classList.remove('opacity-40', 'cursor-not-allowed');
+        sideShowTargetPlayer = prevPlayer;
+      } else {
+        btnSideShow.disabled = true;
+        btnSideShow.classList.add('opacity-40', 'cursor-not-allowed');
+      }
+    }
+
+    function handleUserSideShow() {
+      if (!gameActive || currentTurnIndex !== 0 || !sideShowTargetPlayer) return;
+      const user = players[0];
+      const cost = currentStake * 2; // Standard chaal amount for side-show
+
+      if (user.chips < cost) {
+        updateStatusMsg("Insufficient coins for Side Show!");
+        return;
+      }
+
+      document.getElementById('sideshow-target-name').innerText = sideShowTargetPlayer.name;
+      document.getElementById('sideshow-status-text').innerText = `${sideShowTargetPlayer.name} will compare cards with you for ${cost} coins.`;
+      document.getElementById('modal-sideshow').classList.remove('hidden');
+    }
+
+    function confirmSideShow() {
+      closeModal('modal-sideshow');
+      const user = players[0];
+      const target = sideShowTargetPlayer;
+      const cost = currentStake * 2;
+
+      user.chips -= cost;
+      potAmount += cost;
+      localStorage.setItem('tp_user_chips', user.chips);
+      updateBalanceUI(user.chips);
+      updatePotUI();
+      playSound('chip');
+
+      const cmp = compareTwoHands(user.handEval, target.handEval);
+      if (cmp >= 0) {
+        // User wins side-show: target folds
+        target.isPacked = true;
+        const packBadge = target.seatElem.querySelector('.status-badge');
+        if (packBadge) packBadge.classList.remove('hidden');
+        showPlayerReaction(target.id, '❌ PACK (Lost SideShow)');
+        updateStatusMsg(`Side Show: You won! ${target.name} has folded.`);
+        playSound('win');
+      } else {
+        // User loses side-show: user folds
+        user.isPacked = true;
+        document.getElementById('user-hand-name').innerText = "Folded (Lost SideShow)";
+        for (let c = 0; c < 3; c++) {
+          document.getElementById(`card-inner-${c}`).style.opacity = '0.4';
+        }
+        updateStatusMsg(`Side Show: ${target.name} had better cards! You folded.`);
+      }
+
+      checkRoundStatus();
+      if (gameActive) {
+        passTurnToNext();
+      }
+    }
+
+    // 7. Action Handlers (Pack, Bet, Show)
     function handleUserPack() {
       if (!gameActive || players[0].isPacked) return;
 
@@ -1070,7 +1381,8 @@
       const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
 
       if (user.chips < cost) {
-        updateStatusMsg("Insufficient coins! Claim daily bonus.");
+        updateStatusMsg("Insufficient coins! Earn free coins from Hub.");
+        openRewardsHub();
         return;
       }
 
@@ -1109,6 +1421,7 @@
 
       highlightActiveSeat();
       checkShowAvailability();
+      checkSideShowAvailability();
 
       const currentP = players[currentTurnIndex];
       if (currentP.isBot) {
@@ -1116,8 +1429,8 @@
         const tMsg = translations[currentLang].botTurn.replace('{name}', currentP.name);
         updateStatusMsg(tMsg);
         
-        if (Math.random() < 0.4) {
-          showPlayerReaction(currentP.id, '🤔 Soch raha hu...');
+        if (Math.random() < 0.35) {
+          showPlayerReaction(currentP.id, '🤔 Soch...');
         }
         
         botTimer = setTimeout(() => {
@@ -1257,7 +1570,115 @@
       document.getElementById('modal-winner').classList.remove('hidden');
     }
 
-    // 7. Photo Upload
+    // 8. Rewards Hub, Video Ads, Loan & Referrals
+    function openRewardsHub() {
+      const userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      document.getElementById('hub-current-coins').innerText = userChips.toLocaleString();
+      document.getElementById('modal-rewards-hub').classList.remove('hidden');
+    }
+
+    function startVideoAdSimulation() {
+      closeModal('modal-rewards-hub');
+      document.getElementById('modal-video-ad').classList.remove('hidden');
+
+      let timeLeft = 5;
+      const countEl = document.getElementById('ad-timer-countdown');
+      const barEl = document.getElementById('ad-progress-bar');
+      const btnCollect = document.getElementById('btn-collect-ad-reward');
+
+      countEl.innerText = `${timeLeft}s`;
+      barEl.style.width = '0%';
+      btnCollect.disabled = true;
+      btnCollect.innerText = 'Please wait 5s...';
+      btnCollect.className = 'w-full bg-stone-800 text-stone-500 font-black py-2.5 rounded-xl text-xs uppercase tracking-wider shadow cursor-not-allowed';
+
+      setTimeout(() => { barEl.style.width = '100%'; }, 50);
+
+      adCountdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+          countEl.innerText = `${timeLeft}s`;
+          btnCollect.innerText = `Please wait ${timeLeft}s...`;
+        } else {
+          clearInterval(adCountdownInterval);
+          countEl.innerText = `DONE!`;
+          btnCollect.disabled = false;
+          btnCollect.innerText = '🎁 Collect +5,000 Coins';
+          btnCollect.className = 'w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-stone-950 font-black py-2.5 rounded-xl text-xs uppercase tracking-wider shadow hover:brightness-110 active:scale-95 transition';
+          playSound('win');
+        }
+      }, 1000);
+    }
+
+    function collectAdReward() {
+      closeModal('modal-video-ad');
+      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      userChips += 5000;
+      localStorage.setItem('tp_user_chips', userChips);
+      updateBalanceUI(userChips);
+      playSound('win');
+      setDealerSpeech("Awesome! +5,000 Ad Reward added to your wallet! 🪙");
+      updateStatusMsg("+5,000 Free Coins claimed via video ad!");
+    }
+
+    function claimEmergencyLoan() {
+      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      userChips += 2000;
+      localStorage.setItem('tp_user_chips', userChips);
+      updateBalanceUI(userChips);
+      playSound('win');
+
+      const btn = document.getElementById('btn-claim-loan');
+      btn.innerText = "Credited +2,000!";
+      setDealerSpeech("Emergency 2,000 coin loan credited! Shubh Labh! 🤝");
+      setTimeout(() => closeModal('modal-rewards-hub'), 800);
+    }
+
+    function shareViaWhatsApp() {
+      const room = document.getElementById('display-room-code').innerText;
+      const text = encodeURIComponent(`Hey! Join my live Teen Patti table in Room: ${room} on Teen Patti Live Club. Click here to play and claim 10,000 free coins: ${window.location.href}`);
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+      
+      // Reward user for referral share
+      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      userChips += 10000;
+      localStorage.setItem('tp_user_chips', userChips);
+      updateBalanceUI(userChips);
+      playSound('win');
+      setDealerSpeech("+10,000 Referral Coins added! 📲");
+      setTimeout(() => closeModal('modal-rewards-hub'), 900);
+    }
+
+    function claimDailyBonus() {
+      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      userChips += 2500;
+      localStorage.setItem('tp_user_chips', userChips);
+      updateBalanceUI(userChips);
+      playSound('win');
+      const btn = document.getElementById('hub-btn-bonus');
+      if (btn) btn.innerText = "Claimed +2,500!";
+      setDealerSpeech("Daily bonus claimed! Good luck on the table! 🎁");
+      setTimeout(() => closeModal('modal-rewards-hub'), 800);
+    }
+
+    function copyRoomCode() {
+      const code = document.getElementById('display-room-code').innerText;
+      const shareUrl = `${window.location.href}#${code}`;
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = shareUrl;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+
+      const btn = document.getElementById('hub-btn-copy');
+      if (btn) {
+        btn.innerText = "Copied! ✅";
+        setTimeout(() => { btn.innerText = "📋 Copy Link"; }, 1500);
+      }
+    }
+
+    // 9. Photo Upload & Dealer
     function triggerPhotoUpload() {
       document.getElementById('user-photo-input').click();
     }
@@ -1279,7 +1700,6 @@
       reader.readAsDataURL(file);
     }
 
-    // 8. Dealer System
     function openDealerGiftModal() {
       document.getElementById('modal-dealer-gift').classList.remove('hidden');
     }
@@ -1294,7 +1714,8 @@
     function sendGiftToDealer(giftName, cost, dealerReply) {
       let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
       if (userChips < cost) {
-        alert("Not enough coins for this gift!");
+        alert("Not enough coins for this gift! Visit Earn Coins Hub.");
+        openRewardsHub();
         return;
       }
 
@@ -1308,7 +1729,7 @@
       closeModal('modal-dealer-gift');
     }
 
-    // 9. Player Gifts & Emotes
+    // 10. Player Gifts & Emotes
     function openPlayerProfileModal(botId) {
       selectedTargetPlayerId = botId;
       const bot = players.find(p => p.id === botId);
@@ -1323,7 +1744,8 @@
     function sendGiftToPlayer(emoji, cost) {
       let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
       if (userChips < cost) {
-        alert("Not enough coins for this gift!");
+        alert("Not enough coins for this gift! Visit Earn Coins Hub.");
+        openRewardsHub();
         return;
       }
 
@@ -1379,7 +1801,7 @@
       }
     }
 
-    // 10. Withdraw & Modals
+    // 11. Withdraw Wallet
     function handleWithdrawClick() {
       handleUserPack();
       const userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
@@ -1418,60 +1840,11 @@
       }, 2000);
     }
 
-    function openBonusModal() {
-      document.getElementById('modal-bonus').classList.remove('hidden');
-    }
-    function openReferralModal() {
-      document.getElementById('modal-referral').classList.remove('hidden');
-    }
     function closeModal(id) {
       document.getElementById(id).classList.add('hidden');
     }
 
-    function claimDailyBonus() {
-      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
-      userChips += 2500;
-      localStorage.setItem('tp_user_chips', userChips);
-      updateBalanceUI(userChips);
-      playSound('win');
-      const btn = document.getElementById('btn-claim-bonus');
-      btn.innerText = "Claimed +2,500!";
-      setTimeout(() => closeModal('modal-bonus'), 800);
-    }
-
-    function copyRoomCode() {
-      const code = document.getElementById('room-code-val').innerText;
-      const dummy = document.createElement("textarea");
-      document.body.appendChild(dummy);
-      dummy.value = code;
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
-
-      const btn = document.getElementById('btn-copy-code');
-      btn.innerText = "Copied!";
-      setTimeout(() => { btn.innerText = "Copy"; }, 1500);
-    }
-
-    function redeemFriendCode() {
-      const input = document.getElementById('friend-code-input').value.trim();
-      const status = document.getElementById('ref-status-msg');
-      if (input.length < 4) {
-        status.innerText = "Invalid code!";
-        status.className = "text-[11px] font-semibold text-rose-400 h-4 mt-1";
-        return;
-      }
-      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
-      userChips += 5000;
-      localStorage.setItem('tp_user_chips', userChips);
-      updateBalanceUI(userChips);
-      playSound('win');
-      status.innerText = "+5,000 Coins Added!";
-      status.className = "text-[11px] font-semibold text-emerald-400 h-4 mt-1";
-      setTimeout(() => closeModal('modal-referral'), 1200);
-    }
-
-    // Auto-launch on page load
+    // Initialize on ready
     window.addEventListener('DOMContentLoaded', () => {
       initGame();
       setLanguage('en');
