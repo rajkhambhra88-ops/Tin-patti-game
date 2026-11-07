@@ -150,8 +150,8 @@
     }
     .seat.active .avatar-circle {
       border-color: #22c55e;
-      box-shadow: 0 0 12px #22c55e;
-      transform: scale(1.08);
+      box-shadow: 0 0 14px #22c55e;
+      transform: scale(1.1);
     }
     .seat.folded {
       opacity: 0.35;
@@ -193,8 +193,8 @@
       margin-top: 1px;
     }
     .p-tag.seen { color: #38bdf8; border: 1px solid #0284c7; }
-    .p-tag.chaal { color: #4ade80; }
-    .p-tag.think { color: #facc15; }
+    .p-tag.think { color: #facc15; animation: pulse 0.7s infinite alternate; }
+    @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
 
     .bot-cards-mini {
       display: flex;
@@ -642,6 +642,7 @@ var userFolded = false;
 var isMyTurn = false;
 var turnIndex = 0;
 var gameActive = false;
+var roundCount = 0;
 
 var bots = [
   { id: 0, name: 'Rohit', coins: 9500, isSeen: false, folded: false, cards: [] },
@@ -687,12 +688,15 @@ function renderUI() {
   for (var i = 0; i < bots.length; i++) {
     var b = bots[i];
     var div = document.createElement('div');
-    div.className = 'seat ' + (b.folded ? 'folded ' : '') + ((turnIndex === i && !b.folded) ? 'active' : '');
+    var isThinking = (turnIndex === i && !b.folded && !isMyTurn);
+    div.className = 'seat ' + (b.folded ? 'folded ' : '') + (isThinking ? 'active' : '');
     
     var tagClass = b.isSeen ? 'seen' : '';
     var tagText = b.isSeen ? '👁️ SEEN' : 'BLIND';
-    if (b.folded) tagText = 'PACKED';
-    else if (turnIndex === i) {
+    if (b.folded) {
+      tagText = 'PACKED';
+      tagClass = '';
+    } else if (isThinking) {
       tagClass = 'think';
       tagText = 'THINKING...';
     }
@@ -766,7 +770,7 @@ function renderUI() {
   }
 }
 
-/* ================= GAME CONTROLLER & AI ================= */
+/* ================= GAME CONTROLLER & SMART AI ================= */
 function startRound() {
   var d = makeDeck();
   pot = 0;
@@ -774,7 +778,9 @@ function startRound() {
   userIsSeen = false;
   userFolded = false;
   turnIndex = 0;
+  roundCount = 0;
   gameActive = true;
+  isMyTurn = false;
 
   playSnd('deal');
 
@@ -806,60 +812,74 @@ function processTurn() {
     return;
   }
 
-  // If index reaches user
+  // User Turn: Table stops completely and waits for user's action
   if (turnIndex >= bots.length) {
     if (userFolded) {
       turnIndex = 0;
       processTurn();
       return;
     }
-    // User's Turn
     isMyTurn = true;
     document.getElementById('dealerBubble').textContent = 'Your turn! Chaal, Pack or Side Show.';
     document.getElementById('subInfoTxt').textContent = 'Waiting for your move...';
     renderUI();
-  } else {
-    // Bot's Turn
-    isMyTurn = false;
-    var bot = bots[turnIndex];
-    if (bot.folded) {
-      turnIndex++;
-      processTurn();
-      return;
+    return; // STOP! Do not proceed automatically
+  }
+
+  // Bot Turn
+  isMyTurn = false;
+  var bot = bots[turnIndex];
+  if (bot.folded) {
+    turnIndex++;
+    processTurn();
+    return;
+  }
+
+  renderUI();
+  document.getElementById('subInfoTxt').textContent = bot.name + ' is thinking...';
+
+  // Realistic thinking delay
+  setTimeout(function() {
+    if (!gameActive || bot.folded) return;
+
+    roundCount++;
+    // Bots see cards after 1 or 2 turns
+    if (!bot.isSeen && (roundCount > 2 || Math.random() > 0.4)) {
+      bot.isSeen = true;
     }
 
+    var evalResult = evaluateHand(bot.cards);
+    var score = evalResult.score;
+    var shouldFold = false;
+
+    // Smart logic: Decisions based strictly on hand strength
+    if (bot.isSeen) {
+      // If hand is only a low High Card (< Queen)
+      if (score < 1012) {
+        // High chance of folding on weak cards
+        if (Math.random() < 0.75) shouldFold = true;
+      } else if (score < 2000) {
+        // Ace or King high: 40% fold if pot is getting high
+        if (pot > 800 && Math.random() < 0.45) shouldFold = true;
+      }
+      // If bot has Pair (score >= 2000), Color, Seq, Trail - they will definitely play
+    }
+
+    if (shouldFold) {
+      bot.folded = true;
+      document.getElementById('dealerBubble').textContent = bot.name + ' packed (weak cards).';
+    } else {
+      var cost = bot.isSeen ? stake * 2 : stake;
+      bot.coins = Math.max(0, bot.coins - cost);
+      pot += cost;
+      playSnd('chip');
+      document.getElementById('dealerBubble').textContent = bot.name + ' played ' + (bot.isSeen ? 'Chaal' : 'Blind');
+    }
+
+    turnIndex++;
     renderUI();
-    document.getElementById('subInfoTxt').textContent = bot.name + ' is thinking...';
-
-    setTimeout(function() {
-      if (!bot.isSeen && Math.random() > 0.4) {
-        bot.isSeen = true;
-      }
-
-      var evalScore = evaluateHand(bot.cards).score;
-      var shouldFold = false;
-
-      if (bot.isSeen) {
-        if (evalScore < 1010 && Math.random() > 0.5) shouldFold = true;
-        if (evalScore < 1007) shouldFold = true;
-      }
-
-      if (shouldFold) {
-        bot.folded = true;
-        document.getElementById('dealerBubble').textContent = bot.name + ' packed.';
-      } else {
-        var cost = bot.isSeen ? stake * 2 : stake;
-        bot.coins = Math.max(0, bot.coins - cost);
-        pot += cost;
-        playSnd('chip');
-        document.getElementById('dealerBubble').textContent = bot.name + ' played ' + (bot.isSeen ? 'Chaal' : 'Blind');
-      }
-
-      turnIndex++;
-      renderUI();
-      processTurn();
-    }, 1200 + Math.random() * 600);
-  }
+    processTurn();
+  }, 1400 + Math.random() * 600);
 }
 
 /* ================= USER ACTIONS ================= */
