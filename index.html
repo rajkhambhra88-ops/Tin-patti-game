@@ -1,76 +1,20 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const crypto = require("crypto");
+const functions=require("firebase-functions");
+const admin=require("firebase-admin");
+const crypto=require("crypto");
 admin.initializeApp();
-const db = admin.database();
-const REGION = "asia-south1";
-const COIN_START = 5000, ENTRY = 100;
-const fail = (code, message) => { throw new functions.https.HttpsError(code, message); };
-function uidOf(ctx){ if(!ctx.auth) fail("unauthenticated","पहले लॉगिन करें"); return ctx.auth.uid; }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=crypto.randomInt(i+1);[a[i],a[j]]=[a[j],a[i]];}return a; }
-function deck(){const suits=["♠","♥","♦","♣"],ranks=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],d=[];for(const suit of suits)for(let i=0;i<ranks.length;i++)d.push({suit,rank:ranks[i],v:i+2});return shuffle(d);}
-function evaluate(hand){
- const a=hand.map(c=>c.v).sort((x,y)=>y-x),same=hand.every(c=>c.suit===hand[0].suit),trips=a[0]===a[2],straight=(a[0]-a[1]===1&&a[1]-a[2]===1)||(a[0]===14&&a[1]===3&&a[2]===2);
- if(trips)return [6,a[0]];if(same&&straight)return [5,a[0]===14&&a[1]===3?3:a[0]];if(same)return [4,...a];if(straight)return [3,a[0]===14&&a[1]===3?3:a[0]];if(a[0]===a[1]||a[1]===a[2])return [2,a[1],a[0]===a[1]?a[2]:a[0]];return [1,...a];
-}
-function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)-(b[i]||0);}return 0;}
-function code(){return crypto.randomBytes(3).toString("hex").toUpperCase();}
-async function player(uid){const s=await db.ref("players/"+uid).once("value");if(!s.exists())fail("failed-precondition","खिलाड़ी प्रोफाइल नहीं मिली");return s.val();}
-exports.registerPlayer = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),name=String(data.name||"खिलाड़ी").trim().slice(0,18);if(name.length<2)fail("invalid-argument","नाम कम से कम 2 अक्षर का हो");
- const ref=db.ref("players/"+uid);let out;
- await ref.transaction(old=>{if(old){out=old;return old;}out={name,coins:COIN_START,referralCode:code(),referralCount:0,createdAt:Date.now()};return out;});
- return {name:out.name,coins:out.coins,referralCode:out.referralCode};
-});
-exports.createRoom = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),max=Number(data.maxPlayers);if(![3,4,5,6].includes(max))fail("invalid-argument","3 से 6 खिलाड़ी चुनें");
- const p=await player(uid);if(p.coins<ENTRY)fail("failed-precondition","कॉइन कम हैं");
- const roomId=code(),room={host:uid,maxPlayers:max,entry:ENTRY,pot:0,status:"waiting",players:[{uid,name:p.name,seen:false,folded:false,contribution:0}],createdAt:Date.now(),hands:{},currentTurn:null,turnOrder:[],actions:{},lastActionAt:0};
- await db.ref("players/"+uid+"/coins").transaction(v=>(v||0)-ENTRY);
- await db.ref("rooms/"+roomId).set(room);return {roomId};
-});
-exports.joinRoom = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),id=String(data.roomId||"").toUpperCase(),p=await player(uid),ref=db.ref("rooms/"+id);let err=null;
- await ref.transaction(r=>{if(!r){err="रूम नहीं मिला";return;}if(r.status!=="waiting"){err="यह गेम शुरू हो चुका है";return;}if(r.players.some(x=>x.uid===uid)){return r;}if(r.players.length>=r.maxPlayers){err="टेबल भर चुकी है";return;}if(p.coins<r.entry){err="कॉइन कम हैं";return;}r.players.push({uid,name:p.name,seen:false,folded:false,contribution:0});return r;});
- if(err)fail("failed-precondition",err);
- const snap=await ref.once("value"),r=snap.val();if(r.players.some(x=>x.uid===uid)&&!r.actions?.[uid]){await db.ref("players/"+uid+"/coins").transaction(v=>(v||0)-r.entry);}
- return {roomId:id,players:r.players.length};
-});
-exports.startGame = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),id=String(data.roomId||"");let result=null,err=null;
- await db.ref("rooms/"+id).transaction(r=>{if(!r){err="रूम नहीं मिला";return;}if(r.host!==uid){err="केवल टेबल बनाने वाला गेम शुरू कर सकता है";return;}if(r.status!=="waiting"||r.players.length<3){err="कम से कम 3 खिलाड़ी चाहिए";return;}
- const d=deck();r.hands={};r.players.forEach(p=>{r.hands[p.uid]=d.splice(0,3);p.folded=false;p.seen=false;p.contribution=0;});r.status="playing";r.pot=0;r.turnOrder=r.players.map(p=>p.uid);r.currentTurn=r.turnOrder[0];r.actions={};r.lastActionAt=Date.now();result={started:true};return r;});
- if(err)fail("failed-precondition",err);return result||{started:true};
-});
-exports.gameAction = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),id=String(data.roomId||""),action=String(data.action||"");if(!["blind","chaal","seen","pack","sideshow","show"].includes(action))fail("invalid-argument","गलत चाल");
- let outcome=null,err=null;
- await db.ref("rooms/"+id).transaction(r=>{
-  if(!r){err="रूम नहीं मिला";return;}if(r.status!=="playing"){err="गेम चालू नहीं है";return;}
-  const me=r.players.find(p=>p.uid===uid);if(!me||me.folded){err="आप इस बाज़ी में सक्रिय नहीं हैं";return;}
-  if(r.currentTurn!==uid){err="अभी आपकी बारी नहीं है";return;}
-  if(action==="seen"){me.seen=true;outcome={message:"आपके कार्ड देख लिए गए"};return r;}
-  if(action==="sideshow"){err="Side Show अगले नियम अपडेट में उपलब्ध होगा";return;}
-  if(action==="show"){
-   const active=r.players.filter(p=>!p.folded);if(active.length!==2){err="Show के लिए केवल 2 सक्रिय खिलाड़ी होने चाहिए";return;}
-   const a=evaluate(r.hands[uid]),other=active.find(p=>p.uid!==uid),b=evaluate(r.hands[other.uid]),winner=cmp(a,b)>=0?uid:other.uid;r.status="finished";r.winner=winner;r.players.find(p=>p.uid===winner).won=true;outcome={winner};return r;
-  }
-  if(action==="pack"){me.folded=true;outcome={message:"आपने Pack किया"};}
-  else {const amount=action==="blind"?100:200; if(action==="chaal"&&!me.seen){err="पहले Seen करें या Blind खेलें";return;}me.contribution+=amount;r.pot+=amount;outcome={message:action==="blind"?"Blind चाल":"Chaal चाल"};}
-  const active=r.players.filter(p=>!p.folded);if(active.length===1){r.status="finished";r.winner=active[0].uid;outcome={winner:r.winner};return r;}
-  const order=r.turnOrder;let idx=order.indexOf(uid),next=null;for(let n=1;n<=order.length;n++){const candidate=order[(idx+n)%order.length];if(active.some(p=>p.uid===candidate)){next=candidate;break;}}r.currentTurn=next;r.lastActionAt=Date.now();return r;
- });
- if(err)fail("failed-precondition",err);
- if(outcome&&outcome.winner){const room=(await db.ref("rooms/"+id).once("value")).val();await db.ref("players/"+outcome.winner+"/coins").transaction(v=>(v||0)+(room.pot||0));}
- return outcome||{ok:true};
-});
-exports.leaveRoom = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),id=String(data.roomId||""),ref=db.ref("rooms/"+id);let err=null;
- await ref.transaction(r=>{if(!r)return r;const p=r.players.find(x=>x.uid===uid);if(!p)return r;if(r.status==="playing"){p.folded=true;const a=r.players.filter(x=>!x.folded);if(a.length===1){r.status="finished";r.winner=a[0].uid;}}else{r.players=r.players.filter(x=>x.uid!==uid);if(!r.players.length)return null;if(r.host===uid)r.host=r.players[0].uid;}return r;});
- return {ok:true};
-});
-exports.claimDailyBonus = functions.region(REGION).https.onCall(async(data,ctx)=>{
- const uid=uidOf(ctx),ref=db.ref("players/"+uid),today=new Date().toISOString().slice(0,10);let result=null,err=null;
- await ref.transaction(p=>{if(!p){err="खिलाड़ी नहीं मिला";return;}if(p.lastDaily===today){err="आज का बोनस पहले ले चुके हैं";return;}p.coins=(p.coins||0)+500;p.lastDaily=today;result={coins:p.coins};return p;});
- if(err)fail("failed-precondition",err);return result;
-});
+const db=admin.database(),REGION="asia-south1",ENTRY=100;
+const H=(code,msg)=>{throw new functions.https.HttpsError(code,msg)};
+const uid=c=>{if(!c.auth)H("unauthenticated","पहले लॉगिन करें");return c.auth.uid};
+const code=()=>crypto.randomBytes(3).toString("hex").toUpperCase();
+async function player(id){let s=await db.ref("players/"+id).once("value");if(!s.exists())H("not-found","खिलाड़ी नहीं मिला");return s.val()}
+function deck(){let d=[];for(let s of ["♠","♥","♦","♣"])for(let r of ["2","3","4","5","6","7","8","9","10","J","Q","K","A"])d.push({suit:s,rank:r,value:["2","3","4","5","6","7","8","9","10","J","Q","K","A"].indexOf(r)+2});for(let i=d.length-1;i>0;i--){let j=crypto.randomInt(i+1);[d[i],d[j]]=[d[j],d[i]]}return d}
+function score(h){let v=h.map(c=>c.value).sort((a,b)=>b-a),f=h.every(c=>c.suit===h[0].suit),t=v[0]===v[2],s=(v[0]-v[1]===1&&v[1]-v[2]===1)||(v[0]===14&&v[1]===3&&v[2]===2);if(t)return[6,v[0]];if(f&&s)return[5,v[0]];if(f)return[4,...v];if(s)return[3,v[0]];if(v[0]===v[1]||v[1]===v[2])return[2,v[1],v[0]===v[1]?v[2]:v[0]];return[1,...v]}
+function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++)if((a[i]||0)!==(b[i]||0))return(a[i]||0)-(b[i]||0);return 0}
+exports.registerPlayer=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),name=String(d.name||"Player").trim().slice(0,18),ref=db.ref("players/"+id);if(name.length<2)H("invalid-argument","नाम छोटा है");await ref.transaction(p=>p||{name,coins:5000,referralCode:code(),referralCount:0,createdAt:Date.now(),referrerCode:String(d.referralCode||"").slice(0,12)});let p=(await ref.once("value")).val();return{name:p.name,coins:p.coins,referralCode:p.referralCode}});
+exports.createRoom=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),n=Number(d.maxPlayers);if(![3,4,5,6].includes(n))H("invalid-argument","3 से 6 खिलाड़ी चुनें");let p=await player(id);if(p.coins<ENTRY)H("failed-precondition","कॉइन कम हैं");let rid=code(),u={};u["players/"+id+"/coins"]=p.coins-ENTRY;u["rooms/"+rid]={host:id,maxPlayers:n,entry:ENTRY,pot:ENTRY,status:"waiting",players:[{uid:id,name:p.name,folded:false,seen:false}],createdAt:Date.now(),turnOrder:[]};await db.ref().update(u);return{roomId:rid}});
+exports.joinRoom=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||"").toUpperCase(),p=await player(id),s=await db.ref("rooms/"+rid).once("value"),r=s.val();if(!r)H("not-found","रूम नहीं मिला");if(r.status!=="waiting"||r.players.length>=r.maxPlayers)H("failed-precondition","टेबल उपलब्ध नहीं");if(r.players.some(x=>x.uid===id))return{roomId:rid};if(p.coins<r.entry)H("failed-precondition","कॉइन कम हैं");let u={};u["players/"+id+"/coins"]=p.coins-r.entry;u["rooms/"+rid+"/players"]=r.players.concat([{uid:id,name:p.name,folded:false,seen:false}]);u["rooms/"+rid+"/pot"]=(r.pot||0)+r.entry;await db.ref().update(u);return{roomId:rid}});
+exports.startGame=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||""),s=await db.ref("rooms/"+rid).once("value"),r=s.val();if(!r||r.host!==id)H("permission-denied","टेबल होस्ट ही शुरू कर सकता है");if(r.status!=="waiting"||r.players.length<3)H("failed-precondition","कम से कम 3 खिलाड़ी चाहिए");let dck=deck(),hands={};r.players.forEach(p=>hands[p.uid]=dck.splice(0,3));let u={};u["rooms/"+rid+"/status"]="playing";u["rooms/"+rid+"/turnOrder"]=r.players.map(p=>p.uid);u["rooms/"+rid+"/currentTurn"]=r.players[0].uid;u["rooms/"+rid+"/players"]=r.players.map(p=>({...p,seen:false,folded:false}));u["privateHands/"+rid]=hands;await db.ref().update(u);return{started:true}});
+exports.getMyHand=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),s=await db.ref("privateHands/"+String(d.roomId||"")+"/"+id).once("value");if(!s.exists())H("not-found","कार्ड उपलब्ध नहीं");return{cards:s.val()}});
+exports.gameAction=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||""),a=String(d.action||""),root=db.ref(),s=await root.child("rooms/"+rid).once("value"),r=s.val();if(!r||r.status!=="playing")H("failed-precondition","गेम चालू नहीं");let me=r.players.find(p=>p.uid===id);if(!me||me.folded||r.currentTurn!==id)H("permission-denied","अभी आपकी बारी नहीं");if(a==="sideshow")H("unimplemented","Side Show अभी उपलब्ध नहीं");if(a==="seen"){me.seen=true;await root.child("rooms/"+rid+"/players").set(r.players);return{message:"कार्ड देख लिए"}}if(!["blind","chaal","pack","show"].includes(a))H("invalid-argument","गलत चाल");if(a==="chaal"&&!me.seen)H("failed-precondition","Chaal से पहले Seen करें");let cost=a==="blind"?100:a==="chaal"?200:0,p=await player(id);if(cost&&p.coins<cost)H("failed-precondition","कॉइन कम हैं");if(cost){await root.child("players/"+id+"/coins").set(p.coins-cost);me.contribution=(me.contribution||0)+cost;r.pot+=cost}if(a==="pack")me.folded=true;let active=r.players.filter(x=>!x.folded),winner=null;if(a==="show"){if(active.length!==2)H("failed-precondition","Show के लिए 2 खिलाड़ी होने चाहिए");let h=(await root.child("privateHands/"+rid).once("value")).val(),other=active.find(x=>x.uid!==id);winner=cmp(score(h[id]),score(h[other.uid]))>=0?id:other.uid}if(active.length===1)winner=active[0].uid;if(!winner){let i=r.turnOrder.indexOf(id);for(let n=1;n<=r.turnOrder.length;n++){let x=r.turnOrder[(i+n)%r.turnOrder.length];if(active.some(p=>p.uid===x)){r.currentTurn=x;break}}}let u={};u["rooms/"+rid+"/players"]=r.players;u["rooms/"+rid+"/pot"]=r.pot;u["rooms/"+rid+"/currentTurn"]=winner?null:r.currentTurn;if(winner){let w=await player(winner);u["players/"+winner+"/coins"]=w.coins+r.pot;u["rooms/"+rid+"/status"]="finished";u["rooms/"+rid+"/winner"]=winner;u["privateHands/"+rid]=null}await root.update(u);return winner?{winner}:{message:"चाल दर्ज हुई"}});
+exports.claimDailyBonus=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),ref=db.ref("players/"+id),today=new Date().toISOString().slice(0,10),p=await player(id);if(p.lastDaily===today)H("already-exists","आज का बोनस ले चुके हैं");let coins=p.coins+500;await ref.update({coins,lastDaily:today});return{coins}});
+exports.leaveRoom=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||""),ref=db.ref("rooms/"+rid),s=await ref.once("value"),r=s.val();if(!r)return{ok:true};if(r.status==="playing")H("failed-precondition","चलती बाज़ी में अभी टेबल छोड़ना बंद है");let ps=r.players.filter(p=>p.uid!==id);if(!ps.length){await ref.remove();return{ok:true}}let u={};u["rooms/"+rid+"/players"]=ps;if(r.host===id)u["rooms/"+rid+"/host"]=ps[0].uid;await db.ref().update(u);return{ok:true}});
