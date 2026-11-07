@@ -1,20 +1,1101 @@
-const functions=require("firebase-functions");
-const admin=require("firebase-admin");
-const crypto=require("crypto");
-admin.initializeApp();
-const db=admin.database(),REGION="asia-south1",ENTRY=100;
-const H=(code,msg)=>{throw new functions.https.HttpsError(code,msg)};
-const uid=c=>{if(!c.auth)H("unauthenticated","पहले लॉगिन करें");return c.auth.uid};
-const code=()=>crypto.randomBytes(3).toString("hex").toUpperCase();
-async function player(id){let s=await db.ref("players/"+id).once("value");if(!s.exists())H("not-found","खिलाड़ी नहीं मिला");return s.val()}
-function deck(){let d=[];for(let s of ["♠","♥","♦","♣"])for(let r of ["2","3","4","5","6","7","8","9","10","J","Q","K","A"])d.push({suit:s,rank:r,value:["2","3","4","5","6","7","8","9","10","J","Q","K","A"].indexOf(r)+2});for(let i=d.length-1;i>0;i--){let j=crypto.randomInt(i+1);[d[i],d[j]]=[d[j],d[i]]}return d}
-function score(h){let v=h.map(c=>c.value).sort((a,b)=>b-a),f=h.every(c=>c.suit===h[0].suit),t=v[0]===v[2],s=(v[0]-v[1]===1&&v[1]-v[2]===1)||(v[0]===14&&v[1]===3&&v[2]===2);if(t)return[6,v[0]];if(f&&s)return[5,v[0]];if(f)return[4,...v];if(s)return[3,v[0]];if(v[0]===v[1]||v[1]===v[2])return[2,v[1],v[0]===v[1]?v[2]:v[0]];return[1,...v]}
-function cmp(a,b){for(let i=0;i<Math.max(a.length,b.length);i++)if((a[i]||0)!==(b[i]||0))return(a[i]||0)-(b[i]||0);return 0}
-exports.registerPlayer=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),name=String(d.name||"Player").trim().slice(0,18),ref=db.ref("players/"+id);if(name.length<2)H("invalid-argument","नाम छोटा है");await ref.transaction(p=>p||{name,coins:5000,referralCode:code(),referralCount:0,createdAt:Date.now(),referrerCode:String(d.referralCode||"").slice(0,12)});let p=(await ref.once("value")).val();return{name:p.name,coins:p.coins,referralCode:p.referralCode}});
-exports.createRoom=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),n=Number(d.maxPlayers);if(![3,4,5,6].includes(n))H("invalid-argument","3 से 6 खिलाड़ी चुनें");let p=await player(id);if(p.coins<ENTRY)H("failed-precondition","कॉइन कम हैं");let rid=code(),u={};u["players/"+id+"/coins"]=p.coins-ENTRY;u["rooms/"+rid]={host:id,maxPlayers:n,entry:ENTRY,pot:ENTRY,status:"waiting",players:[{uid:id,name:p.name,folded:false,seen:false}],createdAt:Date.now(),turnOrder:[]};await db.ref().update(u);return{roomId:rid}});
-exports.joinRoom=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||"").toUpperCase(),p=await player(id),s=await db.ref("rooms/"+rid).once("value"),r=s.val();if(!r)H("not-found","रूम नहीं मिला");if(r.status!=="waiting"||r.players.length>=r.maxPlayers)H("failed-precondition","टेबल उपलब्ध नहीं");if(r.players.some(x=>x.uid===id))return{roomId:rid};if(p.coins<r.entry)H("failed-precondition","कॉइन कम हैं");let u={};u["players/"+id+"/coins"]=p.coins-r.entry;u["rooms/"+rid+"/players"]=r.players.concat([{uid:id,name:p.name,folded:false,seen:false}]);u["rooms/"+rid+"/pot"]=(r.pot||0)+r.entry;await db.ref().update(u);return{roomId:rid}});
-exports.startGame=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||""),s=await db.ref("rooms/"+rid).once("value"),r=s.val();if(!r||r.host!==id)H("permission-denied","टेबल होस्ट ही शुरू कर सकता है");if(r.status!=="waiting"||r.players.length<3)H("failed-precondition","कम से कम 3 खिलाड़ी चाहिए");let dck=deck(),hands={};r.players.forEach(p=>hands[p.uid]=dck.splice(0,3));let u={};u["rooms/"+rid+"/status"]="playing";u["rooms/"+rid+"/turnOrder"]=r.players.map(p=>p.uid);u["rooms/"+rid+"/currentTurn"]=r.players[0].uid;u["rooms/"+rid+"/players"]=r.players.map(p=>({...p,seen:false,folded:false}));u["privateHands/"+rid]=hands;await db.ref().update(u);return{started:true}});
-exports.getMyHand=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),s=await db.ref("privateHands/"+String(d.roomId||"")+"/"+id).once("value");if(!s.exists())H("not-found","कार्ड उपलब्ध नहीं");return{cards:s.val()}});
-exports.gameAction=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||""),a=String(d.action||""),root=db.ref(),s=await root.child("rooms/"+rid).once("value"),r=s.val();if(!r||r.status!=="playing")H("failed-precondition","गेम चालू नहीं");let me=r.players.find(p=>p.uid===id);if(!me||me.folded||r.currentTurn!==id)H("permission-denied","अभी आपकी बारी नहीं");if(a==="sideshow")H("unimplemented","Side Show अभी उपलब्ध नहीं");if(a==="seen"){me.seen=true;await root.child("rooms/"+rid+"/players").set(r.players);return{message:"कार्ड देख लिए"}}if(!["blind","chaal","pack","show"].includes(a))H("invalid-argument","गलत चाल");if(a==="chaal"&&!me.seen)H("failed-precondition","Chaal से पहले Seen करें");let cost=a==="blind"?100:a==="chaal"?200:0,p=await player(id);if(cost&&p.coins<cost)H("failed-precondition","कॉइन कम हैं");if(cost){await root.child("players/"+id+"/coins").set(p.coins-cost);me.contribution=(me.contribution||0)+cost;r.pot+=cost}if(a==="pack")me.folded=true;let active=r.players.filter(x=>!x.folded),winner=null;if(a==="show"){if(active.length!==2)H("failed-precondition","Show के लिए 2 खिलाड़ी होने चाहिए");let h=(await root.child("privateHands/"+rid).once("value")).val(),other=active.find(x=>x.uid!==id);winner=cmp(score(h[id]),score(h[other.uid]))>=0?id:other.uid}if(active.length===1)winner=active[0].uid;if(!winner){let i=r.turnOrder.indexOf(id);for(let n=1;n<=r.turnOrder.length;n++){let x=r.turnOrder[(i+n)%r.turnOrder.length];if(active.some(p=>p.uid===x)){r.currentTurn=x;break}}}let u={};u["rooms/"+rid+"/players"]=r.players;u["rooms/"+rid+"/pot"]=r.pot;u["rooms/"+rid+"/currentTurn"]=winner?null:r.currentTurn;if(winner){let w=await player(winner);u["players/"+winner+"/coins"]=w.coins+r.pot;u["rooms/"+rid+"/status"]="finished";u["rooms/"+rid+"/winner"]=winner;u["privateHands/"+rid]=null}await root.update(u);return winner?{winner}:{message:"चाल दर्ज हुई"}});
-exports.claimDailyBonus=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),ref=db.ref("players/"+id),today=new Date().toISOString().slice(0,10),p=await player(id);if(p.lastDaily===today)H("already-exists","आज का बोनस ले चुके हैं");let coins=p.coins+500;await ref.update({coins,lastDaily:today});return{coins}});
-exports.leaveRoom=functions.region(REGION).https.onCall(async(d,c)=>{let id=uid(c),rid=String(d.roomId||""),ref=db.ref("rooms/"+rid),s=await ref.once("value"),r=s.val();if(!r)return{ok:true};if(r.status==="playing")H("failed-precondition","चलती बाज़ी में अभी टेबल छोड़ना बंद है");let ps=r.players.filter(p=>p.uid!==id);if(!ps.length){await ref.remove();return{ok:true}}let u={};u["rooms/"+rid+"/players"]=ps;if(r.host===id)u["rooms/"+rid+"/host"]=ps[0].uid;await db.ref().update(u);return{ok:true}});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Teen Patti Live Club</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .font-royal {
+      font-family: 'Cinzel', serif;
+    }
+    /* Casino Table Gradient & Border */
+    .felt-table {
+      background: radial-gradient(ellipse at center, #1b5e20 0%, #0d3813 60%, #051b0a 100%);
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8), 0 0 0 10px #3d2314, 0 0 0 14px #c59b27, 0 10px 30px rgba(0,0,0,0.9);
+    }
+    /* Card Flip 3D Perspective */
+    .perspective-card {
+      perspective: 1000px;
+    }
+    .card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .card-back {
+      background: linear-gradient(135deg, #8b0000 25%, #500000 100%);
+      border: 2px solid #ffd700;
+    }
+    .card-front {
+      transform: rotateY(180deg);
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+    }
+    /* Chips Animation Glow */
+    .pot-glow {
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.45);
+    }
+    /* Turn timer pulse */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 8px #facc15); }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .active-turn-ring {
+      animation: pulse-ring 1.5s infinite ease-in-out;
+      border-color: #facc15 !important;
+    }
+  </style>
+</head>
+<body class="bg-neutral-950 text-white min-h-screen flex flex-col justify-between overflow-x-hidden select-none">
+
+  <!-- ================= TOP HEADER ================= -->
+  <header class="bg-gradient-to-b from-stone-900 to-stone-950 border-b border-amber-600/30 px-3 py-2 flex items-center justify-between z-20 shadow-lg">
+    <!-- Brand Title -->
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-700 p-0.5 shadow">
+        <div class="w-full h-full bg-neutral-900 rounded-full flex items-center justify-center text-amber-400 font-royal font-black text-sm">
+          3P
+        </div>
+      </div>
+      <div>
+        <h1 class="font-royal text-sm sm:text-base font-extrabold tracking-wider bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-500 bg-clip-text text-transparent">
+          TEEN PATTI LIVE
+        </h1>
+        <div class="text-[10px] text-amber-400/80 flex items-center gap-1 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+          <span id="txt-room-title">Room:</span> <span id="display-room-code" class="text-white">TP-8849</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chips Counter & Language Dropdown -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- Chips Badge -->
+      <div class="flex items-center bg-black/60 border border-amber-500/50 rounded-full px-2.5 py-1 shadow-inner">
+        <span class="text-yellow-400 text-xs sm:text-sm mr-1.5 font-black">🪙</span>
+        <span id="player-balance" class="font-bold text-amber-300 text-xs sm:text-sm tracking-wide">10,000</span>
+      </div>
+
+      <!-- Language Selector -->
+      <select id="lang-switch" class="bg-neutral-800 text-amber-300 border border-amber-500/40 text-xs font-semibold rounded-lg px-2 py-1 outline-none">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="pa">ਪੰਜਾਬੀ</option>
+      </select>
+
+      <!-- Bonus & Invite Buttons -->
+      <button onclick="openBonusModal()" title="Daily Bonus" class="bg-gradient-to-b from-amber-500 to-yellow-600 text-neutral-900 font-extrabold text-xs px-2.5 py-1 rounded-full shadow hover:brightness-110 active:scale-95 transition">
+        🎁 <span class="hidden sm:inline" id="txt-daily-btn">Bonus</span>
+      </button>
+      <button onclick="openReferralModal()" title="Share Room" class="bg-neutral-800 border border-amber-500/60 text-amber-300 text-xs px-2.5 py-1 rounded-full shadow hover:bg-neutral-700 active:scale-95 transition">
+        🔗 <span class="hidden sm:inline" id="txt-invite-btn">Invite</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN POKER TABLE STAGE ================= -->
+  <main class="relative flex-1 flex items-center justify-center px-2 py-3">
+    <!-- Felt Poker Table -->
+    <div class="felt-table relative w-full max-w-4xl h-[470px] sm:h-[520px] rounded-[130px] sm:rounded-[180px] flex items-center justify-center p-4">
+      
+      <!-- Table Felt Texture Branding -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+        <span class="font-royal text-3xl sm:text-6xl font-black text-amber-300 tracking-widest uppercase">
+          CLUB ROYALE
+        </span>
+      </div>
+
+      <!-- POT & GAME STATUS (Center Table) -->
+      <div class="z-10 flex flex-col items-center justify-center pot-glow bg-neutral-950/70 border border-amber-400/40 rounded-2xl px-4 py-2 sm:px-6 sm:py-3 backdrop-blur-sm shadow-2xl">
+        <div class="text-[10px] sm:text-xs text-amber-300 uppercase tracking-widest font-bold" id="txt-pot-title">Total Pot</div>
+        <div class="flex items-center space-x-1">
+          <span class="text-base sm:text-xl font-black text-yellow-400">🪙</span>
+          <span id="pot-amount" class="text-lg sm:text-2xl font-black text-white font-mono tracking-wide">600</span>
+        </div>
+        <div class="text-[11px] text-emerald-400 font-semibold mt-0.5" id="game-status-text">Boot collected. User's turn.</div>
+        <div class="text-[10px] text-amber-300/80 mt-0.5" id="boot-info">Boot: 100 | Min Chaal: 100</div>
+      </div>
+
+      <!-- SEAT 0: AI Bot 1 (Top Left) -->
+      <div id="seat-1" class="absolute top-2 left-6 sm:left-14 flex flex-col items-center">
+        <div class="seat-avatar relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-md">
+          <span class="text-xl">🧔</span>
+          <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1 rounded-full hidden">PACK</span>
+        </div>
+        <div class="text-xs font-bold text-amber-100 mt-1">Vikram</div>
+        <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">9,400</span></div>
+        <div class="bot-cards flex space-x-1 mt-1 scale-75 origin-top">
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+        </div>
+      </div>
+
+      <!-- SEAT 1: AI Bot 2 (Top Center) -->
+      <div id="seat-2" class="absolute top-2 flex flex-col items-center">
+        <div class="seat-avatar relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-md">
+          <span class="text-xl">👩</span>
+          <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1 rounded-full hidden">PACK</span>
+        </div>
+        <div class="text-xs font-bold text-amber-100 mt-1">Priya</div>
+        <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">12,200</span></div>
+        <div class="bot-cards flex space-x-1 mt-1 scale-75 origin-top">
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+        </div>
+      </div>
+
+      <!-- SEAT 2: AI Bot 3 (Top Right) -->
+      <div id="seat-3" class="absolute top-2 right-6 sm:right-14 flex flex-col items-center">
+        <div class="seat-avatar relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-md">
+          <span class="text-xl">👳</span>
+          <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1 rounded-full hidden">PACK</span>
+        </div>
+        <div class="text-xs font-bold text-amber-100 mt-1">Harpreet</div>
+        <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">8,900</span></div>
+        <div class="bot-cards flex space-x-1 mt-1 scale-75 origin-top">
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+        </div>
+      </div>
+
+      <!-- SEAT 3: AI Bot 4 (Mid Left) -->
+      <div id="seat-4" class="absolute left-2 sm:left-4 top-1/2 -translate-y-8 flex flex-col items-center">
+        <div class="seat-avatar relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-md">
+          <span class="text-xl">🧑</span>
+          <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1 rounded-full hidden">PACK</span>
+        </div>
+        <div class="text-xs font-bold text-amber-100 mt-1">Rohit</div>
+        <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">10,800</span></div>
+        <div class="bot-cards flex space-x-1 mt-1 scale-75 origin-top">
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+        </div>
+      </div>
+
+      <!-- SEAT 4: AI Bot 5 (Mid Right) -->
+      <div id="seat-5" class="absolute right-2 sm:right-4 top-1/2 -translate-y-8 flex flex-col items-center">
+        <div class="seat-avatar relative w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-md">
+          <span class="text-xl">👨‍🦱</span>
+          <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1 rounded-full hidden">PACK</span>
+        </div>
+        <div class="text-xs font-bold text-amber-100 mt-1">Amit</div>
+        <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">11,500</span></div>
+        <div class="bot-cards flex space-x-1 mt-1 scale-75 origin-top">
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+          <div class="w-7 h-10 card-back rounded shadow"></div>
+        </div>
+      </div>
+
+      <!-- SEAT 0: HUMAN PLAYER (Bottom Center) -->
+      <div id="seat-user" class="absolute bottom-2 flex flex-col items-center z-10">
+        <!-- Player Cards Container -->
+        <div class="flex items-center justify-center space-x-2 -mb-2">
+          <!-- Card 1 -->
+          <div class="perspective-card w-14 h-20 sm:w-16 sm:h-24">
+            <div id="card-inner-0" class="card-inner relative w-full h-full rounded-lg shadow-lg">
+              <div class="card-back absolute inset-0 rounded-lg flex items-center justify-center">
+                <span class="text-amber-400 font-royal font-black text-xs">TP</span>
+              </div>
+              <div id="card-face-0" class="card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1 text-neutral-900 font-bold">
+                <div class="text-left text-xs leading-none" id="c0-tl">A♠</div>
+                <div class="text-center text-xl leading-none" id="c0-mid">♠</div>
+                <div class="text-right text-xs leading-none" id="c0-br">A♠</div>
+              </div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="perspective-card w-14 h-20 sm:w-16 sm:h-24">
+            <div id="card-inner-1" class="card-inner relative w-full h-full rounded-lg shadow-lg">
+              <div class="card-back absolute inset-0 rounded-lg flex items-center justify-center">
+                <span class="text-amber-400 font-royal font-black text-xs">TP</span>
+              </div>
+              <div id="card-face-1" class="card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1 text-neutral-900 font-bold">
+                <div class="text-left text-xs leading-none" id="c1-tl">K♠</div>
+                <div class="text-center text-xl leading-none" id="c1-mid">♠</div>
+                <div class="text-right text-xs leading-none" id="c1-br">K♠</div>
+              </div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="perspective-card w-14 h-20 sm:w-16 sm:h-24">
+            <div id="card-inner-2" class="card-inner relative w-full h-full rounded-lg shadow-lg">
+              <div class="card-back absolute inset-0 rounded-lg flex items-center justify-center">
+                <span class="text-amber-400 font-royal font-black text-xs">TP</span>
+              </div>
+              <div id="card-face-2" class="card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1 text-neutral-900 font-bold">
+                <div class="text-left text-xs leading-none" id="c2-tl">Q♠</div>
+                <div class="text-center text-xl leading-none" id="c2-mid">♠</div>
+                <div class="text-right text-xs leading-none" id="c2-br">Q♠</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- See Cards Button Trigger overlay -->
+        <button id="btn-see-cards" onclick="handleSeeCards()" class="mt-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-900 font-extrabold text-xs px-4 py-1 rounded-full shadow-lg border border-amber-200 active:scale-95 transition flex items-center space-x-1">
+          <span>👁️</span>
+          <span id="txt-see-cards">See Cards</span>
+        </button>
+
+        <div class="flex items-center space-x-2 mt-1">
+          <div class="text-xs font-bold text-yellow-300" id="user-hand-name">Blind Player</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= ACTION CONTROLS FOOTER ================= -->
+  <footer class="bg-gradient-to-t from-stone-950 via-stone-900 to-stone-950 border-t border-amber-600/30 px-3 py-2.5 z-20">
+    <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
+      <!-- Pack (Fold) Button -->
+      <button id="btn-pack" onclick="handleUserPack()" class="flex-1 bg-gradient-to-b from-rose-700 to-red-900 hover:from-rose-600 hover:to-red-800 text-white font-black py-2.5 px-3 rounded-xl border border-red-500/60 shadow-lg active:scale-95 transition text-xs sm:text-sm tracking-wider uppercase">
+        <span id="txt-pack">Pack</span>
+      </button>
+
+      <!-- Bet Multiplier Controls (- / +) -->
+      <div class="flex items-center bg-stone-950 border border-amber-500/50 rounded-xl px-1.5 py-1">
+        <button onclick="adjustBetMultiplier(-1)" class="w-8 h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700">-</button>
+        <div class="px-2 text-center">
+          <div class="text-[9px] text-amber-400 font-semibold" id="txt-bet-label">BET</div>
+          <div id="bet-multiplier-label" class="font-bold text-xs text-white">1x (100)</div>
+        </div>
+        <button onclick="adjustBetMultiplier(1)" class="w-8 h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700">+</button>
+      </div>
+
+      <!-- Chaal / Blind Action Button -->
+      <button id="btn-chaal" onclick="handleUserBet()" class="flex-1 bg-gradient-to-b from-amber-500 via-yellow-500 to-amber-600 hover:brightness-110 text-neutral-950 font-black py-2.5 px-3 rounded-xl border border-yellow-300 shadow-lg active:scale-95 transition text-xs sm:text-sm tracking-wider uppercase">
+        <span id="txt-chaal-btn">Blind (100)</span>
+      </button>
+
+      <!-- Show Button (Active when only 2 players left) -->
+      <button id="btn-show" onclick="handleUserShow()" disabled class="flex-1 bg-gradient-to-b from-blue-700 to-indigo-900 text-white font-black py-2.5 px-3 rounded-xl border border-blue-400/50 shadow-lg opacity-40 cursor-not-allowed text-xs sm:text-sm tracking-wider uppercase">
+        <span id="txt-show">Show</span>
+      </button>
+    </div>
+
+    <!-- Table Config Footer Bar -->
+    <div class="max-w-xl mx-auto flex items-center justify-between mt-2 pt-1 border-t border-stone-800 text-[11px] text-stone-400">
+      <div class="flex items-center space-x-1">
+        <span id="txt-players-lbl">Players:</span>
+        <select id="select-player-count" onchange="changePlayerCount(this.value)" class="bg-stone-800 text-amber-300 font-semibold rounded px-1.5 py-0.5 outline-none text-xs">
+          <option value="3">3 Players</option>
+          <option value="4">4 Players</option>
+          <option value="5">5 Players</option>
+          <option value="6" selected>6 Players</option>
+        </select>
+      </div>
+      <div>
+        <button onclick="startNewHand()" class="text-amber-400 font-bold hover:underline flex items-center gap-1">
+          🔄 <span id="txt-redeal">Redeal Hand</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= POPUP MODAL: DAILY BONUS ================= -->
+  <div id="modal-bonus" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-stone-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto mb-2 bg-amber-500/20 rounded-full flex items-center justify-center text-3xl">
+        🎁
+      </div>
+      <h3 class="font-royal text-xl font-black text-amber-300" id="txt-modal-bonus-title">Daily Club Bonus</h3>
+      <p class="text-xs text-stone-300 mt-2" id="txt-modal-bonus-desc">Claim your daily royal chips reward to keep the table action going!</p>
+      
+      <div class="bg-black/60 border border-amber-500/40 rounded-2xl p-4 my-4">
+        <div class="text-2xl font-black text-yellow-400 font-mono">+2,500 🪙</div>
+        <div class="text-[10px] text-amber-200 mt-1" id="txt-bonus-badge">Free VIP Coins</div>
+      </div>
+
+      <button id="btn-claim-bonus" onclick="claimDailyBonus()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-950 font-black py-2.5 rounded-xl shadow-lg active:scale-95 transition">
+        <span id="txt-claim-btn">Claim Reward</span>
+      </button>
+      <button onclick="closeModal('modal-bonus')" class="mt-3 text-xs text-stone-400 underline" id="txt-close-bonus">Close</button>
+    </div>
+  </div>
+
+  <!-- ================= POPUP MODAL: REFERRAL & SHARE ================= -->
+  <div id="modal-referral" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-stone-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto mb-2 bg-yellow-500/20 rounded-full flex items-center justify-center text-3xl">
+        👥
+      </div>
+      <h3 class="font-royal text-xl font-black text-amber-300" id="txt-modal-ref-title">Invite & Earn</h3>
+      <p class="text-xs text-stone-300 mt-2" id="txt-modal-ref-desc">Share room code with friends or redeem referral code for 5,000 free coins.</p>
+      
+      <!-- Room Code Box -->
+      <div class="bg-black/60 border border-amber-500/40 rounded-xl p-3 my-3 text-left">
+        <div class="text-[10px] text-amber-400 uppercase font-bold" id="txt-lbl-your-code">Your Table Room Code</div>
+        <div class="flex items-center justify-between mt-1">
+          <span id="room-code-val" class="font-mono text-base font-black text-white">TP-8849</span>
+          <button onclick="copyRoomCode()" class="bg-stone-800 text-amber-300 text-xs px-2.5 py-1 rounded border border-amber-500/40 hover:bg-stone-700 active:scale-95" id="btn-copy-code">Copy</button>
+        </div>
+      </div>
+
+      <!-- Redeem Friend Code -->
+      <div class="flex space-x-1.5 my-2">
+        <input type="text" id="friend-code-input" placeholder="Friend's Code" class="flex-1 bg-stone-900 border border-stone-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-amber-400 uppercase">
+        <button onclick="redeemFriendCode()" class="bg-amber-500 text-stone-950 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-amber-400 active:scale-95" id="btn-redeem-code">Apply</button>
+      </div>
+      <div id="ref-status-msg" class="text-[11px] font-semibold text-emerald-400 h-4 mt-1"></div>
+
+      <button onclick="closeModal('modal-referral')" class="mt-4 text-xs text-stone-400 underline block mx-auto" id="txt-close-ref">Close</button>
+    </div>
+  </div>
+
+  <!-- ================= POPUP MODAL: WINNER / SHOW RESULTS ================= -->
+  <div id="modal-winner" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-stone-900 via-stone-950 to-black border-2 border-amber-400 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
+      <div class="text-4xl mb-1 animate-bounce">🏆</div>
+      <h3 class="font-royal text-2xl font-black text-yellow-300" id="win-title">Winner Declared!</h3>
+      <p class="text-sm font-semibold text-emerald-400 mt-1" id="win-summary">Raju won with Pure Sequence!</p>
+      
+      <div class="bg-black/70 border border-amber-500/40 rounded-2xl p-4 my-4">
+        <div class="text-xs text-stone-300 uppercase tracking-widest font-bold" id="txt-win-amount-lbl">Total Won Pot</div>
+        <div class="text-2xl font-black text-amber-400 font-mono mt-1" id="win-pot-total">🪙 1,800</div>
+      </div>
+
+      <button onclick="startNewHand(); closeModal('modal-winner');" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:brightness-110 text-neutral-950 font-black py-3 rounded-xl shadow-lg active:scale-95 transition text-sm uppercase tracking-wider">
+        <span id="txt-next-hand">Deal Next Hand</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    /* ----------------------------------------------------
+       1. SYNTHETIC AUDIO ENGINE (Web Audio API - No externals)
+       ---------------------------------------------------- */
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (type === 'chip') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'deal') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(180, now + 0.06);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        } else if (type === 'win') {
+          const notes = [440, 554.37, 659.25, 880];
+          notes.forEach((freq, idx) => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freq, now + idx * 0.1);
+            g.gain.setValueAtTime(0.25, now + idx * 0.1);
+            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.25);
+            o.start(now + idx * 0.1);
+            o.stop(now + idx * 0.1 + 0.25);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio not initialized or permitted');
+      }
+    }
+
+    /* ----------------------------------------------------
+       2. MULTILINGUAL DICTIONARY (EN, HI, PA)
+       ---------------------------------------------------- */
+    const translations = {
+      en: {
+        room: "Room:",
+        dailyBtn: "Bonus",
+        inviteBtn: "Invite",
+        totalPot: "Total Pot",
+        pack: "Pack",
+        blindBtn: "Blind",
+        chaalBtn: "Chaal",
+        show: "Show",
+        seeCards: "See Cards",
+        seenBadge: "Seen Player",
+        blindBadge: "Blind Player",
+        redeal: "Redeal Hand",
+        playersLbl: "Players:",
+        userTurn: "Your Turn! Chaal, Pack or Show.",
+        botTurn: "{name}'s turn...",
+        userWon: "Congratulations! You won the pot!",
+        botWon: "{name} won the pot with {hand}!",
+        modalBonusTitle: "Daily Royal Bonus",
+        modalBonusDesc: "Claim your daily royal chips reward to keep the table action going!",
+        claimBtn: "Claim Reward",
+        claimedText: "Claimed for today!",
+        inviteTitle: "Invite & Earn",
+        inviteDesc: "Share room code with friends or redeem referral code for 5,000 free coins.",
+        yourCode: "Your Table Room Code",
+        dealNext: "Deal Next Hand"
+      },
+      hi: {
+        room: "कमरा:",
+        dailyBtn: "बोनस",
+        inviteBtn: "न्योता",
+        totalPot: "कुल पॉट",
+        pack: "पैक",
+        blindBtn: "ब्लाइंड",
+        chaalBtn: "चाल",
+        show: "शो (पत्ते)",
+        seeCards: "पत्ते देखें",
+        seenBadge: "सीन खिलाड़ी",
+        blindBadge: "ब्लाइंड खिलाड़ी",
+        redeal: "नया हाथ बाँटें",
+        playersLbl: "खिलाड़ी:",
+        userTurn: "आपकी बारी! चाल, पैक या शो करें।",
+        botTurn: "{name} की बारी...",
+        userWon: "बधाई हो! आप पॉट जीत गए!",
+        botWon: "{name} ने {hand} के साथ पॉट जीता!",
+        modalBonusTitle: "दैनिक रॉयल बोनस",
+        modalBonusDesc: "खेल जारी रखने के लिए अपने मुफ़्त दैनिक कॉइन क्लेम करें!",
+        claimBtn: "कॉइन प्राप्त करें",
+        claimedText: "आज का बोनस लिया जा चुका है!",
+        inviteTitle: "दोस्तों को जोड़ें और कमाएं",
+        inviteDesc: "रूम कोड शेयर करें या 5,000 मुफ़्त कॉइन के लिए रेफरल कोड डालें।",
+        yourCode: "आपका रूम कोड",
+        dealNext: "अगला राउंड खेलें"
+      },
+      pa: {
+        room: "ਕਮਰਾ:",
+        dailyBtn: "ਬੋਨਸ",
+        inviteBtn: "ਸੱਦਾ",
+        totalPot: "ਕੁੱਲ ਪੋਟ",
+        pack: "ਪੈਕ",
+        blindBtn: "ਬਲਾਇੰਡ",
+        chaalBtn: "ਚਾਲ",
+        show: "ਸ਼ੋਅ",
+        seeCards: "ਪੱਤੇ ਦੇਖੋ",
+        seenBadge: "ਸੀਨ ਖਿਡਾਰੀ",
+        blindBadge: "ਬਲਾਇੰਡ ਖਿਡਾਰੀ",
+        redeal: "ਨਵਾਂ ਹੱਥ ਵੰਡੋ",
+        playersLbl: "ਖਿਡਾਰੀ:",
+        userTurn: "ਤੁਹਾਡੀ ਵਾਰੀ! ਚਾਲ, ਪੈਕ ਜਾਂ ਸ਼ੋਅ ਕਰੋ।",
+        botTurn: "{name} ਦੀ ਵਾਰੀ ਹੈ...",
+        userWon: "ਮੁਬਾਰਕਾਂ! ਤੁਸੀਂ ਪੋਟ ਜਿੱਤ ਲਿਆ!",
+        botWon: "{name} ਨੇ {hand} ਨਾਲ ਪੋਟ ਜਿੱਤਿਆ!",
+        modalBonusTitle: "ਰੋਜ਼ਾਨਾ ਰਾਇਲ ਬੋਨਸ",
+        modalBonusDesc: "ਖੇਡ ਜਾਰੀ ਰੱਖਣ ਲਈ ਆਪਣੇ ਮੁਫ਼ਤ ਰੋਜ਼ਾਨਾ ਕੋਇਨ ਕਲੇਮ ਕਰੋ!",
+        claimBtn: "ਕੋਇਨ ਪ੍ਰਾਪਤ ਕਰੋ",
+        claimedText: "ਅੱਜ ਦਾ ਬੋਨਸ ਲੈ ਲਿਆ ਗਿਆ ਹੈ!",
+        inviteTitle: "ਦੋਸਤਾਂ ਨੂੰ ਜੋੜੋ ਤੇ ਕਮਾਓ",
+        inviteDesc: "ਰੂਮ ਕੋਡ ਸ਼ੇਅਰ ਕਰੋ ਜਾਂ 5,000 ਮੁਫ਼ਤ ਕੋਇਨ ਲਈ ਕੋਡ ਦਾਖਲ ਕਰੋ।",
+        yourCode: "ਤੁਹਾਡਾ ਰੂਮ ਕੋਡ",
+        dealNext: "ਅਗਲਾ ਰਾਊਂਡ ਖੇਡੋ"
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+      document.getElementById('txt-room-title').innerText = t.room;
+      document.getElementById('txt-daily-btn').innerText = t.dailyBtn;
+      document.getElementById('txt-invite-btn').innerText = t.inviteBtn;
+      document.getElementById('txt-pot-title').innerText = t.totalPot;
+      document.getElementById('txt-pack').innerText = t.pack;
+      document.getElementById('txt-show').innerText = t.show;
+      document.getElementById('txt-redeal').innerText = t.redeal;
+      document.getElementById('txt-playersLbl').innerText = t.playersLbl;
+      document.getElementById('txt-see-cards').innerText = t.seeCards;
+      document.getElementById('txt-modal-bonus-title').innerText = t.modalBonusTitle;
+      document.getElementById('txt-modal-bonus-desc').innerText = t.modalBonusDesc;
+      document.getElementById('txt-claim-btn').innerText = t.claimBtn;
+      document.getElementById('txt-modal-ref-title').innerText = t.inviteTitle;
+      document.getElementById('txt-modal-ref-desc').innerText = t.inviteDesc;
+      document.getElementById('txt-lbl-your-code').innerText = t.yourCode;
+      document.getElementById('txt-next-hand').innerText = t.dealNext;
+      updateChaalButtonText();
+    }
+
+    document.getElementById('lang-switch').addEventListener('change', (e) => {
+      setLanguage(e.target.value);
+    });
+
+    /* ----------------------------------------------------
+       3. TEEN PATTI ENGINE & HAND EVALUATION
+       ---------------------------------------------------- */
+    const SUITS = ['♠', '♥', '♦', '♣'];
+    const VALUES = [
+      { r: '2', val: 2 }, { r: '3', val: 3 }, { r: '4', val: 4 }, { r: '5', val: 5 },
+      { r: '6', val: 6 }, { r: '7', val: 7 }, { r: '8', val: 8 }, { r: '9', val: 9 },
+      { r: '10', val: 10 }, { r: 'J', val: 11 }, { r: 'Q', val: 12 }, { r: 'K', val: 13 },
+      { r: 'A', val: 14 }
+    ];
+
+    function createDeck() {
+      const deck = [];
+      for (const s of SUITS) {
+        for (const v of VALUES) {
+          deck.push({ rank: v.r, value: v.val, suit: s, isRed: s === '♥' || s === '♦' });
+        }
+      }
+      return shuffleDeck(deck);
+    }
+
+    function shuffleDeck(deck) {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    // Hand Ranks: 6: Trail/Trio, 5: Pure Seq, 4: Sequence, 3: Color, 2: Pair, 1: High Card
+    function evaluateHand(cards) {
+      // Sort descending
+      const sorted = [...cards].sort((a, b) => b.value - a.value);
+      const v0 = sorted[0].value, v1 = sorted[1].value, v2 = sorted[2].value;
+      const s0 = sorted[0].suit, s1 = sorted[1].suit, s2 = sorted[2].suit;
+
+      const isFlush = (s0 === s1 && s1 === s2);
+      // Sequence check (including special A-2-3 sequence)
+      let isSeq = false;
+      let seqScore = v0;
+      if (v0 === v1 + 1 && v1 === v2 + 1) {
+        isSeq = true;
+      } else if (v0 === 14 && v1 === 3 && v2 === 2) {
+        isSeq = true;
+        seqScore = 3.5; // A-2-3 rank adjustment
+      }
+
+      // 1. Trail / Trio (Set)
+      if (v0 === v1 && v1 === v2) {
+        return { rank: 6, score: v0, name: 'Trail (Trio) of ' + sorted[0].rank };
+      }
+      // 2. Pure Sequence
+      if (isFlush && isSeq) {
+        return { rank: 5, score: seqScore, name: 'Pure Sequence' };
+      }
+      // 3. Normal Sequence / Run
+      if (isSeq) {
+        return { rank: 4, score: seqScore, name: 'Sequence (Run)' };
+      }
+      // 4. Color / Flush
+      if (isFlush) {
+        return { rank: 3, score: v0 * 100 + v1 * 10 + v2, name: 'Color (Flush)' };
+      }
+      // 5. Pair
+      if (v0 === v1) {
+        return { rank: 2, score: v0 * 100 + v2, name: 'Pair of ' + sorted[0].rank };
+      }
+      if (v1 === v2) {
+        return { rank: 2, score: v1 * 100 + v0, name: 'Pair of ' + sorted[1].rank };
+      }
+      if (v0 === v2) {
+        return { rank: 2, score: v0 * 100 + v1, name: 'Pair of ' + sorted[0].rank };
+      }
+      // 6. High Card
+      return { rank: 1, score: v0 * 100 + v1 * 10 + v2, name: 'High Card ' + sorted[0].rank };
+    }
+
+    function compareTwoHands(h1, h2) {
+      if (h1.rank !== h2.rank) return h1.rank - h2.rank;
+      return h1.score - h2.score;
+    }
+
+    /* ----------------------------------------------------
+       4. GAME STATE & PLAYERS CONFIGURATION
+       ---------------------------------------------------- */
+    let totalPlayers = 6;
+    let players = [];
+    let currentTurnIndex = 0;
+    let potAmount = 0;
+    let bootAmount = 100;
+    let currentStake = 100; // base chaal unit
+    let betMultiplier = 1;  // 1x, 2x, 4x
+    let gameActive = false;
+    let turnInterval = null;
+
+    const BOT_PROFILES = [
+      { name: 'Vikram', avatar: '🧔', chips: 9400 },
+      { name: 'Priya', avatar: '👩', chips: 12200 },
+      { name: 'Harpreet', avatar: '👳', chips: 8900 },
+      { name: 'Rohit', avatar: '🧑', chips: 10800 },
+      { name: 'Amit', avatar: '👨‍🦱', chips: 11500 }
+    ];
+
+    function initGame() {
+      const userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      updateBalanceUI(userChips);
+
+      // Generate random Room Code
+      const roomCode = 'TP-' + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('display-room-code').innerText = roomCode;
+      document.getElementById('room-code-val').innerText = roomCode;
+
+      setupPlayers();
+      startNewHand();
+    }
+
+    function setupPlayers() {
+      players = [];
+      // Seat 0: Human User
+      players.push({
+        id: 0,
+        name: 'You',
+        isBot: false,
+        chips: parseInt(localStorage.getItem('tp_user_chips')) || 10000,
+        cards: [],
+        handEval: null,
+        isPacked: false,
+        isSeen: false,
+        seatElem: document.getElementById('seat-user')
+      });
+
+      // Bots according to selected total
+      for (let i = 1; i < totalPlayers; i++) {
+        const botData = BOT_PROFILES[i - 1];
+        players.push({
+          id: i,
+          name: botData.name,
+          isBot: true,
+          chips: botData.chips,
+          cards: [],
+          handEval: null,
+          isPacked: false,
+          isSeen: Math.random() > 0.45, // bot seen chance
+          seatElem: document.getElementById(`seat-${i}`)
+        });
+      }
+
+      // Toggle DOM visibility for bots based on player count
+      for (let i = 1; i <= 5; i++) {
+        const seat = document.getElementById(`seat-${i}`);
+        if (i < totalPlayers) {
+          seat.classList.remove('hidden');
+        } else {
+          seat.classList.add('hidden');
+        }
+      }
+    }
+
+    function changePlayerCount(val) {
+      totalPlayers = parseInt(val);
+      setupPlayers();
+      startNewHand();
+    }
+
+    /* ----------------------------------------------------
+       5. DEALING & ROUND SYSTEM
+       ---------------------------------------------------- */
+    function startNewHand() {
+      if (turnInterval) clearInterval(turnInterval);
+      playSound('deal');
+
+      const deck = createDeck();
+      potAmount = 0;
+      currentStake = bootAmount;
+      betMultiplier = 1;
+      gameActive = true;
+
+      // Reset user cards 3D flip
+      for (let c = 0; c < 3; c++) {
+        document.getElementById(`card-inner-${c}`).classList.remove('flipped');
+      }
+      document.getElementById('btn-see-cards').classList.remove('hidden');
+      document.getElementById('user-hand-name').innerText = translations[currentLang].blindBadge;
+
+      // Deal 3 cards to every active player
+      players.forEach(p => {
+        p.cards = [deck.pop(), deck.pop(), deck.pop()];
+        p.handEval = evaluateHand(p.cards);
+        p.isPacked = false;
+        p.isSeen = p.isBot ? (Math.random() > 0.5) : false;
+
+        // Deduct Boot
+        p.chips = Math.max(0, p.chips - bootAmount);
+        potAmount += bootAmount;
+
+        // Reset UI badges
+        if (p.isBot) {
+          const packBadge = p.seatElem.querySelector('.status-badge');
+          if (packBadge) packBadge.classList.add('hidden');
+          const chipLabel = p.seatElem.querySelector('.bot-chips');
+          if (chipLabel) chipLabel.innerText = p.chips.toLocaleString();
+        }
+      });
+
+      // Update User chips
+      localStorage.setItem('tp_user_chips', players[0].chips);
+      updateBalanceUI(players[0].chips);
+      updatePotUI();
+
+      // Render User Card Faces
+      renderUserCards(players[0].cards);
+
+      // Start turns from User (seat 0)
+      currentTurnIndex = 0;
+      highlightActiveSeat();
+      updateChaalButtonText();
+      checkShowAvailability();
+      updateStatusMsg(translations[currentLang].userTurn);
+    }
+
+    function renderUserCards(cards) {
+      cards.forEach((card, i) => {
+        const colorClass = card.isRed ? 'text-rose-600' : 'text-neutral-900';
+        const face = document.getElementById(`card-face-${i}`);
+        face.className = `card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1.5 font-bold ${colorClass}`;
+
+        document.getElementById(`c${i}-tl`).innerText = `${card.rank}${card.suit}`;
+        document.getElementById(`c${i}-mid`).innerText = card.suit;
+        document.getElementById(`c${i}-br`).innerText = `${card.rank}${card.suit}`;
+      });
+    }
+
+    function handleSeeCards() {
+      const user = players[0];
+      if (user.isSeen) return;
+
+      user.isSeen = true;
+      playSound('deal');
+
+      for (let c = 0; c < 3; c++) {
+        document.getElementById(`card-inner-${c}`).classList.add('flipped');
+      }
+      document.getElementById('btn-see-cards').classList.add('hidden');
+      document.getElementById('user-hand-name').innerText = `${translations[currentLang].seenBadge} (${user.handEval.name})`;
+
+      updateChaalButtonText();
+    }
+
+    function updateBalanceUI(chips) {
+      document.getElementById('player-balance').innerText = chips.toLocaleString();
+    }
+
+    function updatePotUI() {
+      document.getElementById('pot-amount').innerText = potAmount.toLocaleString();
+      document.getElementById('boot-info').innerText = `Boot: ${bootAmount} | Stake: ${currentStake}`;
+    }
+
+    function updateStatusMsg(msg) {
+      document.getElementById('game-status-text').innerText = msg;
+    }
+
+    function adjustBetMultiplier(delta) {
+      if (!gameActive) return;
+      const opts = [1, 2, 4];
+      let curIdx = opts.indexOf(betMultiplier);
+      curIdx = Math.max(0, Math.min(opts.length - 1, curIdx + delta));
+      betMultiplier = opts[curIdx];
+
+      document.getElementById('bet-multiplier-label').innerText = `${betMultiplier}x (${currentStake * betMultiplier})`;
+      updateChaalButtonText();
+    }
+
+    function updateChaalButtonText() {
+      const user = players[0];
+      const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
+      const label = user.isSeen ? translations[currentLang].chaalBtn : translations[currentLang].blindBtn;
+      document.getElementById('txt-chaal-btn').innerText = `${label} (${cost})`;
+    }
+
+    function highlightActiveSeat() {
+      // Remove all ring highlights
+      document.querySelectorAll('.seat-avatar').forEach(el => el.classList.remove('active-turn-ring'));
+      const activeP = players[currentTurnIndex];
+      if (activeP && !activeP.isPacked) {
+        const ringTarget = activeP.isBot ? activeP.seatElem.querySelector('.seat-avatar') : document.getElementById('seat-user');
+        if (ringTarget) ringTarget.classList.add('active-turn-ring');
+      }
+    }
+
+    /* ----------------------------------------------------
+       6. ACTIONS: USER (BET, PACK, SHOW)
+       ---------------------------------------------------- */
+    function handleUserBet() {
+      if (!gameActive || currentTurnIndex !== 0) return;
+
+      const user = players[0];
+      const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
+
+      if (user.chips < cost) {
+        updateStatusMsg("Not enough chips! Please claim bonus or fold.");
+        return;
+      }
+
+      playSound('chip');
+      user.chips -= cost;
+      potAmount += cost;
+      localStorage.setItem('tp_user_chips', user.chips);
+      updateBalanceUI(user.chips);
+      updatePotUI();
+
+      passTurnToNext();
+    }
+
+    function handleUserPack() {
+      if (!gameActive || currentTurnIndex !== 0) return;
+      players[0].isPacked = true;
+      updateStatusMsg("You folded (Packed).");
+      checkRoundStatus();
+      if (gameActive) passTurnToNext();
+    }
+
+    function handleUserShow() {
+      if (!gameActive || currentTurnIndex !== 0) return;
+      const activePlayers = players.filter(p => !p.isPacked);
+      if (activePlayers.length === 2) {
+        const user = players[0];
+        const cost = user.isSeen ? (currentStake * 2) : currentStake;
+        user.chips = Math.max(0, user.chips - cost);
+        potAmount += cost;
+        updateBalanceUI(user.chips);
+        updatePotUI();
+        declareWinner(true);
+      }
+    }
+
+    /* ----------------------------------------------------
+       7. BOT INTELLIGENCE & TURN ROTATION
+       ---------------------------------------------------- */
+    function passTurnToNext() {
+      checkRoundStatus();
+      if (!gameActive) return;
+
+      do {
+        currentTurnIndex = (currentTurnIndex + 1) % players.length;
+      } while (players[currentTurnIndex].isPacked);
+
+      highlightActiveSeat();
+      checkShowAvailability();
+
+      const currentP = players[currentTurnIndex];
+      if (currentP.isBot) {
+        const tMsg = translations[currentLang].botTurn.replace('{name}', currentP.name);
+        updateStatusMsg(tMsg);
+        setTimeout(botAction, 1200 + Math.random() * 800);
+      } else {
+        updateStatusMsg(translations[currentLang].userTurn);
+      }
+    }
+
+    function botAction() {
+      if (!gameActive || currentTurnIndex === 0) return;
+      const bot = players[currentTurnIndex];
+      const activeCount = players.filter(p => !p.isPacked).length;
+
+      // Realistic Bot decision tree based on hand quality
+      const rank = bot.handEval.rank;
+      let shouldPack = false;
+
+      // If active players are 2 and bot has strong hand, may request Show
+      if (activeCount === 2 && Math.random() > 0.45) {
+        declareWinner(false);
+        return;
+      }
+
+      // Fold logic for very weak cards over extended pots
+      if (rank === 1 && bot.handEval.score < 800 && potAmount > 2500 && Math.random() > 0.5) {
+        shouldPack = true;
+      }
+
+      if (shouldPack) {
+        bot.isPacked = true;
+        const packBadge = bot.seatElem.querySelector('.status-badge');
+        if (packBadge) packBadge.classList.remove('hidden');
+        updateStatusMsg(`${bot.name} Packed.`);
+        passTurnToNext();
+      } else {
+        // Place bet
+        const cost = bot.isSeen ? currentStake * 2 : currentStake;
+        bot.chips = Math.max(0, bot.chips - cost);
+        potAmount += cost;
+        playSound('chip');
+
+        const chipLabel = bot.seatElem.querySelector('.bot-chips');
+        if (chipLabel) chipLabel.innerText = bot.chips.toLocaleString();
+        updatePotUI();
+
+        passTurnToNext();
+      }
+    }
+
+    function checkShowAvailability() {
+      const active = players.filter(p => !p.isPacked);
+      const btnShow = document.getElementById('btn-show');
+      if (active.length === 2 && currentTurnIndex === 0) {
+        btnShow.disabled = false;
+        btnShow.classList.remove('opacity-40', 'cursor-not-allowed');
+      } else {
+        btnShow.disabled = true;
+        btnShow.classList.add('opacity-40', 'cursor-not-allowed');
+      }
+    }
+
+    function checkRoundStatus() {
+      const active = players.filter(p => !p.isPacked);
+      if (active.length === 1) {
+        gameActive = false;
+        const winner = active[0];
+        awardPot(winner, `${winner.name} won by default (All others packed).`);
+      }
+    }
+
+    function declareWinner(initiatedByUser) {
+      gameActive = false;
+      playSound('win');
+
+      const active = players.filter(p => !p.isPacked);
+      let bestPlayer = active[0];
+
+      for (let i = 1; i < active.length; i++) {
+        if (compareTwoHands(active[i].handEval, bestPlayer.handEval) > 0) {
+          bestPlayer = active[i];
+        }
+      }
+
+      awardPot(bestPlayer, `${bestPlayer.name} has the best hand: ${bestPlayer.handEval.name}`);
+    }
+
+    function awardPot(winner, reason) {
+      winner.chips += potAmount;
+      if (winner.id === 0) {
+        localStorage.setItem('tp_user_chips', winner.chips);
+        updateBalanceUI(winner.chips);
+        document.getElementById('win-title').innerText = "🏆 Victory!";
+      } else {
+        document.getElementById('win-title').innerText = "Round Finished";
+        const chipLabel = winner.seatElem.querySelector('.bot-chips');
+        if (chipLabel) chipLabel.innerText = winner.chips.toLocaleString();
+      }
+
+      document.getElementById('win-summary').innerText = reason;
+      document.getElementById('win-pot-total').innerText = `🪙 ${potAmount.toLocaleString()}`;
+      document.getElementById('modal-winner').classList.remove('hidden');
+    }
+
+    /* ----------------------------------------------------
+       8. DAILY BONUS & REFERRAL SYSTEM
+       ---------------------------------------------------- */
+    function openBonusModal() {
+      document.getElementById('modal-bonus').classList.remove('hidden');
+    }
+
+    function openReferralModal() {
+      document.getElementById('modal-referral').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function claimDailyBonus() {
+      const lastClaim = localStorage.getItem('tp_last_bonus');
+      const today = new Date().toDateString();
+
+      if (lastClaim === today) {
+        document.getElementById('txt-claim-btn').innerText = translations[currentLang].claimedText;
+        return;
+      }
+
+      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      userChips += 2500;
+      localStorage.setItem('tp_user_chips', userChips);
+      localStorage.setItem('tp_last_bonus', today);
+      updateBalanceUI(userChips);
+
+      playSound('win');
+      document.getElementById('txt-claim-btn').innerText = "Collected +2,500!";
+      setTimeout(() => closeModal('modal-bonus'), 900);
+    }
+
+    function copyRoomCode() {
+      const code = document.getElementById('room-code-val').innerText;
+      // Use fallback execCommand for iFrame / mobile security compatibility
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = code;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+
+      const btn = document.getElementById('btn-copy-code');
+      btn.innerText = "Copied!";
+      setTimeout(() => { btn.innerText = "Copy"; }, 1500);
+    }
+
+    function redeemFriendCode() {
+      const input = document.getElementById('friend-code-input').value.trim();
+      const status = document.getElementById('ref-status-msg');
+      if (input.length < 4) {
+        status.innerText = "Enter valid referral room code";
+        status.className = "text-[11px] font-semibold text-rose-400 h-4 mt-1";
+        return;
+      }
+
+      if (localStorage.getItem('tp_code_redeemed')) {
+        status.innerText = "Code already claimed!";
+        status.className = "text-[11px] font-semibold text-amber-400 h-4 mt-1";
+        return;
+      }
+
+      let userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
+      userChips += 5000;
+      localStorage.setItem('tp_user_chips', userChips);
+      localStorage.setItem('tp_code_redeemed', 'true');
+      updateBalanceUI(userChips);
+      playSound('win');
+
+      status.innerText = "+5,000 Free Coins Credited!";
+      status.className = "text-[11px] font-semibold text-emerald-400 h-4 mt-1";
+      setTimeout(() => closeModal('modal-referral'), 1200);
+    }
+
+    // Initialize game on window load
+    window.onload = function() {
+      initGame();
+      setLanguage('en');
+    };
+  </script>
+</body>
+</html>
