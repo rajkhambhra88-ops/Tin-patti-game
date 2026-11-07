@@ -79,6 +79,15 @@
       animation: float-reaction 2.2s forwards ease-out;
     }
 
+    /* Thinking animation pulse */
+    @keyframes think-glow {
+      0%, 100% { opacity: 0.6; transform: scale(0.95); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    .thinking-tag {
+      animation: think-glow 1s infinite ease-in-out;
+    }
+
     /* Subtle Dealer Breathing Motion */
     @keyframes dealer-sway {
       0%, 100% { transform: translateY(0) scale(1); }
@@ -197,7 +206,8 @@
             <span class="text-xl sm:text-2xl">🧔</span>
           </div>
           <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded-full hidden shadow">PACK</span>
-          <div class="reaction-slot absolute -top-5 inset-x-0 flex justify-center pointer-events-none"></div>
+          <span class="seen-indicator absolute -top-1 -right-1 text-[9px] bg-sky-500 text-white font-bold px-1 py-0.2 rounded-full hidden shadow">👁️ SEEN</span>
+          <div class="reaction-slot absolute -top-6 inset-x-0 flex justify-center pointer-events-none"></div>
         </div>
         <div class="text-xs font-bold text-amber-100 mt-1 flex items-center gap-1">Vikram <span class="text-[10px]">🎁</span></div>
         <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">9,400</span></div>
@@ -215,7 +225,8 @@
             <span class="text-xl sm:text-2xl">👩</span>
           </div>
           <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded-full hidden shadow">PACK</span>
-          <div class="reaction-slot absolute -top-5 inset-x-0 flex justify-center pointer-events-none"></div>
+          <span class="seen-indicator absolute -top-1 -right-1 text-[9px] bg-sky-500 text-white font-bold px-1 py-0.2 rounded-full hidden shadow">👁️ SEEN</span>
+          <div class="reaction-slot absolute -top-6 inset-x-0 flex justify-center pointer-events-none"></div>
         </div>
         <div class="text-xs font-bold text-amber-100 mt-1 flex items-center gap-1">Priya <span class="text-[10px]">🎁</span></div>
         <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">10,700</span></div>
@@ -233,7 +244,8 @@
             <span class="text-xl sm:text-2xl">👳</span>
           </div>
           <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded-full hidden shadow">PACK</span>
-          <div class="reaction-slot absolute -top-5 inset-x-0 flex justify-center pointer-events-none"></div>
+          <span class="seen-indicator absolute -top-1 -right-1 text-[9px] bg-sky-500 text-white font-bold px-1 py-0.2 rounded-full hidden shadow">👁️ SEEN</span>
+          <div class="reaction-slot absolute -top-6 inset-x-0 flex justify-center pointer-events-none"></div>
         </div>
         <div class="text-xs font-bold text-amber-100 mt-1 flex items-center gap-1">Harpreet <span class="text-[10px]">🎁</span></div>
         <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">8,900</span></div>
@@ -251,7 +263,8 @@
             <span class="text-xl sm:text-2xl">🧑</span>
           </div>
           <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded-full hidden shadow">PACK</span>
-          <div class="reaction-slot absolute -top-5 inset-x-0 flex justify-center pointer-events-none"></div>
+          <span class="seen-indicator absolute -top-1 -right-1 text-[9px] bg-sky-500 text-white font-bold px-1 py-0.2 rounded-full hidden shadow">👁️ SEEN</span>
+          <div class="reaction-slot absolute -top-6 inset-x-0 flex justify-center pointer-events-none"></div>
         </div>
         <div class="text-xs font-bold text-amber-100 mt-1 flex items-center gap-1">Rohit <span class="text-[10px]">🎁</span></div>
         <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">9,300</span></div>
@@ -269,7 +282,8 @@
             <span class="text-xl sm:text-2xl">👨‍🦱</span>
           </div>
           <span class="status-badge absolute -bottom-1 -right-1 text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded-full hidden shadow">PACK</span>
-          <div class="reaction-slot absolute -top-5 inset-x-0 flex justify-center pointer-events-none"></div>
+          <span class="seen-indicator absolute -top-1 -right-1 text-[9px] bg-sky-500 text-white font-bold px-1 py-0.2 rounded-full hidden shadow">👁️ SEEN</span>
+          <div class="reaction-slot absolute -top-6 inset-x-0 flex justify-center pointer-events-none"></div>
         </div>
         <div class="text-xs font-bold text-amber-100 mt-1 flex items-center gap-1">Amit <span class="text-[10px]">🎁</span></div>
         <div class="text-[10px] text-yellow-300 font-mono">🪙 <span class="bot-chips">8,800</span></div>
@@ -866,6 +880,8 @@
     let betMultiplier = 1;
     let gameActive = false;
     let selectedTargetPlayerId = null;
+    let roundTurnCounter = 0;
+    let botTimer = null;
 
     const BOT_PROFILES = [
       { id: 1, name: 'Vikram', avatar: '🧔', chips: 9400 },
@@ -918,10 +934,391 @@
           cards: [],
           handEval: null,
           isPacked: false,
-          isSeen: Math.random() > 0.45,
+          isSeen: false,
+          blindTurns: 0,
           seatElem: document.getElementById(`seat-${i}`)
         });
       }
+
+      // Hide unused seats
+      for (let i = 1; i <= 5; i++) {
+        const seat = document.getElementById(`seat-${i}`);
+        if (i < totalPlayers) seat.classList.remove('hidden');
+        else seat.classList.add('hidden');
+      }
+    }
+
+    function changePlayerCount(val) {
+      if (botTimer) clearTimeout(botTimer);
+      totalPlayers = parseInt(val);
+      setupPlayers();
+      startNewHand();
+    }
+
+    /* ----------------------------------------------------
+       5. DEALING & TURNS
+       ---------------------------------------------------- */
+    function startNewHand() {
+      if (botTimer) clearTimeout(botTimer);
+      playSound('deal');
+      const deck = createDeck();
+      potAmount = 0;
+      currentStake = bootAmount;
+      betMultiplier = 1;
+      gameActive = true;
+      roundTurnCounter = 0;
+
+      // Reset dealer bubble
+      setDealerSpeech("Cards Dealt! May Lakshmi bless you! ✨");
+
+      // Reset user cards
+      for (let c = 0; c < 3; c++) {
+        const cardInner = document.getElementById(`card-inner-${c}`);
+        cardInner.classList.remove('flipped');
+        cardInner.style.opacity = '1';
+      }
+      document.getElementById('btn-see-cards').classList.remove('hidden');
+      document.getElementById('user-hand-name').innerText = translations[currentLang].blindBadge;
+
+      players.forEach(p => {
+        p.cards = [deck.pop(), deck.pop(), deck.pop()];
+        p.handEval = evaluateHand(p.cards);
+        p.isPacked = false;
+        p.isSeen = false;
+        p.blindTurns = 0;
+
+        // Collect Boot
+        p.chips = Math.max(0, p.chips - bootAmount);
+        potAmount += bootAmount;
+
+        if (p.isBot) {
+          const packBadge = p.seatElem.querySelector('.status-badge');
+          if (packBadge) packBadge.classList.add('hidden');
+          const seenBadge = p.seatElem.querySelector('.seen-indicator');
+          if (seenBadge) seenBadge.classList.add('hidden');
+          const chipLabel = p.seatElem.querySelector('.bot-chips');
+          if (chipLabel) chipLabel.innerText = p.chips.toLocaleString();
+        }
+      });
+
+      localStorage.setItem('tp_user_chips', players[0].chips);
+      updateBalanceUI(players[0].chips);
+      updatePotUI();
+
+      renderUserCards(players[0].cards);
+
+      currentTurnIndex = 0;
+      highlightActiveSeat();
+      updateChaalButtonText();
+      checkShowAvailability();
+      updateControlsState(true);
+      updateStatusMsg(translations[currentLang].userTurn);
+    }
+
+    function renderUserCards(cards) {
+      cards.forEach((card, i) => {
+        const colorClass = card.isRed ? 'text-rose-600' : 'text-neutral-900';
+        const face = document.getElementById(`card-face-${i}`);
+        face.className = `card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1.5 font-bold ${colorClass}`;
+
+        document.getElementById(`c${i}-tl`).innerText = `${card.rank}${card.suit}`;
+        document.getElementById(`c${i}-mid`).innerText = card.suit;
+        document.getElementById(`c${i}-br`).innerText = `${card.rank}${card.suit}`;
+      });
+    }
+
+    function handleSeeCards() {
+      const user = players[0];
+      if (user.isSeen) return;
+      user.isSeen = true;
+      playSound('deal');
+
+      for (let c = 0; c < 3; c++) {
+        document.getElementById(`card-inner-${c}`).classList.add('flipped');
+      }
+      document.getElementById('btn-see-cards').classList.add('hidden');
+      document.getElementById('user-hand-name').innerText = `${translations[currentLang].seenBadge} (${user.handEval.name})`;
+      updateChaalButtonText();
+    }
+
+    function updateBalanceUI(chips) {
+      document.getElementById('player-balance').innerText = chips.toLocaleString();
+    }
+
+    function updatePotUI() {
+      document.getElementById('pot-amount').innerText = potAmount.toLocaleString();
+      document.getElementById('boot-info').innerText = `Boot: ${bootAmount} | Stake: ${currentStake}`;
+    }
+
+    function updateStatusMsg(msg) {
+      document.getElementById('game-status-text').innerText = msg;
+    }
+
+    function updateControlsState(isUserTurn) {
+      const btnChaal = document.getElementById('btn-chaal');
+      const btnPack = document.getElementById('btn-pack');
+      const active = players.filter(p => !p.isPacked);
+
+      if (!gameActive || !isUserTurn || players[0].isPacked) {
+        btnChaal.disabled = true;
+        btnChaal.classList.add('opacity-40', 'cursor-not-allowed');
+      } else {
+        btnChaal.disabled = false;
+        btnChaal.classList.remove('opacity-40', 'cursor-not-allowed');
+      }
+
+      // Pack is always available if human is still active
+      if (!gameActive || players[0].isPacked) {
+        btnPack.disabled = true;
+        btnPack.classList.add('opacity-40', 'cursor-not-allowed');
+      } else {
+        btnPack.disabled = false;
+        btnPack.classList.remove('opacity-40', 'cursor-not-allowed');
+      }
+    }
+
+    function adjustBetMultiplier(delta) {
+      if (!gameActive) return;
+      const opts = [1, 2, 4];
+      let curIdx = opts.indexOf(betMultiplier);
+      curIdx = Math.max(0, Math.min(opts.length - 1, curIdx + delta));
+      betMultiplier = opts[curIdx];
+
+      document.getElementById('bet-multiplier-label').innerText = `${betMultiplier}x (${currentStake * betMultiplier})`;
+      updateChaalButtonText();
+    }
+
+    function updateChaalButtonText() {
+      const user = players[0];
+      const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
+      const label = user.isSeen ? translations[currentLang].chaalBtn : translations[currentLang].blindBtn;
+      document.getElementById('txt-chaal-btn').innerText = `${label} (${cost})`;
+    }
+
+    function highlightActiveSeat() {
+      document.querySelectorAll('.seat-avatar').forEach(el => el.classList.remove('active-turn-ring'));
+      document.getElementById('user-avatar-frame').classList.remove('active-turn-ring');
+
+      const activeP = players[currentTurnIndex];
+      if (activeP && !activeP.isPacked) {
+        if (activeP.isBot) {
+          const avatar = activeP.seatElem.querySelector('.seat-avatar');
+          if (avatar) avatar.classList.add('active-turn-ring');
+        } else {
+          document.getElementById('user-avatar-frame').classList.add('active-turn-ring');
+        }
+      }
+    }
+
+    /* ----------------------------------------------------
+       6. PACK & AUTHENTIC TURN-BASED LOGIC
+       ---------------------------------------------------- */
+    // Instant Pack (User folds hand)
+    function handleUserPack() {
+      if (!gameActive || players[0].isPacked) return;
+
+      players[0].isPacked = true;
+      playSound('chip');
+      document.getElementById('user-hand-name').innerText = "Folded (PACKED)";
+      updateStatusMsg("You have Folded (Packed).");
+      updateControlsState(false);
+
+      // Dim user cards
+      for (let c = 0; c < 3; c++) {
+        document.getElementById(`card-inner-${c}`).style.opacity = '0.4';
+      }
+
+      checkRoundStatus();
+      if (gameActive) {
+        passTurnToNext();
+      }
+    }
+
+    function handleUserBet() {
+      if (!gameActive || currentTurnIndex !== 0 || players[0].isPacked) return;
+      const user = players[0];
+      const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
+
+      if (user.chips < cost) {
+        updateStatusMsg("Insufficient chips! Please claim bonus.");
+        return;
+      }
+
+      playSound('chip');
+      user.chips -= cost;
+      potAmount += cost;
+      localStorage.setItem('tp_user_chips', user.chips);
+      updateBalanceUI(user.chips);
+      updatePotUI();
+
+      // Disable buttons while bots play
+      updateControlsState(false);
+      passTurnToNext();
+    }
+
+    function handleUserShow() {
+      if (!gameActive || currentTurnIndex !== 0 || players[0].isPacked) return;
+      const activePlayers = players.filter(p => !p.isPacked);
+      if (activePlayers.length === 2) {
+        const user = players[0];
+        const cost = user.isSeen ? (currentStake * 2) : currentStake;
+        user.chips = Math.max(0, user.chips - cost);
+        potAmount += cost;
+        updateBalanceUI(user.chips);
+        updatePotUI();
+        declareWinner();
+      }
+    }
+
+    function passTurnToNext() {
+      checkRoundStatus();
+      if (!gameActive) return;
+
+      do {
+        currentTurnIndex = (currentTurnIndex + 1) % players.length;
+      } while (players[currentTurnIndex].isPacked);
+
+      highlightActiveSeat();
+      checkShowAvailability();
+
+      const currentP = players[currentTurnIndex];
+      if (currentP.isBot) {
+        updateControlsState(false);
+        const tMsg = translations[currentLang].botTurn.replace('{name}', currentP.name);
+        updateStatusMsg(tMsg);
+        
+        // Realistic thinking pause with status
+        if (Math.random() < 0.4) {
+          showPlayerReaction(currentP.id, '🤔 Soch raha hu...');
+        }
+        
+        // Bot thinks for 1.8 to 2.5 seconds, then acts
+        botTimer = setTimeout(() => {
+          botAction();
+        }, 1800 + Math.random() * 800);
+      } else {
+        // TURN STOPS ON HUMAN PLAYER COMPLETELY!
+        updateControlsState(true);
+        updateChaalButtonText();
+        updateStatusMsg(translations[currentLang].userTurn);
+      }
+    }
+
+    function botAction() {
+      if (!gameActive || currentTurnIndex === 0) return;
+      const bot = players[currentTurnIndex];
+      if (bot.isPacked) {
+        passTurnToNext();
+        return;
+      }
+
+      const activePlayers = players.filter(p => !p.isPacked);
+      const activeCount = activePlayers.length;
+
+      // 1. Bot decides to 'See Cards' if still playing Blind
+      if (!bot.isSeen) {
+        bot.blindTurns = (bot.blindTurns || 0) + 1;
+        // After 1-2 blind turns or when pot grows, bot checks cards
+        if (bot.blindTurns >= 2 || potAmount > 1500 || Math.random() > 0.6) {
+          bot.isSeen = true;
+          const seenBadge = bot.seatElem.querySelector('.seen-indicator');
+          if (seenBadge) seenBadge.classList.remove('hidden');
+          showPlayerReaction(bot.id, '👁️ Dekhe Patte');
+          playSound('deal');
+        }
+      }
+
+      // 2. If only 2 players left, bot can call Show
+      if (activeCount === 2 && bot.isSeen) {
+        const canShow = (bot.handEval.rank >= 2) || (potAmount > 4000);
+        if (canShow && Math.random() > 0.4) {
+          showPlayerReaction(bot.id, '✋ SHOW!');
+          declareWinner();
+          return;
+        }
+      }
+
+      // 3. Real Teen Patti Hand Evaluation: Should Bot Fold (Pack)?
+      let shouldPack = false;
+      if (bot.isSeen) {
+        // High card only (Rank 1): Bad cards
+        if (bot.handEval.rank === 1) {
+          // If pot is high, fold easily
+          if (potAmount > 2000) shouldPack = true;
+          else if (Math.random() > 0.45) shouldPack = true;
+        } 
+        // Weak pair (Rank 2 with low card): fold if high stakes
+        else if (bot.handEval.rank === 2 && bot.handEval.score < 800 && potAmount > 5000) {
+          if (Math.random() > 0.55) shouldPack = true;
+        }
+      }
+
+      if (shouldPack) {
+        bot.isPacked = true;
+        const packBadge = bot.seatElem.querySelector('.status-badge');
+        if (packBadge) packBadge.classList.remove('hidden');
+        showPlayerReaction(bot.id, '❌ PACK (Fold)');
+        updateStatusMsg(`${bot.name} folded their cards.`);
+        passTurnToNext();
+        return;
+      }
+
+      // 4. Bot places Chaal or Blind
+      const cost = bot.isSeen ? currentStake * 2 : currentStake;
+      bot.chips = Math.max(0, bot.chips - cost);
+      potAmount += cost;
+      playSound('chip');
+
+      const chipLabel = bot.seatElem.querySelector('.bot-chips');
+      if (chipLabel) chipLabel.innerText = bot.chips.toLocaleString();
+      updatePotUI();
+
+      if (bot.isSeen) {
+        showPlayerReaction(bot.id, `Chaal ${cost}`);
+      } else {
+        showPlayerReaction(bot.id, `Blind ${cost}`);
+      }
+
+      passTurnToNext();
+    }
+
+    function checkShowAvailability() {
+      const active = players.filter(p => !p.isPacked);
+      const btnShow = document.getElementById('btn-show');
+      if (active.length === 2 && currentTurnIndex === 0 && !players[0].isPacked) {
+        btnShow.disabled = false;
+        btnShow.classList.remove('opacity-40', 'cursor-not-allowed');
+      } else {
+        btnShow.disabled = true;
+        btnShow.classList.add('opacity-40', 'cursor-not-allowed');
+      }
+    }
+
+    function checkRoundStatus() {
+      const active = players.filter(p => !p.isPacked);
+      if (active.length === 1) {
+        gameActive = false;
+        if (botTimer) clearTimeout(botTimer);
+        const winner = active[0];
+        awardPot(winner, `${winner.name} won by default (All other players folded).`);
+      }
+    }
+
+    function declareWinner() {
+      gameActive = false;
+      if (botTimer) clearTimeout(botTimer);
+      playSound('win');
+
+      const active = players.filter(p => !p.isPacked);
+      let bestPlayer = active[0];
+
+      for (let i = 1; i < active.length; i++) {
+        if (compareTwoHands(active[i].handEval, bestPlayer.handEval) > 0) {
+          bestPlayer = active[i];
+        }
+      }
+      awardPot(bestPlayer, `${bestPlayer.name} won with ${bestPlayer.handEval.name}!`);
+    }
 
       // Hide unused seats
       for (let i = 1; i <= 5; i++) {
