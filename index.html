@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -19,10 +19,10 @@
     }
     .font-royal { font-family: 'Cinzel', serif; }
     
-    /* Casino Table Gradient & Velvet Texture */
+    /* Casino Green Felt Table */
     .felt-table {
       background: radial-gradient(ellipse at center, #115e2e 0%, #0a401e 55%, #041f0d 95%);
-      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9), 0 0 0 10px #2a180b, 0 0 0 14px #eab308, 0 0 0 18px #78350f, 0 20px 45px rgba(0,0,0,0.95);
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9), 0 0 0 8px #2a180b, 0 0 0 12px #eab308, 0 0 0 16px #78350f, 0 20px 45px rgba(0,0,0,0.95);
     }
 
     /* 3D Card Animation */
@@ -58,7 +58,7 @@
       border-color: #facc15 !important;
     }
 
-    /* Floating flying gift animation */
+    /* Flying gift animation */
     @keyframes fly-gift {
       0% { transform: scale(0.5) translateY(0); opacity: 1; }
       50% { transform: scale(1.6) translateY(-40px); opacity: 1; }
@@ -68,7 +68,7 @@
       animation: fly-gift 1.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
-    /* Floating Reaction bubble */
+    /* Reaction bubble */
     @keyframes float-reaction {
       0% { transform: scale(0.6) translateY(10px); opacity: 0; }
       20% { transform: scale(1.2) translateY(-5px); opacity: 1; }
@@ -79,16 +79,7 @@
       animation: float-reaction 2.2s forwards ease-out;
     }
 
-    /* Thinking animation pulse */
-    @keyframes think-glow {
-      0%, 100% { opacity: 0.6; transform: scale(0.95); }
-      50% { opacity: 1; transform: scale(1.05); }
-    }
-    .thinking-tag {
-      animation: think-glow 1s infinite ease-in-out;
-    }
-
-    /* Subtle Dealer Breathing Motion */
+    /* Dealer breathing motion */
     @keyframes dealer-sway {
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-3px) scale(1.02); }
@@ -102,7 +93,6 @@
 
   <!-- ================= TOP HEADER BAR ================= -->
   <header class="bg-gradient-to-b from-stone-900 via-stone-950 to-black border-b border-amber-600/40 px-3 py-2 flex items-center justify-between z-20 shadow-xl">
-    <!-- Brand Title & Room -->
     <div class="flex items-center space-x-2">
       <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-yellow-500 via-amber-300 to-yellow-600 p-0.5 shadow-md">
         <div class="w-full h-full bg-stone-950 rounded-full flex items-center justify-center text-amber-300 font-royal font-black text-xs">
@@ -120,22 +110,21 @@
       </div>
     </div>
 
-    <!-- Chips, Language & Wallet Actions -->
     <div class="flex items-center space-x-1.5 sm:space-x-2">
-      <!-- Virtual Coins Badge -->
+      <!-- Balance -->
       <div class="flex items-center bg-black/80 border border-yellow-500/60 rounded-full px-2.5 py-1 shadow-inner">
         <span class="text-yellow-400 text-xs sm:text-sm mr-1 font-black">🪙</span>
         <span id="player-balance" class="font-mono font-bold text-amber-300 text-xs sm:text-sm">10,000</span>
       </div>
 
-      <!-- Language Selector -->
+      <!-- Language -->
       <select id="lang-switch" class="bg-stone-900 text-amber-300 border border-amber-500/40 text-xs font-semibold rounded-lg px-1.5 py-1 outline-none">
         <option value="en">English</option>
         <option value="hi">हिंदी</option>
         <option value="pa">ਪੰਜਾਬੀ</option>
       </select>
 
-      <!-- Withdraw Button (Packs game & allows cashout) -->
+      <!-- Withdraw Button -->
       <button onclick="handleWithdrawClick()" class="bg-gradient-to-b from-emerald-600 to-teal-800 text-white font-bold text-xs px-2.5 py-1 rounded-full shadow border border-emerald-400/50 hover:brightness-110 active:scale-95 transition flex items-center gap-1">
         <span>🏦</span> <span class="hidden sm:inline" id="txt-withdraw-btn">Withdraw</span>
       </button>
@@ -145,19 +134,18 @@
         🎁
       </button>
 
-      <!-- Referral / Room Share -->
+      <!-- Referral Share -->
       <button onclick="openReferralModal()" title="Share Room" class="bg-stone-800 border border-amber-500/50 text-amber-300 text-xs px-2 py-1 rounded-full shadow hover:bg-stone-700 active:scale-95 transition">
         🔗
       </button>
     </div>
   </header>
 
-  <!-- ================= POKER TABLE ARENA ================= -->
+  <!-- ================= POKER TABLE ================= -->
   <main class="relative flex-1 flex items-center justify-center px-2 py-2 overflow-hidden">
-    <!-- Felt Poker Table -->
     <div class="felt-table relative w-full max-w-4xl h-[500px] sm:h-[550px] rounded-[140px] sm:rounded-[200px] flex items-center justify-center p-3">
       
-      <!-- Watermark Crest -->
+      <!-- Watermark Background -->
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-15">
         <div class="text-center">
           <div class="text-4xl sm:text-7xl">👑</div>
@@ -165,30 +153,27 @@
         </div>
       </div>
 
-      <!-- ================= LIVE DEALER (CROUPIER) ================= -->
-      <div id="dealer-container" class="absolute top-1 flex flex-col items-center z-10 cursor-pointer group" onclick="openDealerGiftModal()" title="Tap dealer to send gifts or tip!">
+      <!-- ================= DEALER SIMRAN ================= -->
+      <div id="dealer-container" class="absolute top-1 flex flex-col items-center z-10 cursor-pointer group" onclick="openDealerGiftModal()" title="Tap to tip or gift dealer!">
         <div class="dealer-anim relative flex flex-col items-center">
-          <!-- Dealer Speech / Reaction Bubble -->
           <div id="dealer-bubble" class="absolute -top-7 bg-amber-400 text-stone-950 font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-lg border border-yellow-200 transition-all duration-300 opacity-90 scale-100 flex items-center gap-1">
             <span>✨</span> <span id="dealer-bubble-text">Cards Dealt! Good Luck</span>
           </div>
 
-          <!-- Dealer Avatar Circle -->
           <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-yellow-400 bg-gradient-to-b from-rose-900 to-stone-900 p-0.5 shadow-2xl flex items-center justify-center relative overflow-hidden group-hover:border-yellow-200">
             <span class="text-3xl sm:text-4xl select-none">👩‍💼</span>
             <div class="absolute bottom-0 inset-x-0 bg-yellow-500/90 text-stone-950 text-[8px] font-black tracking-tighter text-center py-0.5 uppercase">
               DEALER SIMRAN
             </div>
           </div>
-          <!-- Tip Dealer Indicator -->
           <span class="mt-0.5 text-[9px] bg-black/70 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-500/40">
             💝 <span id="txt-tip-dealer">Tip / Gift</span>
           </span>
         </div>
       </div>
 
-      <!-- ================= CENTER POT & TABLE STATUS ================= -->
-      <div class="z-10 flex flex-col items-center justify-center bg-stone-950/80 border border-yellow-500/50 rounded-2xl px-5 py-2.5 sm:px-7 sm:py-3.5 backdrop-blur-md shadow-2xl">
+      <!-- ================= CENTER POT ================= -->
+      <div class="z-10 flex flex-col items-center justify-center bg-stone-950/85 border border-yellow-500/50 rounded-2xl px-5 py-2 sm:px-7 sm:py-3 backdrop-blur-md shadow-2xl">
         <div class="text-[10px] sm:text-xs text-amber-300 uppercase tracking-widest font-bold" id="txt-pot-title">TOTAL POT</div>
         <div class="flex items-center space-x-1.5 my-0.5">
           <span class="text-lg sm:text-2xl font-black text-yellow-400">🪙</span>
@@ -199,7 +184,7 @@
       </div>
 
       <!-- ================= BOT SEATS (1 to 5) ================= -->
-      <!-- Seat 1: Top Left -->
+      <!-- Seat 1: Vikram -->
       <div id="seat-1" class="absolute top-14 left-5 sm:left-14 flex flex-col items-center cursor-pointer" onclick="openPlayerProfileModal(1)">
         <div class="relative">
           <div class="seat-avatar w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-lg transition">
@@ -218,7 +203,7 @@
         </div>
       </div>
 
-      <!-- Seat 2: Top Right -->
+      <!-- Seat 2: Priya -->
       <div id="seat-2" class="absolute top-14 right-5 sm:right-14 flex flex-col items-center cursor-pointer" onclick="openPlayerProfileModal(2)">
         <div class="relative">
           <div class="seat-avatar w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-lg transition">
@@ -237,7 +222,7 @@
         </div>
       </div>
 
-      <!-- Seat 3: Mid Left -->
+      <!-- Seat 3: Harpreet -->
       <div id="seat-3" class="absolute left-2 sm:left-4 top-1/2 -translate-y-8 flex flex-col items-center cursor-pointer" onclick="openPlayerProfileModal(3)">
         <div class="relative">
           <div class="seat-avatar w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-lg transition">
@@ -256,7 +241,7 @@
         </div>
       </div>
 
-      <!-- Seat 4: Mid Right -->
+      <!-- Seat 4: Rohit -->
       <div id="seat-4" class="absolute right-2 sm:right-4 top-1/2 -translate-y-8 flex flex-col items-center cursor-pointer" onclick="openPlayerProfileModal(4)">
         <div class="relative">
           <div class="seat-avatar w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-lg transition">
@@ -275,7 +260,7 @@
         </div>
       </div>
 
-      <!-- Seat 5: Bottom Center Left (Amit) -->
+      <!-- Seat 5: Amit -->
       <div id="seat-5" class="absolute left-6 sm:left-24 bottom-14 flex flex-col items-center cursor-pointer" onclick="openPlayerProfileModal(5)">
         <div class="relative">
           <div class="seat-avatar w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-stone-600 bg-stone-800 flex items-center justify-center shadow-lg transition">
@@ -294,14 +279,13 @@
         </div>
       </div>
 
-      <!-- ================= SEAT 0: HUMAN USER (Bottom Center) ================= -->
+      <!-- ================= SEAT 0: USER (Bottom Center) ================= -->
       <div id="seat-user" class="absolute bottom-2 flex flex-col items-center z-10">
-        <!-- Reaction Float Area -->
         <div id="user-reaction-slot" class="absolute -top-7 inset-x-0 flex justify-center pointer-events-none"></div>
 
-        <!-- Cards Container -->
+        <!-- 3 Cards -->
         <div class="flex items-center justify-center space-x-2 -mb-2">
-          <!-- User Card 1 -->
+          <!-- Card 1 -->
           <div class="perspective-card w-14 h-20 sm:w-16 sm:h-24">
             <div id="card-inner-0" class="card-inner relative w-full h-full rounded-lg shadow-xl">
               <div class="card-back absolute inset-0 rounded-lg flex items-center justify-center">
@@ -314,7 +298,7 @@
               </div>
             </div>
           </div>
-          <!-- User Card 2 -->
+          <!-- Card 2 -->
           <div class="perspective-card w-14 h-20 sm:w-16 sm:h-24">
             <div id="card-inner-1" class="card-inner relative w-full h-full rounded-lg shadow-xl">
               <div class="card-back absolute inset-0 rounded-lg flex items-center justify-center">
@@ -327,7 +311,7 @@
               </div>
             </div>
           </div>
-          <!-- User Card 3 -->
+          <!-- Card 3 -->
           <div class="perspective-card w-14 h-20 sm:w-16 sm:h-24">
             <div id="card-inner-2" class="card-inner relative w-full h-full rounded-lg shadow-xl">
               <div class="card-back absolute inset-0 rounded-lg flex items-center justify-center">
@@ -342,20 +326,18 @@
           </div>
         </div>
 
-        <!-- See Cards Action Trigger -->
+        <!-- See Cards Button -->
         <button id="btn-see-cards" onclick="handleSeeCards()" class="mt-2 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 text-stone-950 font-black text-xs px-4 py-1 rounded-full shadow-lg border border-yellow-200 active:scale-95 transition flex items-center space-x-1">
           <span>👁️</span>
           <span id="txt-see-cards">See Cards</span>
         </button>
 
-        <!-- User Profile Avatar with Custom Photo Upload & Reaction Bar -->
+        <!-- Profile / Photo / Emote Bar -->
         <div class="flex items-center space-x-3 mt-1.5">
-          <!-- Express / Soch reactions trigger -->
           <button onclick="toggleQuickReactions()" title="Express Emotion / Soch" class="w-8 h-8 rounded-full bg-stone-900 border border-amber-500/60 flex items-center justify-center text-sm shadow hover:bg-stone-800 active:scale-90 transition">
             🤔
           </button>
 
-          <!-- Avatar Image & +Photo badge -->
           <div class="relative cursor-pointer group" onclick="triggerPhotoUpload()" title="Tap to upload your photo!">
             <input type="file" id="user-photo-input" accept="image/*" class="hidden" onchange="handleUserPhotoSelected(event)">
             <div id="user-avatar-frame" class="w-11 h-11 rounded-full border-2 border-yellow-400 bg-stone-800 overflow-hidden shadow-lg flex items-center justify-center relative">
@@ -367,7 +349,6 @@
             </div>
           </div>
 
-          <!-- Name & Hand Quality -->
           <div class="text-left">
             <div class="text-xs font-black text-yellow-300 flex items-center gap-1">
               <span id="user-display-name">You</span>
@@ -378,14 +359,14 @@
         </div>
       </div>
 
-      <!-- Quick 'Soch' Reaction Floating Toolbar (Toggled by 🤔) -->
+      <!-- Quick Reaction Popup Toolbar -->
       <div id="reaction-picker-bar" class="absolute bottom-24 bg-stone-950/95 border border-yellow-400/80 rounded-full px-3 py-1.5 shadow-2xl flex items-center space-x-2 z-30 hidden backdrop-blur-md">
-        <button onclick="sendUserReaction('🤔 Soch..')" class="hover:scale-125 transition text-base" title="Soch / Thinking">🤔</button>
-        <button onclick="sendUserReaction('🤑 Rich!')" class="hover:scale-125 transition text-base" title="Rich">🤑</button>
-        <button onclick="sendUserReaction('😎 King')" class="hover:scale-125 transition text-base" title="Cool">😎</button>
-        <button onclick="sendUserReaction('😂 Haha')" class="hover:scale-125 transition text-base" title="Laugh">😂</button>
-        <button onclick="sendUserReaction('😡 Fold kar!')" class="hover:scale-125 transition text-base" title="Angry">😡</button>
-        <button onclick="sendUserReaction('🙏 Namaste')" class="hover:scale-125 transition text-base" title="Namaste">🙏</button>
+        <button onclick="sendUserReaction('🤔 Soch..')" class="hover:scale-125 transition text-base">🤔</button>
+        <button onclick="sendUserReaction('🤑 Rich!')" class="hover:scale-125 transition text-base">🤑</button>
+        <button onclick="sendUserReaction('😎 King')" class="hover:scale-125 transition text-base">😎</button>
+        <button onclick="sendUserReaction('😂 Haha')" class="hover:scale-125 transition text-base">😂</button>
+        <button onclick="sendUserReaction('😡 Fold kar!')" class="hover:scale-125 transition text-base">😡</button>
+        <button onclick="sendUserReaction('🙏 Namaste')" class="hover:scale-125 transition text-base">🙏</button>
       </div>
 
     </div>
@@ -394,12 +375,12 @@
   <!-- ================= ACTION CONTROLS FOOTER ================= -->
   <footer class="bg-gradient-to-t from-stone-950 via-stone-900 to-stone-950 border-t border-amber-600/40 px-3 py-2.5 z-20">
     <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
-      <!-- Pack Button (Instant Pack & Hand Folding) -->
+      <!-- Pack Button -->
       <button id="btn-pack" onclick="handleUserPack()" class="flex-1 bg-gradient-to-b from-rose-700 via-red-800 to-red-950 hover:brightness-110 text-white font-black py-2.5 px-3 rounded-xl border border-red-500/80 shadow-lg active:scale-95 transition text-xs sm:text-sm tracking-wider uppercase">
         <span id="txt-pack">Pack</span>
       </button>
 
-      <!-- Bet Multiplier Controls (- / +) -->
+      <!-- Bet Multiplier -->
       <div class="flex items-center bg-stone-950 border border-amber-500/60 rounded-xl px-2 py-1 shadow-inner">
         <button onclick="adjustBetMultiplier(-1)" class="w-8 h-8 rounded-lg bg-stone-800 text-amber-300 font-black text-base active:bg-stone-700 flex items-center justify-center">-</button>
         <div class="px-2 text-center">
@@ -420,7 +401,7 @@
       </button>
     </div>
 
-    <!-- Table Config & Redeal Bar -->
+    <!-- Players and Redeal Hand -->
     <div class="max-w-xl mx-auto flex items-center justify-between mt-2 pt-1 border-t border-stone-800/80 text-[11px] text-stone-400">
       <div class="flex items-center space-x-1.5">
         <span id="txt-players-lbl">Players:</span>
@@ -439,7 +420,7 @@
     </div>
   </footer>
 
-  <!-- ================= MODAL: LIVE DEALER GIFT & TIP ================= -->
+  <!-- ================= MODAL: DEALER GIFT ================= -->
   <div id="modal-dealer-gift" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 via-neutral-950 to-black border-2 border-yellow-500 rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl relative">
       <div class="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-yellow-400 bg-rose-950 flex items-center justify-center text-4xl shadow-inner">
@@ -449,37 +430,31 @@
       <p class="text-xs text-stone-300 mt-1" id="txt-modal-dealer-desc">Tip the dealer for luck or send her virtual gifts!</p>
 
       <div class="grid grid-cols-3 gap-2 my-4">
-        <!-- Gift: Rose -->
         <button onclick="sendGiftToDealer('🌹 Rose', 50, 'Thank you so much! May you win big! 🌹')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🌹</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Rose</span>
           <span class="text-[9px] text-yellow-400 font-mono">50 🪙</span>
         </button>
-        <!-- Gift: Tip 100 -->
         <button onclick="sendGiftToDealer('🪙 Tip 100', 100, 'Thank you for the generous tip! 🪙')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🪙</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Tip 100</span>
           <span class="text-[9px] text-yellow-400 font-mono">100 🪙</span>
         </button>
-        <!-- Gift: Diamond -->
-        <button onclick="sendGiftToDealer('💎 Diamond', 500, 'Wow! Royal diamond! Royal luck to you! 💎')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
+        <button onclick="sendGiftToDealer('💎 Diamond', 500, 'Royal diamond! Royal luck to you! 💎')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">💎</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Diamond</span>
           <span class="text-[9px] text-yellow-400 font-mono">500 🪙</span>
         </button>
-        <!-- Gift: Sweet Ladoo -->
         <button onclick="sendGiftToDealer('🍬 Sweets', 200, 'Aww, sweet treats! Shubh labh! 🍬')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🍬</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Mithai</span>
           <span class="text-[9px] text-yellow-400 font-mono">200 🪙</span>
         </button>
-        <!-- Gift: Garland -->
         <button onclick="sendGiftToDealer('💐 Garland', 350, 'So respectful! Namaste player ji! 💐')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">💐</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Garland</span>
           <span class="text-[9px] text-yellow-400 font-mono">350 🪙</span>
         </button>
-        <!-- Gift: Royal Crown -->
         <button onclick="sendGiftToDealer('👑 Crown', 1000, 'A royal gift from a royal King! 👑')" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">👑</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Crown</span>
@@ -491,7 +466,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: PLAYER PROFILE & GIFT SENDING ================= -->
+  <!-- ================= MODAL: PLAYER GIFT ================= -->
   <div id="modal-player-gift" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 via-neutral-950 to-black border-2 border-yellow-500 rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl relative">
       <div id="target-player-avatar" class="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-yellow-400 bg-stone-800 flex items-center justify-center text-4xl shadow-inner">
@@ -502,37 +477,31 @@
       <p class="text-xs text-stone-300 mt-1" id="txt-modal-player-desc">Send animated gifts across the table to this player!</p>
 
       <div class="grid grid-cols-3 gap-2 my-4">
-        <!-- Gift: Gulab -->
         <button onclick="sendGiftToPlayer('🌹', 100)" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🌹</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Gulab</span>
           <span class="text-[9px] text-yellow-400 font-mono">100 🪙</span>
         </button>
-        <!-- Gift: Beer Drink -->
         <button onclick="sendGiftToPlayer('🍺', 150)" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🍺</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Cheers</span>
           <span class="text-[9px] text-yellow-400 font-mono">150 🪙</span>
         </button>
-        <!-- Gift: Dil / Love -->
         <button onclick="sendGiftToPlayer('💖', 250)" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">💖</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Dil</span>
           <span class="text-[9px] text-yellow-400 font-mono">250 🪙</span>
         </button>
-        <!-- Gift: Patakha / Firecracker -->
         <button onclick="sendGiftToPlayer('🎆', 300)" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🎆</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Patakha</span>
           <span class="text-[9px] text-yellow-400 font-mono">300 🪙</span>
         </button>
-        <!-- Gift: Chappal / Fun -->
         <button onclick="sendGiftToPlayer('🩴', 50)" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">🩴</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Chappal</span>
           <span class="text-[9px] text-yellow-400 font-mono">50 🪙</span>
         </button>
-        <!-- Gift: Cash Bundle -->
         <button onclick="sendGiftToPlayer('💵', 500)" class="bg-stone-900 border border-stone-700 hover:border-yellow-400 p-2 rounded-xl flex flex-col items-center active:scale-95 transition">
           <span class="text-2xl">💵</span>
           <span class="text-[10px] font-bold text-amber-200 mt-1">Gaddi</span>
@@ -544,14 +513,14 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: WITHDRAW / CASHOUT WALLET ================= -->
+  <!-- ================= MODAL: WITHDRAW / CASHOUT ================= -->
   <div id="modal-withdraw" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 via-neutral-950 to-black border-2 border-emerald-500 rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl relative">
       <div class="w-16 h-16 mx-auto mb-2 bg-emerald-500/20 rounded-full flex items-center justify-center text-3xl border border-emerald-400/40">
         🏦
       </div>
       <h3 class="font-royal text-xl font-black text-emerald-400" id="txt-modal-withdraw-title">Wallet & Cashout</h3>
-      <p class="text-xs text-stone-300 mt-1" id="txt-modal-withdraw-desc">Your active hand has been safely Folded (Packed). Withdraw your winning coins.</p>
+      <p class="text-xs text-stone-300 mt-1" id="txt-modal-withdraw-desc">Your active hand has been safely Folded (Packed). Withdraw your coins.</p>
       
       <div class="bg-black/60 border border-emerald-500/40 rounded-2xl p-3 my-3 text-left">
         <div class="text-[10px] text-stone-400 uppercase font-semibold">Current Balance</div>
@@ -560,32 +529,32 @@
 
       <div class="space-y-2 text-left text-xs">
         <div>
-          <label class="text-[10px] text-stone-400 uppercase font-bold" id="txt-lbl-upi">UPI ID / Bank Account</label>
+          <label class="text-[10px] text-stone-400 uppercase font-bold">UPI ID / Bank Account</label>
           <input type="text" id="withdraw-upi-input" placeholder="e.g. yourname@upi / 9876543210@paytm" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-400 mt-1">
         </div>
         <div>
-          <label class="text-[10px] text-stone-400 uppercase font-bold" id="txt-lbl-coins">Coins to Withdraw</label>
+          <label class="text-[10px] text-stone-400 uppercase font-bold">Coins to Withdraw</label>
           <input type="number" id="withdraw-amount-input" value="5000" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-white outline-none focus:border-emerald-400 mt-1 font-mono">
         </div>
       </div>
 
       <div id="withdraw-msg" class="text-[11px] font-semibold text-emerald-400 h-5 mt-2"></div>
 
-      <button onclick="processWithdrawal()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-stone-950 font-black py-2.5 rounded-xl shadow-lg active:scale-95 transition text-xs uppercase tracking-wider mt-1" id="btn-confirm-withdraw">
+      <button onclick="processWithdrawal()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-stone-950 font-black py-2.5 rounded-xl shadow-lg active:scale-95 transition text-xs uppercase tracking-wider mt-1">
         Submit Withdrawal Request
       </button>
-      <button onclick="closeModal('modal-withdraw')" class="mt-3 text-xs text-stone-400 underline" id="txt-close-withdraw">Return to Table</button>
+      <button onclick="closeModal('modal-withdraw')" class="mt-3 text-xs text-stone-400 underline">Return to Table</button>
     </div>
   </div>
 
-  <!-- ================= POPUP MODAL: DAILY BONUS ================= -->
+  <!-- ================= MODAL: DAILY BONUS ================= -->
   <div id="modal-bonus" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
       <div class="w-16 h-16 mx-auto mb-2 bg-amber-500/20 rounded-full flex items-center justify-center text-3xl">
         🎁
       </div>
-      <h3 class="font-royal text-xl font-black text-amber-300" id="txt-modal-bonus-title">Daily Club Bonus</h3>
-      <p class="text-xs text-stone-300 mt-2" id="txt-modal-bonus-desc">Claim your daily royal chips reward to keep the table action going!</p>
+      <h3 class="font-royal text-xl font-black text-amber-300">Daily Club Bonus</h3>
+      <p class="text-xs text-stone-300 mt-2">Claim your daily royal chips reward to keep the table action going!</p>
       
       <div class="bg-black/60 border border-amber-500/40 rounded-2xl p-4 my-4">
         <div class="text-2xl font-black text-yellow-400 font-mono">+2,500 🪙</div>
@@ -593,31 +562,29 @@
       </div>
 
       <button id="btn-claim-bonus" onclick="claimDailyBonus()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-neutral-950 font-black py-2.5 rounded-xl shadow-lg active:scale-95 transition">
-        <span id="txt-claim-btn">Claim Reward</span>
+        <span>Claim Reward</span>
       </button>
       <button onclick="closeModal('modal-bonus')" class="mt-3 text-xs text-stone-400 underline">Close</button>
     </div>
   </div>
 
-  <!-- ================= POPUP MODAL: REFERRAL & SHARE ================= -->
+  <!-- ================= MODAL: REFERRAL & SHARE ================= -->
   <div id="modal-referral" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
       <div class="w-16 h-16 mx-auto mb-2 bg-yellow-500/20 rounded-full flex items-center justify-center text-3xl">
         👥
       </div>
-      <h3 class="font-royal text-xl font-black text-amber-300" id="txt-modal-ref-title">Invite & Earn</h3>
-      <p class="text-xs text-stone-300 mt-2" id="txt-modal-ref-desc">Share room code with friends or redeem referral code for 5,000 free coins.</p>
+      <h3 class="font-royal text-xl font-black text-amber-300">Invite & Earn</h3>
+      <p class="text-xs text-stone-300 mt-2">Share room code with friends or redeem referral code for 5,000 free coins.</p>
       
-      <!-- Room Code Box -->
       <div class="bg-black/60 border border-amber-500/40 rounded-xl p-3 my-3 text-left">
-        <div class="text-[10px] text-amber-400 uppercase font-bold" id="txt-lbl-your-code">Your Table Room Code</div>
+        <div class="text-[10px] text-amber-400 uppercase font-bold">Your Table Room Code</div>
         <div class="flex items-center justify-between mt-1">
           <span id="room-code-val" class="font-mono text-base font-black text-white">TP-9862</span>
           <button onclick="copyRoomCode()" class="bg-stone-800 text-amber-300 text-xs px-2.5 py-1 rounded border border-amber-500/40 hover:bg-stone-700 active:scale-95" id="btn-copy-code">Copy</button>
         </div>
       </div>
 
-      <!-- Redeem Friend Code -->
       <div class="flex space-x-1.5 my-2">
         <input type="text" id="friend-code-input" placeholder="Friend's Code" class="flex-1 bg-stone-900 border border-stone-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-amber-400 uppercase">
         <button onclick="redeemFriendCode()" class="bg-amber-500 text-stone-950 font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-amber-400 active:scale-95">Apply</button>
@@ -628,7 +595,7 @@
     </div>
   </div>
 
-  <!-- ================= POPUP MODAL: WINNER SHOW RESULTS ================= -->
+  <!-- ================= MODAL: WINNER SHOW RESULTS ================= -->
   <div id="modal-winner" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
     <div class="bg-gradient-to-b from-stone-900 via-stone-950 to-black border-2 border-amber-400 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
       <div class="text-4xl mb-1 animate-bounce">🏆</div>
@@ -646,19 +613,13 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT GAME LOGIC ================= -->
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
   <script>
-    /* ----------------------------------------------------
-       1. SYNTHETIC AUDIO ENGINE (Web Audio API)
-       ---------------------------------------------------- */
+    // 1. Audio Engine
     let audioCtx = null;
     function getAudioContext() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
 
@@ -696,8 +657,7 @@
           osc.start(now);
           osc.stop(now + 0.15);
         } else if (type === 'win') {
-          const notes = [440, 554.37, 659.25, 880];
-          notes.forEach((freq, idx) => {
+          [440, 554, 659, 880].forEach((freq, idx) => {
             const o = ctx.createOscillator();
             const g = ctx.createGain();
             o.connect(g);
@@ -710,14 +670,10 @@
             o.stop(now + idx * 0.1 + 0.25);
           });
         }
-      } catch (e) {
-        console.warn('Audio Context muted');
-      }
+      } catch (e) {}
     }
 
-    /* ----------------------------------------------------
-       2. MULTILINGUAL TRANSLATIONS (EN, HI, PA)
-       ---------------------------------------------------- */
+    // 2. Languages
     const translations = {
       en: {
         room: "Room:",
@@ -788,7 +744,6 @@
     };
 
     let currentLang = 'en';
-
     function setLanguage(lang) {
       currentLang = lang;
       const t = translations[lang];
@@ -809,13 +764,9 @@
       updateChaalButtonText();
     }
 
-    document.getElementById('lang-switch').addEventListener('change', (e) => {
-      setLanguage(e.target.value);
-    });
+    document.getElementById('lang-switch').addEventListener('change', (e) => setLanguage(e.target.value));
 
-    /* ----------------------------------------------------
-       3. DECK & TEEN PATTI ENGINE
-       ---------------------------------------------------- */
+    // 3. Deck & Hand Evaluation
     const SUITS = ['♠', '♥', '♦', '♣'];
     const VALUES = [
       { r: '2', val: 2 }, { r: '3', val: 3 }, { r: '4', val: 4 }, { r: '5', val: 5 },
@@ -842,10 +793,10 @@
       const sorted = [...cards].sort((a, b) => b.value - a.value);
       const v0 = sorted[0].value, v1 = sorted[1].value, v2 = sorted[2].value;
       const s0 = sorted[0].suit, s1 = sorted[1].suit, s2 = sorted[2].suit;
-
       const isFlush = (s0 === s1 && s1 === s2);
       let isSeq = false;
       let seqScore = v0;
+
       if (v0 === v1 + 1 && v1 === v2 + 1) {
         isSeq = true;
       } else if (v0 === 14 && v1 === 3 && v2 === 2) {
@@ -868,19 +819,16 @@
       return h1.score - h2.score;
     }
 
-    /* ----------------------------------------------------
-       4. GAME STATE & SETUP
-       ---------------------------------------------------- */
+    // 4. Game State
     let totalPlayers = 6;
     let players = [];
     let currentTurnIndex = 0;
     let potAmount = 0;
-    let bootAmount = 100;
+    const bootAmount = 100;
     let currentStake = 100;
     let betMultiplier = 1;
     let gameActive = false;
     let selectedTargetPlayerId = null;
-    let roundTurnCounter = 0;
     let botTimer = null;
 
     const BOT_PROFILES = [
@@ -895,7 +843,6 @@
       const userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
       updateBalanceUI(userChips);
 
-      // Restore user custom photo if previously uploaded
       const savedPhoto = localStorage.getItem('tp_user_photo');
       if (savedPhoto) {
         const img = document.getElementById('user-photo-img');
@@ -910,7 +857,6 @@
 
     function setupPlayers() {
       players = [];
-      // User Seat 0
       players.push({
         id: 0,
         name: 'You',
@@ -923,7 +869,6 @@
         seatElem: document.getElementById('seat-user')
       });
 
-      // Bots 1 to totalPlayers-1
       for (let i = 1; i < totalPlayers; i++) {
         const b = BOT_PROFILES[i - 1];
         players.push({
@@ -940,7 +885,6 @@
         });
       }
 
-      // Hide unused seats
       for (let i = 1; i <= 5; i++) {
         const seat = document.getElementById(`seat-${i}`);
         if (i < totalPlayers) seat.classList.remove('hidden');
@@ -955,9 +899,7 @@
       startNewHand();
     }
 
-    /* ----------------------------------------------------
-       5. DEALING & TURNS
-       ---------------------------------------------------- */
+    // 5. Hand Dealing
     function startNewHand() {
       if (botTimer) clearTimeout(botTimer);
       playSound('deal');
@@ -966,12 +908,9 @@
       currentStake = bootAmount;
       betMultiplier = 1;
       gameActive = true;
-      roundTurnCounter = 0;
 
-      // Reset dealer bubble
       setDealerSpeech("Cards Dealt! May Lakshmi bless you! ✨");
 
-      // Reset user cards
       for (let c = 0; c < 3; c++) {
         const cardInner = document.getElementById(`card-inner-${c}`);
         cardInner.classList.remove('flipped');
@@ -987,7 +926,6 @@
         p.isSeen = false;
         p.blindTurns = 0;
 
-        // Collect Boot
         p.chips = Math.max(0, p.chips - bootAmount);
         potAmount += bootAmount;
 
@@ -1004,7 +942,6 @@
       localStorage.setItem('tp_user_chips', players[0].chips);
       updateBalanceUI(players[0].chips);
       updatePotUI();
-
       renderUserCards(players[0].cards);
 
       currentTurnIndex = 0;
@@ -1020,7 +957,6 @@
         const colorClass = card.isRed ? 'text-rose-600' : 'text-neutral-900';
         const face = document.getElementById(`card-face-${i}`);
         face.className = `card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1.5 font-bold ${colorClass}`;
-
         document.getElementById(`c${i}-tl`).innerText = `${card.rank}${card.suit}`;
         document.getElementById(`c${i}-mid`).innerText = card.suit;
         document.getElementById(`c${i}-br`).innerText = `${card.rank}${card.suit}`;
@@ -1057,7 +993,6 @@
     function updateControlsState(isUserTurn) {
       const btnChaal = document.getElementById('btn-chaal');
       const btnPack = document.getElementById('btn-pack');
-      const active = players.filter(p => !p.isPacked);
 
       if (!gameActive || !isUserTurn || players[0].isPacked) {
         btnChaal.disabled = true;
@@ -1067,7 +1002,6 @@
         btnChaal.classList.remove('opacity-40', 'cursor-not-allowed');
       }
 
-      // Pack is always available if human is still active
       if (!gameActive || players[0].isPacked) {
         btnPack.disabled = true;
         btnPack.classList.add('opacity-40', 'cursor-not-allowed');
@@ -1110,10 +1044,7 @@
       }
     }
 
-    /* ----------------------------------------------------
-       6. PACK & AUTHENTIC TURN-BASED LOGIC
-       ---------------------------------------------------- */
-    // Instant Pack (User folds hand)
+    // 6. Action Handlers (Pack, Bet, Show)
     function handleUserPack() {
       if (!gameActive || players[0].isPacked) return;
 
@@ -1123,7 +1054,6 @@
       updateStatusMsg("You have Folded (Packed).");
       updateControlsState(false);
 
-      // Dim user cards
       for (let c = 0; c < 3; c++) {
         document.getElementById(`card-inner-${c}`).style.opacity = '0.4';
       }
@@ -1140,7 +1070,7 @@
       const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
 
       if (user.chips < cost) {
-        updateStatusMsg("Insufficient chips! Please claim bonus.");
+        updateStatusMsg("Insufficient coins! Claim daily bonus.");
         return;
       }
 
@@ -1151,7 +1081,6 @@
       updateBalanceUI(user.chips);
       updatePotUI();
 
-      // Disable buttons while bots play
       updateControlsState(false);
       passTurnToNext();
     }
@@ -1187,17 +1116,14 @@
         const tMsg = translations[currentLang].botTurn.replace('{name}', currentP.name);
         updateStatusMsg(tMsg);
         
-        // Realistic thinking pause with status
         if (Math.random() < 0.4) {
           showPlayerReaction(currentP.id, '🤔 Soch raha hu...');
         }
         
-        // Bot thinks for 1.8 to 2.5 seconds, then acts
         botTimer = setTimeout(() => {
           botAction();
-        }, 1800 + Math.random() * 800);
+        }, 1600 + Math.random() * 800);
       } else {
-        // TURN STOPS ON HUMAN PLAYER COMPLETELY!
         updateControlsState(true);
         updateChaalButtonText();
         updateStatusMsg(translations[currentLang].userTurn);
@@ -1215,10 +1141,9 @@
       const activePlayers = players.filter(p => !p.isPacked);
       const activeCount = activePlayers.length;
 
-      // 1. Bot decides to 'See Cards' if still playing Blind
+      // Bot sees cards after 1-2 blind turns
       if (!bot.isSeen) {
         bot.blindTurns = (bot.blindTurns || 0) + 1;
-        // After 1-2 blind turns or when pot grows, bot checks cards
         if (bot.blindTurns >= 2 || potAmount > 1500 || Math.random() > 0.6) {
           bot.isSeen = true;
           const seenBadge = bot.seatElem.querySelector('.seen-indicator');
@@ -1228,7 +1153,7 @@
         }
       }
 
-      // 2. If only 2 players left, bot can call Show
+      // Show call when only 2 remain
       if (activeCount === 2 && bot.isSeen) {
         const canShow = (bot.handEval.rank >= 2) || (potAmount > 4000);
         if (canShow && Math.random() > 0.4) {
@@ -1238,17 +1163,12 @@
         }
       }
 
-      // 3. Real Teen Patti Hand Evaluation: Should Bot Fold (Pack)?
+      // Evaluation to fold (Pack)
       let shouldPack = false;
       if (bot.isSeen) {
-        // High card only (Rank 1): Bad cards
         if (bot.handEval.rank === 1) {
-          // If pot is high, fold easily
-          if (potAmount > 2000) shouldPack = true;
-          else if (Math.random() > 0.45) shouldPack = true;
-        } 
-        // Weak pair (Rank 2 with low card): fold if high stakes
-        else if (bot.handEval.rank === 2 && bot.handEval.score < 800 && potAmount > 5000) {
+          if (potAmount > 2000 || Math.random() > 0.45) shouldPack = true;
+        } else if (bot.handEval.rank === 2 && bot.handEval.score < 800 && potAmount > 5000) {
           if (Math.random() > 0.55) shouldPack = true;
         }
       }
@@ -1257,13 +1177,13 @@
         bot.isPacked = true;
         const packBadge = bot.seatElem.querySelector('.status-badge');
         if (packBadge) packBadge.classList.remove('hidden');
-        showPlayerReaction(bot.id, '❌ PACK (Fold)');
-        updateStatusMsg(`${bot.name} folded their cards.`);
+        showPlayerReaction(bot.id, '❌ PACK');
+        updateStatusMsg(`${bot.name} folded.`);
         passTurnToNext();
         return;
       }
 
-      // 4. Bot places Chaal or Blind
+      // Chaal or Blind
       const cost = bot.isSeen ? currentStake * 2 : currentStake;
       bot.chips = Math.max(0, bot.chips - cost);
       potAmount += cost;
@@ -1300,7 +1220,7 @@
         gameActive = false;
         if (botTimer) clearTimeout(botTimer);
         const winner = active[0];
-        awardPot(winner, `${winner.name} won by default (All other players folded).`);
+        awardPot(winner, `${winner.name} won by default! (All others folded)`);
       }
     }
 
@@ -1317,298 +1237,7 @@
           bestPlayer = active[i];
         }
       }
-      awardPot(bestPlayer, `${bestPlayer.name} won with ${bestPlayer.handEval.name}!`);
-    }
-
-      // Hide unused seats
-      for (let i = 1; i <= 5; i++) {
-        const seat = document.getElementById(`seat-${i}`);
-        if (i < totalPlayers) seat.classList.remove('hidden');
-        else seat.classList.add('hidden');
-      }
-    }
-
-    function changePlayerCount(val) {
-      totalPlayers = parseInt(val);
-      setupPlayers();
-      startNewHand();
-    }
-
-    /* ----------------------------------------------------
-       5. DEALING & TURNS
-       ---------------------------------------------------- */
-    function startNewHand() {
-      playSound('deal');
-      const deck = createDeck();
-      potAmount = 0;
-      currentStake = bootAmount;
-      betMultiplier = 1;
-      gameActive = true;
-
-      // Reset dealer bubble
-      setDealerSpeech("Cards Dealt! May Lakshmi bless you! ✨");
-
-      // Reset user cards
-      for (let c = 0; c < 3; c++) {
-        document.getElementById(`card-inner-${c}`).classList.remove('flipped');
-      }
-      document.getElementById('btn-see-cards').classList.remove('hidden');
-      document.getElementById('user-hand-name').innerText = translations[currentLang].blindBadge;
-
-      players.forEach(p => {
-        p.cards = [deck.pop(), deck.pop(), deck.pop()];
-        p.handEval = evaluateHand(p.cards);
-        p.isPacked = false;
-        p.isSeen = p.isBot ? (Math.random() > 0.5) : false;
-
-        // Collect Boot
-        p.chips = Math.max(0, p.chips - bootAmount);
-        potAmount += bootAmount;
-
-        if (p.isBot) {
-          const packBadge = p.seatElem.querySelector('.status-badge');
-          if (packBadge) packBadge.classList.add('hidden');
-          const chipLabel = p.seatElem.querySelector('.bot-chips');
-          if (chipLabel) chipLabel.innerText = p.chips.toLocaleString();
-        }
-      });
-
-      localStorage.setItem('tp_user_chips', players[0].chips);
-      updateBalanceUI(players[0].chips);
-      updatePotUI();
-
-      renderUserCards(players[0].cards);
-
-      currentTurnIndex = 0;
-      highlightActiveSeat();
-      updateChaalButtonText();
-      checkShowAvailability();
-      updateStatusMsg(translations[currentLang].userTurn);
-    }
-
-    function renderUserCards(cards) {
-      cards.forEach((card, i) => {
-        const colorClass = card.isRed ? 'text-rose-600' : 'text-neutral-900';
-        const face = document.getElementById(`card-face-${i}`);
-        face.className = `card-front absolute inset-0 rounded-lg flex flex-col justify-between p-1.5 font-bold ${colorClass}`;
-
-        document.getElementById(`c${i}-tl`).innerText = `${card.rank}${card.suit}`;
-        document.getElementById(`c${i}-mid`).innerText = card.suit;
-        document.getElementById(`c${i}-br`).innerText = `${card.rank}${card.suit}`;
-      });
-    }
-
-    function handleSeeCards() {
-      const user = players[0];
-      if (user.isSeen) return;
-      user.isSeen = true;
-      playSound('deal');
-
-      for (let c = 0; c < 3; c++) {
-        document.getElementById(`card-inner-${c}`).classList.add('flipped');
-      }
-      document.getElementById('btn-see-cards').classList.add('hidden');
-      document.getElementById('user-hand-name').innerText = `${translations[currentLang].seenBadge} (${user.handEval.name})`;
-      updateChaalButtonText();
-    }
-
-    function updateBalanceUI(chips) {
-      document.getElementById('player-balance').innerText = chips.toLocaleString();
-    }
-
-    function updatePotUI() {
-      document.getElementById('pot-amount').innerText = potAmount.toLocaleString();
-      document.getElementById('boot-info').innerText = `Boot: ${bootAmount} | Stake: ${currentStake}`;
-    }
-
-    function updateStatusMsg(msg) {
-      document.getElementById('game-status-text').innerText = msg;
-    }
-
-    function adjustBetMultiplier(delta) {
-      if (!gameActive) return;
-      const opts = [1, 2, 4];
-      let curIdx = opts.indexOf(betMultiplier);
-      curIdx = Math.max(0, Math.min(opts.length - 1, curIdx + delta));
-      betMultiplier = opts[curIdx];
-
-      document.getElementById('bet-multiplier-label').innerText = `${betMultiplier}x (${currentStake * betMultiplier})`;
-      updateChaalButtonText();
-    }
-
-    function updateChaalButtonText() {
-      const user = players[0];
-      const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
-      const label = user.isSeen ? translations[currentLang].chaalBtn : translations[currentLang].blindBtn;
-      document.getElementById('txt-chaal-btn').innerText = `${label} (${cost})`;
-    }
-
-    function highlightActiveSeat() {
-      document.querySelectorAll('.seat-avatar').forEach(el => el.classList.remove('active-turn-ring'));
-      const activeP = players[currentTurnIndex];
-      if (activeP && !activeP.isPacked) {
-        if (activeP.isBot) {
-          const avatar = activeP.seatElem.querySelector('.seat-avatar');
-          if (avatar) avatar.classList.add('active-turn-ring');
-        } else {
-          document.getElementById('user-avatar-frame').classList.add('active-turn-ring');
-        }
-      }
-    }
-
-    /* ----------------------------------------------------
-       6. PACK & BET ACTION FIXES
-       ---------------------------------------------------- */
-    // Instant Pack (User can fold at any time or turn)
-    function handleUserPack() {
-      if (!gameActive || players[0].isPacked) return;
-
-      players[0].isPacked = true;
-      playSound('chip');
-      document.getElementById('user-hand-name').innerText = "Folded (PACKED)";
-      updateStatusMsg("You have Folded (Packed).");
-
-      // Dim user cards
-      for (let c = 0; c < 3; c++) {
-        document.getElementById(`card-inner-${c}`).style.opacity = '0.4';
-      }
-
-      checkRoundStatus();
-      if (gameActive && currentTurnIndex === 0) {
-        passTurnToNext();
-      }
-    }
-
-    function handleUserBet() {
-      if (!gameActive || currentTurnIndex !== 0) return;
-      const user = players[0];
-      const cost = user.isSeen ? (currentStake * betMultiplier * 2) : (currentStake * betMultiplier);
-
-      if (user.chips < cost) {
-        updateStatusMsg("Insufficient chips! Please claim bonus.");
-        return;
-      }
-
-      playSound('chip');
-      user.chips -= cost;
-      potAmount += cost;
-      localStorage.setItem('tp_user_chips', user.chips);
-      updateBalanceUI(user.chips);
-      updatePotUI();
-
-      passTurnToNext();
-    }
-
-    function handleUserShow() {
-      if (!gameActive || currentTurnIndex !== 0) return;
-      const activePlayers = players.filter(p => !p.isPacked);
-      if (activePlayers.length === 2) {
-        const user = players[0];
-        const cost = user.isSeen ? (currentStake * 2) : currentStake;
-        user.chips = Math.max(0, user.chips - cost);
-        potAmount += cost;
-        updateBalanceUI(user.chips);
-        updatePotUI();
-        declareWinner();
-      }
-    }
-
-    function passTurnToNext() {
-      checkRoundStatus();
-      if (!gameActive) return;
-
-      do {
-        currentTurnIndex = (currentTurnIndex + 1) % players.length;
-      } while (players[currentTurnIndex].isPacked);
-
-      highlightActiveSeat();
-      checkShowAvailability();
-
-      const currentP = players[currentTurnIndex];
-      if (currentP.isBot) {
-        const tMsg = translations[currentLang].botTurn.replace('{name}', currentP.name);
-        updateStatusMsg(tMsg);
-        setTimeout(botAction, 1100 + Math.random() * 800);
-      } else {
-        updateStatusMsg(translations[currentLang].userTurn);
-      }
-    }
-
-    function botAction() {
-      if (!gameActive || currentTurnIndex === 0) return;
-      const bot = players[currentTurnIndex];
-      const activeCount = players.filter(p => !p.isPacked).length;
-
-      // Bot random Thinking 'Soch' reaction
-      if (Math.random() < 0.25) {
-        showPlayerReaction(bot.id, '🤔 Soch..');
-      }
-
-      if (activeCount === 2 && Math.random() > 0.45) {
-        declareWinner();
-        return;
-      }
-
-      let shouldPack = false;
-      if (bot.handEval.rank === 1 && bot.handEval.score < 800 && potAmount > 3000 && Math.random() > 0.45) {
-        shouldPack = true;
-      }
-
-      if (shouldPack) {
-        bot.isPacked = true;
-        const packBadge = bot.seatElem.querySelector('.status-badge');
-        if (packBadge) packBadge.classList.remove('hidden');
-        showPlayerReaction(bot.id, '😢 Pack');
-        updateStatusMsg(`${bot.name} Folded.`);
-        passTurnToNext();
-      } else {
-        const cost = bot.isSeen ? currentStake * 2 : currentStake;
-        bot.chips = Math.max(0, bot.chips - cost);
-        potAmount += cost;
-        playSound('chip');
-
-        const chipLabel = bot.seatElem.querySelector('.bot-chips');
-        if (chipLabel) chipLabel.innerText = bot.chips.toLocaleString();
-        updatePotUI();
-
-        passTurnToNext();
-      }
-    }
-
-    function checkShowAvailability() {
-      const active = players.filter(p => !p.isPacked);
-      const btnShow = document.getElementById('btn-show');
-      if (active.length === 2 && currentTurnIndex === 0) {
-        btnShow.disabled = false;
-        btnShow.classList.remove('opacity-40', 'cursor-not-allowed');
-      } else {
-        btnShow.disabled = true;
-        btnShow.classList.add('opacity-40', 'cursor-not-allowed');
-      }
-    }
-
-    function checkRoundStatus() {
-      const active = players.filter(p => !p.isPacked);
-      if (active.length === 1) {
-        gameActive = false;
-        const winner = active[0];
-        awardPot(winner, `${winner.name} won by default (All others folded).`);
-      }
-    }
-
-    function declareWinner() {
-      gameActive = false;
-      playSound('win');
-
-      const active = players.filter(p => !p.isPacked);
-      let bestPlayer = active[0];
-
-      for (let i = 1; i < active.length; i++) {
-        if (compareTwoHands(active[i].handEval, bestPlayer.handEval) > 0) {
-          bestPlayer = active[i];
-        }
-      }
-      awardPot(bestPlayer, `${bestPlayer.name} has the best hand: ${bestPlayer.handEval.name}`);
+      awardPot(bestPlayer, `${bestPlayer.name} has the best hand: ${bestPlayer.handEval.name}!`);
     }
 
     function awardPot(winner, reason) {
@@ -1628,9 +1257,7 @@
       document.getElementById('modal-winner').classList.remove('hidden');
     }
 
-    /* ----------------------------------------------------
-       7. USER CUSTOM PHOTO UPLOAD FEATURE
-       ---------------------------------------------------- */
+    // 7. Photo Upload
     function triggerPhotoUpload() {
       document.getElementById('user-photo-input').click();
     }
@@ -1642,21 +1269,17 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const dataUrl = e.target.result;
-        // Save in localStorage so user's image persists
         localStorage.setItem('tp_user_photo', dataUrl);
-
         const img = document.getElementById('user-photo-img');
         img.src = dataUrl;
         img.classList.remove('hidden');
         document.getElementById('user-default-icon').classList.add('hidden');
-        setDealerSpeech("Looking sharp, Handsome! Nice photo! 📸");
+        setDealerSpeech("Looking sharp, Champion! 📸");
       };
       reader.readAsDataURL(file);
     }
 
-    /* ----------------------------------------------------
-       8. LIVE DEALER GIFT & SPEECH SYSTEM
-       ---------------------------------------------------- */
+    // 8. Dealer System
     function openDealerGiftModal() {
       document.getElementById('modal-dealer-gift').classList.remove('hidden');
     }
@@ -1680,15 +1303,12 @@
       updateBalanceUI(userChips);
       playSound('gift');
 
-      // Animate flying gift to dealer
       spawnFlyingGift(giftName.split(' ')[0], document.getElementById('dealer-container'));
       setDealerSpeech(dealerReply);
       closeModal('modal-dealer-gift');
     }
 
-    /* ----------------------------------------------------
-       9. PLAYER-TO-PLAYER GIFTS & EMOTE 'SOCH' REACTIONS
-       ---------------------------------------------------- */
+    // 9. Player Gifts & Emotes
     function openPlayerProfileModal(botId) {
       selectedTargetPlayerId = botId;
       const bot = players.find(p => p.id === botId);
@@ -1725,7 +1345,6 @@
       gift.className = 'fixed z-50 text-4xl gift-fly-anim pointer-events-none drop-shadow-xl';
       gift.innerText = emoji;
 
-      // Position from center-bottom to target
       const rect = targetElem.getBoundingClientRect();
       gift.style.left = `${rect.left + rect.width / 2 - 15}px`;
       gift.style.top = `${rect.top + 10}px`;
@@ -1760,14 +1379,9 @@
       }
     }
 
-    /* ----------------------------------------------------
-       10. WITHDRAW / CASHOUT SYSTEM
-       ---------------------------------------------------- */
+    // 10. Withdraw & Modals
     function handleWithdrawClick() {
-      // First, safely fold active hand
       handleUserPack();
-
-      // Show wallet modal
       const userChips = parseInt(localStorage.getItem('tp_user_chips')) || 10000;
       document.getElementById('withdraw-balance-display').innerText = `${userChips.toLocaleString()} 🪙`;
       document.getElementById('withdraw-msg').innerText = '';
@@ -1804,9 +1418,6 @@
       }, 2000);
     }
 
-    /* ----------------------------------------------------
-       11. DAILY BONUS & REFERRAL SHARE
-       ---------------------------------------------------- */
     function openBonusModal() {
       document.getElementById('modal-bonus').classList.remove('hidden');
     }
@@ -1823,7 +1434,8 @@
       localStorage.setItem('tp_user_chips', userChips);
       updateBalanceUI(userChips);
       playSound('win');
-      document.getElementById('txt-claim-btn').innerText = "Claimed +2,500!";
+      const btn = document.getElementById('btn-claim-bonus');
+      btn.innerText = "Claimed +2,500!";
       setTimeout(() => closeModal('modal-bonus'), 800);
     }
 
@@ -1859,10 +1471,11 @@
       setTimeout(() => closeModal('modal-referral'), 1200);
     }
 
-    window.onload = function() {
+    // Auto-launch on page load
+    window.addEventListener('DOMContentLoaded', () => {
       initGame();
       setLanguage('en');
-    };
+    });
   </script>
 </body>
 </html>
