@@ -3,247 +3,327 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Teen Patti Live Club - Multiplayer</title>
-  <script src="/socket.io/socket.io.js"></script>
+  <title>Teen Patti Live Club</title>
   <style>
-    :root {
-      --gold: #f59e0b;
-      --gold-bright: #fbbf24;
-      --felt-cyan: #064e3b;
-      --felt-radial: radial-gradient(ellipse at center, #065f46 0%, #064e3b 65%, #022c22 100%);
-      --dark-blue: #0b1120;
-    }
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
       user-select: none;
       -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     body {
-      background: var(--dark-blue);
+      background: #090e18;
       color: #fff;
       display: flex;
       justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
     }
-    #gameContainer {
-      width: 100vw;
-      height: 100vh;
-      max-width: 900px;
-      max-height: 520px;
+    .wrapper {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      background: radial-gradient(circle at 50% 20%, #17223b, #070b13 90%);
       position: relative;
-      background: radial-gradient(circle at center, #1e293b, #0f172a);
-      border: 3px solid #334155;
     }
 
-    /* TOP HEADER */
-    .header {
-      height: 44px;
-      background: rgba(15, 23, 42, 0.95);
-      border-bottom: 2px solid var(--gold);
+    /* Top Bar */
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 12px;
+      padding: 8px 12px;
+      background: rgba(14, 21, 35, 0.95);
+      border-bottom: 1.5px solid #d4af37;
       z-index: 10;
     }
-    .brand {
-      font-size: 14px;
-      font-weight: 900;
-      color: var(--gold-bright);
-      text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-    }
-    .top-stats {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .coin-badge {
-      background: #1e293b;
-      border: 1px solid var(--gold);
-      border-radius: 14px;
-      padding: 3px 10px;
-      font-size: 11px;
+    .title-box {
+      font-size: 13px;
       font-weight: 800;
-      color: var(--gold-bright);
+      color: #ffd700;
+      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+    }
+    .pill {
+      background: #1e293b;
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+    .pill.gold {
+      background: linear-gradient(135deg, #ffd700, #b8860b);
+      color: #000;
     }
 
-    /* FELT CASINO TABLE */
-    .table-felt {
-      flex: 1;
-      margin: 10px;
-      border-radius: 120px;
-      background: var(--felt-radial);
-      border: 8px solid #b45309;
-      box-shadow: inset 0 0 50px #000, 0 0 20px rgba(0,0,0,0.8);
+    /* Royal Blue Felt Table */
+    .table-container {
       position: relative;
+      width: 95%;
+      margin: 8px auto;
+      height: 480px;
+      border-radius: 120px;
+      background: radial-gradient(ellipse at 50% 50%, #0d6982 0%, #084353 60%, #02232c 100%);
+      border: 6px solid #c59b27;
+      box-shadow: inset 0 0 35px #000, 0 0 20px rgba(197, 155, 39, 0.4);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
+      padding: 6px 0 10px;
+    }
+    .table-inner-rim {
+      position: absolute;
+      inset: 6px;
+      border: 1.5px dashed rgba(255, 215, 0, 0.25);
+      border-radius: 112px;
+      pointer-events: none;
     }
 
-    /* DEALER TOP */
-    .dealer-croupier {
+    /* Dealer */
+    .dealer-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: pointer;
       z-index: 5;
+      cursor: pointer;
     }
-    .dealer-pic {
-      width: 44px;
-      height: 44px;
+    .dealer-avatar {
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
-      border: 2px solid var(--gold);
+      border: 2px solid #ffd700;
       background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
     }
-    .dealer-tip-bubble {
-      font-size: 9px;
+    .dealer-name {
+      font-size: 10px;
       font-weight: 800;
+      color: #ffd700;
+      background: rgba(0,0,0,0.7);
+      padding: 1px 8px;
+      border-radius: 8px;
+      margin-top: -2px;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+    }
+    .dealer-bubble {
+      font-size: 9.5px;
       background: rgba(0,0,0,0.85);
-      border: 1px solid #38bdf8;
       color: #38bdf8;
-      padding: 2px 8px;
+      border: 1px solid #0284c7;
+      padding: 2px 10px;
       border-radius: 10px;
-      margin-top: 2px;
+      margin-top: 3px;
+      max-width: 220px;
+      text-align: center;
+      font-weight: 600;
     }
 
-    /* CENTER POT */
-    .pot-center {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.8);
-      border: 2px solid var(--gold);
-      border-radius: 20px;
-      padding: 4px 18px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    /* Opponents Row */
+    .opponents-grid {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 8px;
       z-index: 4;
     }
-    .pot-val {
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--gold-bright);
-    }
-
-    /* PLAYERS AROUND TABLE */
-    .seats-grid {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    .player-seat {
-      position: absolute;
-      width: 70px;
+    .seat {
       display: flex;
       flex-direction: column;
       align-items: center;
-      pointer-events: auto;
+      width: 65px;
+      position: relative;
       transition: all 0.2s;
     }
-    /* 6 Seats Geometry */
-    .seat-0 { bottom: 12px; left: 50%; transform: translateX(-50%); } /* YOU */
-    .seat-1 { bottom: 60px; left: 30px; }
-    .seat-2 { top: 60px; left: 30px; }
-    .seat-3 { top: 12px; right: 120px; }
-    .seat-4 { top: 60px; right: 30px; }
-    .seat-5 { bottom: 60px; right: 30px; }
-
-    .avatar-wrapper {
-      width: 44px;
-      height: 44px;
+    .seat.active .avatar-circle {
+      border-color: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+      transform: scale(1.08);
+    }
+    .seat.folded {
+      opacity: 0.35;
+      filter: grayscale(80%);
+    }
+    .avatar-circle {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      border: 2px solid var(--gold);
+      border: 2px solid #d4af37;
       background: #1e293b;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 20px;
-      position: relative;
       overflow: hidden;
     }
-    .player-seat.active .avatar-wrapper {
-      border-color: #22c55e;
-      box-shadow: 0 0 15px #22c55e;
-      animation: pulseTurn 1s infinite alternate;
+    .p-name {
+      font-size: 9px;
+      font-weight: 800;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 65px;
     }
-    .player-seat.folded { opacity: 0.35; filter: grayscale(1); }
-    @keyframes pulseTurn {
-      from { transform: scale(1); }
-      to { transform: scale(1.1); }
+    .p-coins {
+      font-size: 9px;
+      color: #ffd700;
+      font-weight: 800;
     }
     .p-tag {
-      font-size: 8.5px;
-      font-weight: 800;
-      background: #000;
-      padding: 1px 4px;
+      font-size: 8px;
+      padding: 1px 5px;
       border-radius: 4px;
+      background: rgba(0,0,0,0.85);
+      color: #94a3b8;
+      font-weight: 700;
       margin-top: 1px;
     }
     .p-tag.seen { color: #38bdf8; border: 1px solid #0284c7; }
+    .p-tag.chaal { color: #4ade80; }
+    .p-tag.think { color: #facc15; }
 
-    /* USER CARDS DISPLAY */
-    .cards-box {
+    .bot-cards-mini {
       display: flex;
-      gap: 4px;
+      gap: 2px;
       margin-top: 2px;
-      z-index: 6;
     }
-    .card-item {
-      width: 48px;
-      height: 70px;
+    .mini-card {
+      width: 12px;
+      height: 18px;
+      border-radius: 2px;
+      background: linear-gradient(135deg, #880000, #400000);
+      border: 1px solid #ffd700;
+    }
+
+    /* Pot Center */
+    .table-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
+      margin: auto 0;
+    }
+    .pot-pill {
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #ffd700;
+      border-radius: 18px;
+      padding: 5px 16px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+    .pot-label { font-size: 8.5px; color: #94a3b8; font-weight: 800; }
+    .pot-val { font-size: 17px; color: #ffd700; font-weight: 900; }
+    .table-subinfo { font-size: 9.5px; color: #38bdf8; margin-top: 3px; font-weight: 600; }
+
+    /* User Cards on Felt */
+    .user-felt-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 6;
+      margin-bottom: 2px;
+    }
+    .cards-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .card {
+      width: 58px;
+      height: 82px;
       background: #fff;
-      border: 1.5px solid var(--gold);
-      border-radius: 4px;
+      border: 2px solid #d4af37;
+      border-radius: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 2px;
+      padding: 4px;
       font-weight: 900;
-      font-size: 11px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+      font-size: 13px;
     }
-    .card-item.red { color: #dc2626; }
-    .card-item.black { color: #111; }
-    .card-item.back {
-      background: repeating-linear-gradient(45deg, #7f1d1d, #7f1d1d 4px, #450a0a 4px, #450a0a 8px);
+    .card.red { color: #dc2626; }
+    .card.black { color: #111; }
+    .card.back {
+      background: repeating-linear-gradient(45deg, #880000, #880000 6px, #4a0000 6px, #4a0000 12px);
+      border: 2px solid #ffd700;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--gold-bright);
-      font-size: 20px;
+      font-size: 26px;
+      color: #ffd700;
+    }
+    .c-suit-big { font-size: 24px; align-self: center; line-height: 1; }
+    .c-bot-turn { transform: rotate(180deg); }
+    .eval-badge {
+      font-size: 9.5px;
+      background: rgba(0,0,0,0.85);
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
     }
 
-    /* CONTROLS BOTTOM */
-    .controls-panel {
-      height: 64px;
-      background: rgba(15, 23, 42, 0.95);
-      border-top: 2px solid var(--gold);
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.3fr 1.1fr 1fr;
-      gap: 6px;
-      padding: 8px 12px;
-      z-index: 10;
+    /* Bottom Control Bar */
+    .bottom-bar {
+      background: linear-gradient(180deg, #131c31, #080c14);
+      border-top: 1.5px solid #d4af37;
+      padding: 8px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .action-btn {
+    .me-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .me-profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .me-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid #ffd700;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      overflow: hidden;
+    }
+    .me-details { display: flex; flex-direction: column; }
+    .me-name { font-size: 11px; font-weight: 800; }
+    .me-coins { font-size: 14px; font-weight: 900; color: #ffd700; }
+
+    /* Action Buttons Row */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.3fr 1.1fr;
+      gap: 6px;
+    }
+    .act-btn {
+      padding: 10px 4px;
       border: none;
       border-radius: 8px;
       font-weight: 900;
@@ -253,21 +333,62 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
     }
-    .action-btn:disabled {
+    .act-btn:disabled {
       opacity: 0.35;
       cursor: not-allowed;
       filter: grayscale(80%);
     }
-    .btn-pack { background: linear-gradient(180deg, #ef4444, #991b1b); color: #fff; }
-    .btn-see { background: linear-gradient(180deg, #3b82f6, #1d4ed8); color: #fff; }
-    .btn-chaal { background: linear-gradient(180deg, var(--gold-bright), #b45309); color: #000; }
-    .btn-side { background: linear-gradient(180deg, #a855f7, #6b21a8); color: #fff; }
-    .btn-show { background: linear-gradient(180deg, #22c55e, #15803d); color: #fff; }
+    .btn-pack { background: linear-gradient(180deg, #dc2626, #991b1b); color: #fff; border: 1px solid #ef4444; }
+    .btn-see { background: linear-gradient(180deg, #2563eb, #1e40af); color: #fff; border: 1px solid #60a5fa; }
+    .btn-chaal { background: linear-gradient(180deg, #f59e0b, #b45309); color: #111; border: 1px solid #fbbf24; }
+    .btn-side { background: linear-gradient(180deg, #9333ea, #6b21a8); color: #fff; border: 1px solid #c084fc; }
+    .btn-show { background: linear-gradient(180deg, #16a34a, #15803d); color: #fff; border: 1px solid #4ade80; }
 
-    /* MODALS */
-    .modal-overlay {
+    /* SideShow Animated Screen */
+    .sideshow-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .vs-box {
+      width: 90%;
+      background: #111827;
+      border: 3px solid #ffd700;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 0 30px #ffd700;
+    }
+    .vs-logo {
+      font-size: 38px;
+      font-weight: 900;
+      color: #ef4444;
+      text-shadow: 0 0 15px #ef4444;
+      margin: 8px 0;
+    }
+    .vs-players {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .vs-card-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Modal Overlay */
+    .modal {
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.85);
@@ -275,119 +396,206 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
     }
-    .modal-card {
-      background: #1e293b;
-      border: 2px solid var(--gold);
-      border-radius: 12px;
-      padding: 18px;
+    .modal-box {
+      background: #131c31;
+      border: 2px solid #ffd700;
+      border-radius: 14px;
+      padding: 16px;
       width: 100%;
       max-width: 320px;
       text-align: center;
+      box-shadow: 0 0 25px rgba(255,215,0,0.4);
     }
+    .m-title { font-size: 15px; font-weight: 800; color: #ffd700; margin-bottom: 12px; }
     .m-btn {
       width: 100%;
-      padding: 10px;
+      padding: 9px;
       margin-top: 8px;
       border-radius: 6px;
       border: none;
       font-weight: 800;
+      font-size: 12px;
       cursor: pointer;
     }
-    .m-btn.gold { background: var(--gold-bright); color: #000; }
-    .m-btn.blue { background: #0284c7; color: #fff; }
-    .m-btn.close { background: #475569; color: #fff; }
+    .m-btn.gold { background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; }
+    .m-btn.blue { background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; }
+    .m-btn.close { background: #334155; color: #fff; margin-top: 10px; }
+
+    /* Round Countdown */
+    .round-countdown {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 54px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 25px rgba(255,215,0,0.9);
+      z-index: 90;
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-<div id="gameContainer">
+<div class="wrapper">
   <!-- Top Bar -->
-  <div class="header">
-    <div class="brand">♠ TEEN PATTI LIVE CLUB</div>
-    <div class="top-stats">
-      <div class="coin-badge" id="myCoinBadge">🪙 10,000</div>
-      <button class="coin-badge" style="cursor:pointer;" onclick="openModal('rewardsModal')">🎁 FREE</button>
-      <button class="coin-badge" style="cursor:pointer;" onclick="openModal('roomModal')">🚪 ROOM</button>
+  <div class="top-bar">
+    <div class="title-box">♠ TEEN PATTI LIVE</div>
+    <div style="display:flex; gap:6px;">
+      <button class="pill gold" onclick="openModal('coinsModal')">🪙 +FREE COINS</button>
+      <button class="pill" onclick="openModal('langModal')">🌐 <span id="curLangTxt">ENG</span></button>
     </div>
   </div>
 
-  <!-- Table Felt Area -->
-  <div class="table-felt">
-    <!-- Dealer -->
-    <div class="dealer-croupier">
-      <div class="dealer-pic">👩‍💼</div>
-      <div class="dealer-tip-bubble" id="dealerSpeech">Welcome to the Club!</div>
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-inner-rim"></div>
+
+    <!-- Live Dealer Top -->
+    <div class="dealer-wrap" onclick="openModal('giftModal')">
+      <div class="dealer-avatar">👩‍💼</div>
+      <div class="dealer-name">SIMRAN (DEALER)</div>
+      <div class="dealer-bubble" id="dealerBubble">Place your bets!</div>
     </div>
+
+    <!-- Opponents Row -->
+    <div class="opponents-grid" id="opponentsWrap"></div>
 
     <!-- Center Pot -->
-    <div class="pot-center">
-      <div style="font-size:9px; color:#94a3b8; font-weight:800;">TOTAL POT</div>
-      <div class="pot-val" id="potText">🪙 0</div>
+    <div class="table-center">
+      <div class="pot-pill">
+        <div class="pot-label">TOTAL POT</div>
+        <div class="pot-val" id="potTxt">🪙 500</div>
+      </div>
+      <div class="table-subinfo" id="subInfoTxt">Round in progress</div>
     </div>
 
-    <!-- Dynamic Seats Grid -->
-    <div class="seats-grid" id="seatsContainer"></div>
+    <!-- User Cards on Felt -->
+    <div class="user-felt-area">
+      <div class="cards-row" id="userCardsWrap"></div>
+      <div class="eval-badge" id="evalTxt">Tap SEE to check cards</div>
+    </div>
 
-    <!-- User Playing Cards Center-Bottom -->
-    <div style="display:flex; flex-direction:column; align-items:center; z-index:7;">
-      <div class="cards-box" id="userCardsBox"></div>
-      <div style="font-size:9px; background:rgba(0,0,0,0.85); color:var(--gold-bright); padding:2px 8px; border-radius:6px; margin-top:2px; font-weight:800;" id="userHandDesc">Tap SEE to check cards</div>
+    <!-- SideShow VS Modal -->
+    <div class="sideshow-overlay" id="sideShowScreen">
+      <div class="vs-box">
+        <div style="font-size:12px; color:#ffd700; font-weight:800;">⚔️ SIDESHOW COMPARISON ⚔️</div>
+        <div class="vs-logo">VS</div>
+        <div class="vs-players">
+          <div class="vs-card-preview">
+            <div>YOU</div>
+            <div id="vsUserScore" style="color:#ffd700; margin-top:4px;">...</div>
+          </div>
+          <div style="font-size:22px;">⚡</div>
+          <div class="vs-card-preview">
+            <div id="vsBotName">BOT</div>
+            <div id="vsBotScore" style="color:#ffd700; margin-top:4px;">...</div>
+          </div>
+        </div>
+        <div id="vsResultText" style="font-size:13px; font-weight:800; color:#4ade80;">Evaluating...</div>
+      </div>
+    </div>
+
+    <div class="round-countdown" id="roundCountdown">3</div>
+  </div>
+
+  <!-- Bottom Panel -->
+  <div class="bottom-bar">
+    <div class="me-row">
+      <div class="me-profile" onclick="document.getElementById('photoInput').click()">
+        <div class="me-avatar" id="myAvatarBox">👤</div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+        <div class="me-details">
+          <div class="me-name" id="myNameTxt">YOU (+PHOTO)</div>
+          <div class="me-coins" id="myCoinsTxt">🪙 10,000</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="pill" onclick="openModal('giftModal')">🎁 GIFT</button>
+        <button class="pill" onclick="openModal('wdModal')">🏦 WITHDRAW</button>
+      </div>
+    </div>
+
+    <div class="action-grid">
+      <button class="act-btn btn-pack" id="btnPack" onclick="userAction('PACK')">PACK</button>
+      <button class="act-btn btn-see" id="btnSee" onclick="userAction('SEE')">SEE</button>
+      <button class="act-btn btn-chaal" id="btnChaal" onclick="userAction('CHAAL')">
+        <span id="chaalTitle">CHAAL</span>
+        <span id="chaalCost" style="font-size:10px;">(100)</span>
+      </button>
+      <button class="act-btn btn-side" id="btnSide" onclick="userAction('SIDESHOW')">SIDE SHOW</button>
+      <button class="act-btn btn-show" id="btnShow" onclick="userAction('SHOW')" style="display:none;">SHOW</button>
     </div>
   </div>
 
-  <!-- Bottom Interactive Action Buttons -->
-  <div class="controls-panel">
-    <button class="action-btn btn-pack" id="btnPack" onclick="actionPack()">PACK</button>
-    <button class="action-btn btn-see" id="btnSee" onclick="actionSee()">SEE</button>
-    <button class="action-btn btn-chaal" id="btnChaal" onclick="actionBet()">
-      <span id="chaalTitle">CHAAL</span>
-      <span id="chaalAmt" style="font-size:9px;">(100)</span>
-    </button>
-    <button class="action-btn btn-side" id="btnSide" onclick="actionSideShow()">SIDE SHOW</button>
-    <button class="action-btn btn-show" id="btnShow" onclick="actionShowDown()">SHOW</button>
-  </div>
-
-  <!-- REWARDS MODAL -->
-  <div class="modal-overlay" id="rewardsModal">
-    <div class="modal-card">
-      <h3 style="color:var(--gold-bright); margin-bottom:10px;">🎁 FREE REWARDS HUB</h3>
-      <button class="m-btn gold" onclick="claimDailyReward()">📅 Daily Bonus (+2,500)</button>
-      <button class="m-btn blue" onclick="applyReferral()">🤝 Apply Referral Code (+5,000)</button>
-      <button class="m-btn close" onclick="closeModals()">Back</button>
-    </div>
-  </div>
-
-  <!-- ROOM MODAL -->
-  <div class="modal-overlay" id="roomModal">
-    <div class="modal-card">
-      <h3 style="color:var(--gold-bright); margin-bottom:10px;">🚪 PRIVATE CLUB ROOM</h3>
-      <button class="m-btn gold" onclick="createPrivateRoom()">Create Private Table</button>
-      <input type="text" id="joinRoomInput" placeholder="Enter Room ID" style="width:100%; padding:8px; margin-top:8px; border-radius:4px; border:1px solid #475569; background:#0f172a; color:#fff;">
-      <button class="m-btn blue" onclick="joinPrivateRoom()">Join Room</button>
+  <!-- Free Coins Hub Modal -->
+  <div class="modal" id="coinsModal">
+    <div class="modal-box">
+      <div class="m-title">🎁 FREE COINS & REWARDS</div>
+      <button class="m-btn gold" onclick="addBonus(2500, 'Daily Bonus')">📅 Daily Bonus (+2,500)</button>
+      <button class="m-btn gold" onclick="watchVideoAd()">📺 Watch Video Ad (+5,000)</button>
+      <button class="m-btn blue" onclick="shareWhatsApp()">📲 WhatsApp Refer (+10,000)</button>
+      <button class="m-btn gold" onclick="addBonus(2000, 'Emergency Udhaar')">🤝 Emergency Udhaar (+2,000)</button>
       <button class="m-btn close" onclick="closeModals()">Close</button>
     </div>
   </div>
+
+  <!-- Gift Modal -->
+  <div class="modal" id="giftModal">
+    <div class="modal-box">
+      <div class="m-title">🎁 SEND GIFT</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin:8px 0;">
+        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Rose', 50)">🌹<br>50</button>
+        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Beer', 200)">🍺<br>200</button>
+        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Diamond', 500)">💎<br>500</button>
+      </div>
+      <button class="m-btn close" onclick="closeModals()">Close</button>
+    </div>
+  </div>
+
+  <!-- Language Modal -->
+  <div class="modal" id="langModal">
+    <div class="modal-box">
+      <div class="m-title">🌐 SELECT LANGUAGE</div>
+      <button class="m-btn blue" onclick="changeLang('en')">English</button>
+      <button class="m-btn blue" onclick="changeLang('hi')">हिन्दी (Hindi)</button>
+      <button class="m-btn blue" onclick="changeLang('pa')">ਪੰਜਾਬੀ (Punjabi)</button>
+      <button class="m-btn close" onclick="closeModals()">Close</button>
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div class="modal" id="wdModal">
+    <div class="modal-box">
+      <div class="m-title">🏦 WITHDRAW WALLET</div>
+      <input type="text" placeholder="UPI ID (e.g. mobile@upi)" style="width:100%; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#fff; font-size:12px; margin-bottom:8px;">
+      <button class="m-btn gold" onclick="alert('Withdrawal request submitted!'); closeModals();">Submit</button>
+      <button class="m-btn close" onclick="closeModals()">Cancel</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
-/* ================= REAL WEB-AUDIO SYNTHESIZER ================= */
-let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
-}
-
-function playSound(type) {
+/* ================= AUDIO SYNTHESIZER ================= */
+var audioCtx = null;
+function playSnd(type) {
   try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    if (!audioCtx) return;
+
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
-    const now = ctx.currentTime;
+    gain.connect(audioCtx.destination);
+    var now = audioCtx.currentTime;
 
     if (type === 'chip') {
       osc.type = 'sine';
@@ -396,6 +604,13 @@ function playSound(type) {
       gain.gain.setValueAtTime(0.2, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
       osc.start(now); osc.stop(now + 0.05);
+    } else if (type === 'win') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523, now);
+      osc.frequency.exponentialRampToValueAtTime(1046, now + 0.3);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now); osc.stop(now + 0.3);
     } else if (type === 'deal') {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(240, now);
@@ -403,168 +618,427 @@ function playSound(type) {
       gain.gain.setValueAtTime(0.15, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
       osc.start(now); osc.stop(now + 0.08);
-    } else if (type === 'win') {
-      [523, 659, 783, 1046].forEach((f, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.setValueAtTime(f, now + i * 0.1);
-        g.gain.setValueAtTime(0.2, now + i * 0.1);
-        g.gain.linearRampToValueAtTime(0.01, now + i * 0.1 + 0.25);
-        o.start(now + i * 0.1); o.stop(now + i * 0.1 + 0.25);
-      });
     }
   } catch(e){}
 }
 
-/* ================= CLIENT LOGIC & SOCKETS ================= */
-const socket = io();
-let currentUser = null;
-let currentTable = null;
-let myCards = [];
-let isSeen = false;
-let myTurn = false;
+/* ================= GAME STATE & LOGIC ================= */
+var suits = ['♠','♥','♦','♣'];
+var ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
 
-// Auto Guest Authentication
-fetch('/api/auth/guest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
-  .then(res => res.json())
-  .then(data => {
-    currentUser = data.user;
-    document.getElementById('myCoinBadge').textContent = `🪙 ${currentUser.coins.toLocaleString()}`;
-    socket.emit('joinQuickPlay', currentUser);
-  });
+var currentLang = 'en';
+var langTexts = {
+  en: { chaal: 'CHAAL', blind: 'BLIND', pack: 'PACK', see: 'SEE', show: 'SHOW', side: 'SIDE SHOW' },
+  hi: { chaal: 'चाल', blind: 'ब्लाइंड', pack: 'पैक', see: 'देखें', show: 'शो', side: 'साइड शो' },
+  pa: { chaal: 'ਚਾਲ', blind: 'ਬਲਾਇੰਡ', pack: 'ਪੈਕ', see: 'ਵੇਖੋ', show: 'ਸ਼ੋਅ', side: 'ਸਾਈਡ ਸ਼ੋਅ' }
+};
 
-/* Socket Listeners */
-socket.on('tableUpdate', (data) => {
-  currentTable = data;
-  document.getElementById('potText').textContent = `🪙 ${data.pot.toLocaleString()}`;
-  document.getElementById('dealerSpeech').textContent = data.message;
-  renderSeats(data.players, data.currentTurnIdx);
-  updateControls();
-});
+var userCoins = 10000;
+var pot = 0;
+var boot = 100;
+var stake = 100;
+var userIsSeen = false;
+var userFolded = false;
+var isMyTurn = false;
+var turnIndex = 0;
+var gameActive = false;
 
-socket.on('turnStart', (turnData) => {
-  myTurn = (turnData.playerId === currentUser.id);
-  if (myTurn) playSound('chip');
-  updateControls();
-});
+var bots = [
+  { id: 0, name: 'Rohit', coins: 9500, isSeen: false, folded: false, cards: [] },
+  { id: 1, name: 'Priya', coins: 10500, isSeen: false, folded: false, cards: [] },
+  { id: 2, name: 'Vikram', coins: 8800, isSeen: false, folded: false, cards: [] },
+  { id: 3, name: 'Harpreet', coins: 9700, isSeen: false, folded: false, cards: [] }
+];
+var userCards = [];
 
-socket.on('privateCards', (data) => {
-  myCards = data.cards;
-  isSeen = false;
-  playSound('deal');
-  renderCards();
-});
-
-socket.on('handEnded', (data) => {
-  playSound('win');
-  alert(`🏆 ${data.winner} WON THE POT OF 🪙${data.pot.toLocaleString()}!\n\nAll hands revealed.`);
-});
-
-socket.on('sideShowResult', (res) => {
-  alert(`⚔️ Side Show: ${res.requester} VS ${res.target}!\nLoser: ${res.loser} packed.`);
-});
-
-/* Render Functions */
-function renderSeats(players, curTurnIdx) {
-  const container = document.getElementById('seatsContainer');
-  container.innerHTML = '';
-
-  players.forEach((p, idx) => {
-    const isMe = p.id === currentUser.id;
-    const seatEl = document.createElement('div');
-    seatEl.className = `player-seat seat-${p.seat} ${p.folded ? 'folded' : ''} ${curTurnIdx === idx && !p.folded ? 'active' : ''}`;
-    
-    seatEl.innerHTML = `
-      <div class="avatar-wrapper">${isMe ? '👤' : '🧑‍🦱'}</div>
-      <div style="font-size:9px; font-weight:800; max-width:65px; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
-      <div style="font-size:9px; color:var(--gold-bright); font-weight:800;">🪙 ${p.coins.toLocaleString()}</div>
-      <div class="p-tag ${p.isSeen ? 'seen' : ''}">${p.folded ? 'PACK' : (p.isSeen ? 'SEEN' : 'BLIND')}</div>
-    `;
-    container.appendChild(seatEl);
-  });
-}
-
-function renderCards() {
-  const box = document.getElementById('userCardsBox');
-  box.innerHTML = '';
-  myCards.forEach(card => {
-    const el = document.createElement('div');
-    if (!isSeen) {
-      el.className = 'card-item back';
-      el.textContent = '🂠';
-    } else {
-      const isRed = card.suit === '♥' || card.suit === '♦';
-      el.className = `card-item ${isRed ? 'red' : 'black'}`;
-      el.innerHTML = `<div>${card.rank}${card.suit}</div><div style="align-self:center; font-size:18px;">${card.suit}</div><div style="transform:rotate(180deg);">${card.rank}${card.suit}</div>`;
+function makeDeck() {
+  var deck = [];
+  for (var s = 0; s < suits.length; s++) {
+    for (var r = 0; r < ranks.length; r++) {
+      deck.push({ suit: suits[s], rank: ranks[r], val: r + 2, isRed: (suits[s]==='♥'||suits[s]==='♦') });
     }
-    box.appendChild(el);
-  });
+  }
+  return deck.sort(function() { return Math.random() - 0.5; });
 }
 
-function updateControls() {
-  const btnPack = document.getElementById('btnPack');
-  const btnSee = document.getElementById('btnSee');
-  const btnChaal = document.getElementById('btnChaal');
-  const btnSide = document.getElementById('btnSide');
-  const btnShow = document.getElementById('btnShow');
+function evaluateHand(cards) {
+  if (!cards || cards.length < 3) return { score: 0, title: 'High Card' };
+  var v = [cards[0].val, cards[1].val, cards[2].val].sort(function(a,b){ return b - a; });
+  var trail = (v[0] === v[1] && v[1] === v[2]);
+  var flush = (cards[0].suit === cards[1].suit && cards[1].suit === cards[2].suit);
+  var seq = (v[0]-v[1]===1 && v[1]-v[2]===1) || (v[0]===14 && v[1]===3 && v[2]===2);
+  var pair = (v[0]===v[1] || v[1]===v[2] || v[0]===v[2]);
 
-  btnSee.disabled = isSeen;
-  document.getElementById('chaalTitle').textContent = isSeen ? 'CHAAL' : 'BLIND';
+  if (trail) return { score: 6000 + v[0], title: 'Trail (Set)' };
+  if (flush && seq) return { score: 5000 + v[0], title: 'Pure Seq' };
+  if (seq) return { score: 4000 + v[0], title: 'Sequence' };
+  if (flush) return { score: 3000 + v[0], title: 'Color (Flush)' };
+  if (pair) return { score: 2000 + v[0], title: 'Pair' };
+  return { score: 1000 + v[0], title: 'High Card ' + cards[0].rank };
+}
 
-  if (myTurn) {
-    btnPack.disabled = false;
-    btnChaal.disabled = false;
-    btnSide.disabled = !isSeen;
-    btnShow.disabled = false;
+function renderUI() {
+  document.getElementById('potTxt').textContent = '🪙 ' + pot.toLocaleString();
+  document.getElementById('myCoinsTxt').textContent = '🪙 ' + userCoins.toLocaleString();
+
+  // Render Bots
+  var oWrap = document.getElementById('opponentsWrap');
+  oWrap.innerHTML = '';
+  for (var i = 0; i < bots.length; i++) {
+    var b = bots[i];
+    var div = document.createElement('div');
+    div.className = 'seat ' + (b.folded ? 'folded ' : '') + ((turnIndex === i && !b.folded) ? 'active' : '');
+    
+    var tagClass = b.isSeen ? 'seen' : '';
+    var tagText = b.isSeen ? '👁️ SEEN' : 'BLIND';
+    if (b.folded) tagText = 'PACKED';
+    else if (turnIndex === i) {
+      tagClass = 'think';
+      tagText = 'THINKING...';
+    }
+
+    div.innerHTML = '<div class="avatar-circle">👤</div>' +
+      '<div class="p-name">' + b.name + '</div>' +
+      '<div class="p-coins">🪙 ' + b.coins.toLocaleString() + '</div>' +
+      '<div class="p-tag ' + tagClass + '">' + tagText + '</div>' +
+      '<div class="bot-cards-mini"><div class="mini-card"></div><div class="mini-card"></div><div class="mini-card"></div></div>';
+    oWrap.appendChild(div);
+  }
+
+  // Render User Cards
+  var uWrap = document.getElementById('userCardsWrap');
+  uWrap.innerHTML = '';
+  for (var j = 0; j < userCards.length; j++) {
+    var c = userCards[j];
+    var cEl = document.createElement('div');
+    if (!userIsSeen) {
+      cEl.className = 'card back';
+      cEl.textContent = '🂠';
+    } else {
+      cEl.className = 'card ' + (c.isRed ? 'red' : 'black');
+      cEl.innerHTML = '<div>' + c.rank + c.suit + '</div>' +
+        '<div class="c-suit-big">' + c.suit + '</div>' +
+        '<div class="c-bot-turn">' + c.rank + c.suit + '</div>';
+    }
+    uWrap.appendChild(cEl);
+  }
+
+  document.getElementById('evalTxt').textContent = userIsSeen ? evaluateHand(userCards).title : 'Tap SEE to check cards';
+
+  // Control Buttons
+  var t = langTexts[currentLang];
+  var betCost = userIsSeen ? stake * 2 : stake;
+  var bChaal = document.getElementById('btnChaal');
+  var bSee = document.getElementById('btnSee');
+  var bPack = document.getElementById('btnPack');
+  var bSide = document.getElementById('btnSide');
+  var bShow = document.getElementById('btnShow');
+
+  document.getElementById('chaalTitle').textContent = userIsSeen ? t.chaal : t.blind;
+  document.getElementById('chaalCost').textContent = '(' + betCost + ')';
+  bPack.textContent = t.pack;
+  bSee.textContent = t.see;
+  bSide.textContent = t.side;
+  bShow.textContent = t.show;
+
+  bSee.disabled = userIsSeen || userFolded;
+
+  var activeRemaining = (userFolded ? 0 : 1) + bots.filter(function(x){ return !x.folded; }).length;
+
+  if (isMyTurn && !userFolded) {
+    bChaal.disabled = false;
+    bPack.disabled = false;
+
+    if (activeRemaining === 2) {
+      bShow.style.display = 'flex';
+      bSide.style.display = 'none';
+      bShow.disabled = false;
+    } else {
+      bShow.style.display = 'none';
+      bSide.style.display = 'flex';
+      bSide.disabled = !userIsSeen;
+    }
   } else {
-    btnPack.disabled = true;
-    btnChaal.disabled = true;
-    btnSide.disabled = true;
-    btnShow.disabled = true;
+    bChaal.disabled = true;
+    bPack.disabled = true;
+    bSide.disabled = true;
+    bShow.disabled = true;
   }
 }
 
-/* User Actions */
-function actionSee() {
-  isSeen = true;
-  socket.emit('actSee');
-  renderCards();
-  document.getElementById('userHandDesc').textContent = 'Hand: SEEN Cards';
-  updateControls();
-}
-function actionBet() { socket.emit('actBet'); myTurn = false; updateControls(); }
-function actionPack() { socket.emit('actFold'); myTurn = false; updateControls(); }
-function actionSideShow() { socket.emit('actSideShow'); myTurn = false; updateControls(); }
-function actionShowDown() { socket.emit('actShowDown'); myTurn = false; updateControls(); }
+/* ================= GAME CONTROLLER & AI ================= */
+function startRound() {
+  var d = makeDeck();
+  pot = 0;
+  stake = boot;
+  userIsSeen = false;
+  userFolded = false;
+  turnIndex = 0;
+  gameActive = true;
 
-/* Modals & Bonus */
+  playSnd('deal');
+
+  for (var i = 0; i < bots.length; i++) {
+    bots[i].folded = false;
+    bots[i].isSeen = false;
+    bots[i].coins = Math.max(0, bots[i].coins - boot);
+    bots[i].cards = [d.pop(), d.pop(), d.pop()];
+    pot += boot;
+  }
+  userCoins = Math.max(0, userCoins - boot);
+  pot += boot;
+  userCards = [d.pop(), d.pop(), d.pop()];
+
+  document.getElementById('dealerBubble').textContent = 'Cards dealt! Boot 🪙100 collected.';
+  document.getElementById('subInfoTxt').textContent = 'Round started';
+
+  renderUI();
+  processTurn();
+}
+
+function processTurn() {
+  if (!gameActive) return;
+
+  var remaining = (userFolded ? 0 : 1) + bots.filter(function(x){ return !x.folded; }).length;
+  if (remaining <= 1) {
+    var winner = !userFolded ? 'YOU' : bots.filter(function(x){ return !x.folded; })[0].name;
+    finishRound(winner);
+    return;
+  }
+
+  // If index reaches user
+  if (turnIndex >= bots.length) {
+    if (userFolded) {
+      turnIndex = 0;
+      processTurn();
+      return;
+    }
+    // User's Turn
+    isMyTurn = true;
+    document.getElementById('dealerBubble').textContent = 'Your turn! Chaal, Pack or Side Show.';
+    document.getElementById('subInfoTxt').textContent = 'Waiting for your move...';
+    renderUI();
+  } else {
+    // Bot's Turn
+    isMyTurn = false;
+    var bot = bots[turnIndex];
+    if (bot.folded) {
+      turnIndex++;
+      processTurn();
+      return;
+    }
+
+    renderUI();
+    document.getElementById('subInfoTxt').textContent = bot.name + ' is thinking...';
+
+    setTimeout(function() {
+      if (!bot.isSeen && Math.random() > 0.4) {
+        bot.isSeen = true;
+      }
+
+      var evalScore = evaluateHand(bot.cards).score;
+      var shouldFold = false;
+
+      if (bot.isSeen) {
+        if (evalScore < 1010 && Math.random() > 0.5) shouldFold = true;
+        if (evalScore < 1007) shouldFold = true;
+      }
+
+      if (shouldFold) {
+        bot.folded = true;
+        document.getElementById('dealerBubble').textContent = bot.name + ' packed.';
+      } else {
+        var cost = bot.isSeen ? stake * 2 : stake;
+        bot.coins = Math.max(0, bot.coins - cost);
+        pot += cost;
+        playSnd('chip');
+        document.getElementById('dealerBubble').textContent = bot.name + ' played ' + (bot.isSeen ? 'Chaal' : 'Blind');
+      }
+
+      turnIndex++;
+      renderUI();
+      processTurn();
+    }, 1200 + Math.random() * 600);
+  }
+}
+
+/* ================= USER ACTIONS ================= */
+function userAction(act) {
+  if (act === 'SEE') {
+    userIsSeen = true;
+    playSnd('deal');
+    renderUI();
+    return;
+  }
+
+  if (act === 'PACK') {
+    userFolded = true;
+    isMyTurn = false;
+    document.getElementById('dealerBubble').textContent = 'You packed this round.';
+    renderUI();
+    turnIndex = 0;
+    processTurn();
+    return;
+  }
+
+  if (act === 'CHAAL') {
+    var cost = userIsSeen ? stake * 2 : stake;
+    if (userCoins < cost) {
+      alert('Not enough coins! Get coins from +FREE COINS.');
+      openModal('coinsModal');
+      return;
+    }
+    userCoins -= cost;
+    pot += cost;
+    playSnd('chip');
+    isMyTurn = false;
+    renderUI();
+    turnIndex = 0;
+    processTurn();
+    return;
+  }
+
+  if (act === 'SIDESHOW') {
+    var seenBots = bots.filter(function(b){ return !b.folded && b.isSeen; });
+    if (seenBots.length === 0) {
+      alert('Side show needs at least 1 other SEEN player!');
+      return;
+    }
+    var target = seenBots[seenBots.length - 1];
+    var myScore = evaluateHand(userCards).score;
+    var botScore = evaluateHand(target.cards).score;
+
+    var ss = document.getElementById('sideShowScreen');
+    ss.style.display = 'flex';
+    document.getElementById('vsBotName').textContent = target.name;
+    document.getElementById('vsUserScore').textContent = evaluateHand(userCards).title;
+    document.getElementById('vsBotScore').textContent = evaluateHand(target.cards).title;
+
+    setTimeout(function() {
+      if (myScore >= botScore) {
+        target.folded = true;
+        document.getElementById('vsResultText').textContent = '🎉 You WON! ' + target.name + ' packed.';
+      } else {
+        userFolded = true;
+        document.getElementById('vsResultText').textContent = '❌ ' + target.name + ' had better hand! You packed.';
+      }
+      setTimeout(function() {
+        ss.style.display = 'none';
+        isMyTurn = false;
+        turnIndex = 0;
+        renderUI();
+        processTurn();
+      }, 1500);
+    }, 1200);
+    return;
+  }
+
+  if (act === 'SHOW') {
+    var activeBots = bots.filter(function(b){ return !b.folded; });
+    var topBot = activeBots[0];
+    var mySc = evaluateHand(userCards).score;
+    var botSc = evaluateHand(topBot.cards).score;
+    if (mySc >= botSc) {
+      finishRound('YOU');
+    } else {
+      finishRound(topBot.name);
+    }
+  }
+}
+
+function finishRound(winnerName) {
+  gameActive = false;
+  isMyTurn = false;
+  playSnd('win');
+
+  if (winnerName === 'YOU') {
+    userCoins += pot;
+    document.getElementById('dealerBubble').textContent = '🏆 YOU WON 🪙' + pot.toLocaleString() + '!';
+  } else {
+    for (var i = 0; i < bots.length; i++) {
+      if (bots[i].name === winnerName) bots[i].coins += pot;
+    }
+    document.getElementById('dealerBubble').textContent = '🏆 ' + winnerName + ' won 🪙' + pot.toLocaleString() + '!';
+  }
+  renderUI();
+
+  // 3... 2... 1 Countdown
+  var cnt = 3;
+  var cBox = document.getElementById('roundCountdown');
+  cBox.style.display = 'block';
+  cBox.textContent = cnt;
+  var timer = setInterval(function() {
+    cnt--;
+    if (cnt > 0) {
+      cBox.textContent = cnt;
+    } else {
+      clearInterval(timer);
+      cBox.style.display = 'none';
+      startRound();
+    }
+  }, 1000);
+}
+
+/* ================= MODALS & EXTRA FEATURES ================= */
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-
-function claimDailyReward() {
-  fetch('/api/rewards/daily', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: currentUser.id }) })
-    .then(r => r.json())
-    .then(res => {
-      alert(res.message);
-      currentUser.coins += res.reward;
-      document.getElementById('myCoinBadge').textContent = `🪙 ${currentUser.coins.toLocaleString()}`;
-      closeModals();
-    });
+function closeModals() {
+  var modals = document.querySelectorAll('.modal');
+  for (var i = 0; i < modals.length; i++) modals[i].style.display = 'none';
 }
 
-function createPrivateRoom() {
-  socket.emit('createPrivateRoom', currentUser);
+function addBonus(amt, label) {
+  userCoins += amt;
+  playSnd('win');
+  alert('🎉 ' + label + ': +' + amt.toLocaleString() + ' Coins added!');
   closeModals();
+  renderUI();
 }
 
-function joinPrivateRoom() {
-  const rId = document.getElementById('joinRoomInput').value.trim();
-  if (rId) {
-    socket.emit('joinPrivateRoom', { roomId: rId, userData: currentUser });
-    closeModals();
+function watchVideoAd() {
+  closeModals();
+  document.getElementById('dealerBubble').textContent = '📺 Playing sponsor video ad (3s)...';
+  setTimeout(function() {
+    addBonus(5000, 'Video Ad Reward');
+  }, 3000);
+}
+
+function shareWhatsApp() {
+  var url = encodeURIComponent('Play Teen Patti Live Club with me! ' + window.location.href);
+  window.open('https://api.whatsapp.com/send?text=' + url, '_blank');
+  addBonus(10000, 'Referral Bonus');
+}
+
+function sendGift(gift, cost) {
+  if (userCoins < cost) { alert('Not enough coins!'); return; }
+  userCoins -= cost;
+  playSnd('win');
+  document.getElementById('dealerBubble').textContent = 'Simran thanks you for the ' + gift + '! ❤️';
+  closeModals();
+  renderUI();
+}
+
+function changeLang(l) {
+  currentLang = l;
+  document.getElementById('curLangTxt').textContent = l.toUpperCase();
+  closeModals();
+  renderUI();
+}
+
+function handlePhotoUpload(e) {
+  var file = e.target.files[0];
+  if (file) {
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      document.getElementById('myAvatarBox').innerHTML = '<img src="' + evt.target.result + '" style="width:100%; height:100%; object-fit:cover;">';
+    };
+    reader.readAsDataURL(file);
   }
 }
+
+// Auto-start
+window.onload = function() {
+  startRound();
+};
 </script>
 </body>
 </html>
