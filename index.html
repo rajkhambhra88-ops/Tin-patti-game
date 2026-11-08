@@ -1021,44 +1021,33 @@ function watchVideoAd() {
     addBonus(5000, 'Video Ad Reward');
   }, 3000);
 }
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+// Live Multiplayer Connection
+var socket = io();
+var currentRoom = new URLSearchParams(window.location.search).get('room') || 'table-1';
 
+// Join Table Room
+socket.emit('joinRoom', { room: currentRoom, name: 'Player' });
+
+// WhatsApp Share Function
 function shareWhatsApp() {
-  var url = encodeURIComponent('Play Teen Patti Live Club with me! ' + window.location.href);
-  window.open('https://api.whatsapp.com/send?text=' + url, '_blank');
-  addBonus(10000, 'Referral Bonus');
+    var shareUrl = window.location.origin + '?room=' + currentRoom;
+    var msg = encodeURIComponent('Mere sath Teen Patti khelo! Is table par aao: ' + shareUrl);
+    window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
 }
 
-function sendGift(gift, cost) {
-  if (userCoins < cost) { alert('Not enough coins!'); return; }
-  userCoins -= cost;
-  playSnd('win');
-  document.getElementById('dealerBubble').textContent = 'Simran thanks you for the ' + gift + '! ❤️';
-  closeModals();
-  renderUI();
-}
+// Update game from server
+socket.on('gameState', function(data) {
+    if (data.activePlayers < 2) {
+        document.getElementById('dealerBubble').innerText = 'Dost ka intezar hai... WhatsApp par invite karein!';
+        return;
+    }
+    renderUI();
+});
+</script>
 
-function changeLang(l) {
-  currentLang = l;
-  document.getElementById('curLangTxt').textContent = l.toUpperCase();
-  closeModals();
-  renderUI();
-}
-
-function handlePhotoUpload(e) {
-  var file = e.target.files[0];
-  if (file) {
-    var reader = new FileReader();
-    reader.onload = function(evt) {
-      document.getElementById('myAvatarBox').innerHTML = '<img src="' + evt.target.result + '" style="width:100%; height:100%; object-fit:cover;">';
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-// Auto-start
-window.onload = function() {
-  startRound();
-};
 </script>
 </body>
 </html>
