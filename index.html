@@ -14,336 +14,252 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     body {
-      background: radial-gradient(circle at 50% 20%, #4a0d24 0%, #1a050d 60%, #080004 100%);
+      background: #090e18;
       color: #fff;
       display: flex;
       justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
     }
-    .game-viewport {
-      width: 100vw;
-      height: 100vh;
-      max-width: 960px;
-      max-height: 540px;
+    .wrapper {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      background: radial-gradient(circle at 50% 20%, #17223b, #070b13 90%);
       position: relative;
-      background: radial-gradient(circle at 50% 30%, #5c112e 0%, #290815 65%, #100208 100%);
-      box-shadow: 0 0 50px rgba(0,0,0,0.9);
-      overflow: hidden;
     }
 
-    /* TOP BAR / CURTAIN DECOR */
-    .top-curtain-border {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 28px;
-      background: linear-gradient(180deg, #d4af37 0%, rgba(212,175,55,0.2) 60%, transparent 100%);
-      pointer-events: none;
-      z-index: 10;
-    }
-    .hud-header {
-      position: absolute;
-      top: 6px;
-      left: 12px;
-      right: 12px;
+    /* Top Bar */
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 15;
+      padding: 8px 12px;
+      background: rgba(14, 21, 35, 0.95);
+      border-bottom: 1.5px solid #d4af37;
+      z-index: 10;
     }
-    .hud-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.65);
-      border: 1.5px solid #d4af37;
-      color: #ffd700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    }
-    .hud-btn.text-pill {
-      width: auto;
-      border-radius: 14px;
-      padding: 0 10px;
-      font-size: 11px;
+    .title-box {
+      font-size: 13px;
       font-weight: 800;
-    }
-
-    /* 3D CASINO TABLE */
-    .table-stage {
-      position: absolute;
-      inset: 32px 20px 65px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .oval-table {
-      position: relative;
-      width: 90%;
-      height: 82%;
-      border-radius: 140px;
-      background: radial-gradient(ellipse at 50% 45%, #0ea5e9 0%, #0284c7 35%, #0369a1 70%, #07476f 100%);
-      border: 10px solid #c89524;
-      box-shadow: 
-        inset 0 0 35px rgba(0,0,0,0.7),
-        0 8px 0 #785310,
-        0 14px 28px rgba(0,0,0,0.8),
-        0 0 25px rgba(251, 191, 36, 0.4);
-    }
-    .table-neon-rim {
-      position: absolute;
-      inset: 6px;
-      border-radius: 130px;
-      border: 2px dashed rgba(255, 255, 255, 0.25);
-      pointer-events: none;
-    }
-    .table-watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: 4px;
-      color: rgba(255,255,255,0.08);
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    /* DEALER AT TOP */
-    .dealer-seat {
-      position: absolute;
-      top: -34px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 20;
-      cursor: pointer;
-    }
-    .dealer-img-ring {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 2px solid #ffd700;
-      background: #111;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      box-shadow: 0 0 15px rgba(255,215,0,0.7);
-      background: radial-gradient(circle, #fff, #cbd5e1);
-    }
-    .dealer-tip-btn {
-      margin-top: -6px;
-      background: linear-gradient(180deg, #ef4444, #991b1b);
-      border: 1px solid #ffd700;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 900;
-      padding: 1px 8px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .dealer-balloon {
-      position: absolute;
-      top: 58px;
-      background: rgba(0,0,0,0.85);
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
-      font-size: 9.5px;
-      font-weight: 700;
-      padding: 2px 10px;
-      border-radius: 10px;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-
-    /* CENTER POT & CHIPS PILE */
-    .table-center-pot {
-      position: absolute;
-      top: 36%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 8;
-    }
-    .pot-plate {
-      background: rgba(0, 0, 0, 0.85);
-      border: 2px solid #ffd700;
-      border-radius: 14px;
-      padding: 3px 14px;
+      color: #ffd700;
+      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 0 15px rgba(255,215,0,0.4);
     }
-    .pot-chips-pile {
-      display: flex;
-      gap: 3px;
-      margin-top: 6px;
+    .pill {
+      background: #1e293b;
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 14px;
+      cursor: pointer;
     }
-    .chip-token {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      font-weight: 900;
-      border: 2px dashed #fff;
-      box-shadow: 0 3px 4px rgba(0,0,0,0.6);
+    .pill.gold {
+      background: linear-gradient(135deg, #ffd700, #b8860b);
+      color: #000;
     }
-    .chip-red { background: #dc2626; color: #fff; }
-    .chip-green { background: #16a34a; color: #fff; }
-    .chip-gold { background: #d97706; color: #fff; }
 
-    /* PLAYERS AROUND TABLE */
-    .player-spot {
+    /* Royal Blue Felt Table */
+    .table-container {
+      position: relative;
+      width: 95%;
+      margin: 8px auto;
+      height: 480px;
+      border-radius: 120px;
+      background: radial-gradient(ellipse at 50% 50%, #0d6982 0%, #084353 60%, #02232c 100%);
+      border: 6px solid #c59b27;
+      box-shadow: inset 0 0 35px #000, 0 0 20px rgba(197, 155, 39, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0 10px;
+    }
+    .table-inner-rim {
       position: absolute;
+      inset: 6px;
+      border: 1.5px dashed rgba(255, 215, 0, 0.25);
+      border-radius: 112px;
+      pointer-events: none;
+    }
+
+    /* Dealer */
+    .dealer-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      z-index: 12;
-      width: 90px;
+      z-index: 5;
+      cursor: pointer;
     }
-    .spot-left-top { top: 12%; left: 8%; }
-    .spot-left-mid { top: 48%; left: 4%; }
-    .spot-right-top { top: 18%; right: 6%; }
-    .spot-right-mid { top: 52%; right: 4%; }
-
-    .player-avatar-box {
-      position: relative;
-      width: 52px;
-      height: 52px;
+    .dealer-avatar {
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
-      border: 2.5px solid #d4af37;
-      background: #1e293b;
+      border: 2px solid #ffd700;
+      background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
     }
-    .player-spot.active .player-avatar-box {
-      border-color: #22c55e;
-      box-shadow: 0 0 16px #22c55e;
-      animation: turnAura 0.9s infinite alternate;
-    }
-    .player-spot.folded {
-      opacity: 0.35;
-      filter: grayscale(85%);
-    }
-    @keyframes turnAura {
-      from { transform: scale(1); }
-      to { transform: scale(1.08); }
-    }
-    .dealer-d-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #fff;
-      color: #000;
-      font-weight: 900;
+    .dealer-name {
       font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    .player-name-tag {
-      font-size: 9.5px;
-      font-weight: 800;
-      color: #fff;
-      margin-top: 2px;
-      text-shadow: 0 1px 3px #000;
-      max-width: 85px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .player-coins-pill {
-      font-size: 9px;
       font-weight: 800;
       color: #ffd700;
-      background: rgba(0,0,0,0.75);
-      padding: 1px 6px;
+      background: rgba(0,0,0,0.7);
+      padding: 1px 8px;
       border-radius: 8px;
-      margin-top: 1px;
+      margin-top: -2px;
+      border: 1px solid rgba(255, 215, 0, 0.4);
     }
-    .player-seen-badge {
-      font-size: 8px;
-      font-weight: 900;
-      padding: 1px 6px;
-      border-radius: 6px;
-      margin-top: 2px;
+    .dealer-bubble {
+      font-size: 9.5px;
       background: rgba(0,0,0,0.85);
       color: #38bdf8;
       border: 1px solid #0284c7;
-    }
-    .player-seen-badge.chaal {
-      color: #4ade80;
-      border-color: #16a34a;
-    }
-    .player-seen-badge.think {
-      color: #facc15;
-      border-color: #ca8a04;
+      padding: 2px 10px;
+      border-radius: 10px;
+      margin-top: 3px;
+      max-width: 220px;
+      text-align: center;
+      font-weight: 600;
     }
 
-    /* USER CARDS & SEE BUTTON (BOTTOM CENTER ON FELT) */
-    .user-table-zone {
-      position: absolute;
-      bottom: 2px;
-      left: 50%;
-      transform: translateX(-50%);
+    /* Opponents Row */
+    .opponents-grid {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 8px;
+      z-index: 4;
+    }
+    .seat {
       display: flex;
       flex-direction: column;
       align-items: center;
-      z-index: 25;
+      width: 65px;
+      position: relative;
+      transition: all 0.2s;
     }
-    .cards-hand-row {
+    .seat.active .avatar-circle {
+      border-color: #22c55e;
+      box-shadow: 0 0 14px #22c55e;
+      transform: scale(1.1);
+    }
+    .seat.folded {
+      opacity: 0.35;
+      filter: grayscale(80%);
+    }
+    .avatar-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid #d4af37;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      overflow: hidden;
+    }
+    .p-name {
+      font-size: 9px;
+      font-weight: 800;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 65px;
+    }
+    .p-coins {
+      font-size: 9px;
+      color: #ffd700;
+      font-weight: 800;
+    }
+    .p-tag {
+      font-size: 8px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.85);
+      color: #94a3b8;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+    .p-tag.seen { color: #38bdf8; border: 1px solid #0284c7; }
+    .p-tag.think { color: #facc15; animation: pulse 0.7s infinite alternate; }
+    @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+
+    .bot-cards-mini {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+    }
+    .mini-card {
+      width: 12px;
+      height: 18px;
+      border-radius: 2px;
+      background: linear-gradient(135deg, #880000, #400000);
+      border: 1px solid #ffd700;
+    }
+
+    /* Pot Center */
+    .table-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 3;
+      margin: auto 0;
+    }
+    .pot-pill {
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #ffd700;
+      border-radius: 18px;
+      padding: 5px 16px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+    .pot-label { font-size: 8.5px; color: #94a3b8; font-weight: 800; }
+    .pot-val { font-size: 17px; color: #ffd700; font-weight: 900; }
+    .table-subinfo { font-size: 9.5px; color: #38bdf8; margin-top: 3px; font-weight: 600; }
+
+    /* User Cards on Felt */
+    .user-felt-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 6;
+      margin-bottom: 2px;
+    }
+    .cards-row {
       display: flex;
       gap: 6px;
-      position: relative;
+      margin-bottom: 4px;
     }
-    .p-card {
+    .card {
       width: 58px;
-      height: 84px;
+      height: 82px;
       background: #fff;
+      border: 2px solid #d4af37;
       border-radius: 6px;
-      border: 1.5px solid #d4af37;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       padding: 4px;
       font-weight: 900;
       font-size: 13px;
-      position: relative;
     }
-    .p-card.red { color: #dc2626; }
-    .p-card.black { color: #111; }
-    .p-card.back {
-      background: repeating-linear-gradient(45deg, #880808, #880808 6px, #4d0000 6px, #4d0000 12px);
+    .card.red { color: #dc2626; }
+    .card.black { color: #111; }
+    .card.back {
+      background: repeating-linear-gradient(45deg, #880000, #880000 6px, #4a0000 6px, #4a0000 12px);
       border: 2px solid #ffd700;
       display: flex;
       align-items: center;
@@ -352,122 +268,127 @@
       color: #ffd700;
     }
     .c-suit-big { font-size: 24px; align-self: center; line-height: 1; }
-    .c-rotate-bot { transform: rotate(180deg); }
-
-    .btn-see-cards-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(180deg, #dc2626, #7f1d1d);
-      border: 2px solid #ffd700;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 900;
-      padding: 4px 16px;
-      border-radius: 14px;
-      cursor: pointer;
-      box-shadow: 0 0 12px rgba(220,38,38,0.9);
-      white-space: nowrap;
-    }
-    .hand-strength-pill {
+    .c-bot-turn { transform: rotate(180deg); }
+    .eval-badge {
       font-size: 9.5px;
-      font-weight: 900;
-      background: rgba(0,0,0,0.9);
-      border: 1px solid #ffd700;
+      background: rgba(0,0,0,0.85);
       color: #ffd700;
+      border: 1px solid #ffd700;
       padding: 2px 10px;
       border-radius: 10px;
-      margin-top: 3px;
+      font-weight: 800;
       text-transform: uppercase;
     }
 
-    /* USER AVATAR / PROFILE (BOTTOM LEFT OVERLAY) */
-    .user-profile-anchor {
-      position: absolute;
-      bottom: 6px;
-      left: 14px;
+    /* Bottom Control Bar */
+    .bottom-bar {
+      background: linear-gradient(180deg, #131c31, #080c14);
+      border-top: 1.5px solid #d4af37;
+      padding: 8px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .me-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .me-profile {
       display: flex;
       align-items: center;
       gap: 8px;
-      z-index: 30;
       cursor: pointer;
     }
-    .u-avatar-ring {
-      width: 48px;
-      height: 48px;
+    .me-avatar {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      border: 2.5px solid #ffd700;
+      border: 2px solid #ffd700;
       background: #1e293b;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 0 12px rgba(255,215,0,0.5);
+      font-size: 20px;
       overflow: hidden;
     }
+    .me-details { display: flex; flex-direction: column; }
+    .me-name { font-size: 11px; font-weight: 800; }
+    .me-coins { font-size: 14px; font-weight: 900; color: #ffd700; }
 
-    /* BOTTOM BET & ACTION DASHBOARD */
-    .bottom-action-console {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 62px;
-      background: linear-gradient(180deg, rgba(16,4,9,0.92) 0%, rgba(5,1,3,0.98) 100%);
-      border-top: 2px solid #c89524;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 0 14px;
-      gap: 8px;
-      z-index: 25;
+    /* Action Buttons Row */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.3fr 1.1fr;
+      gap: 6px;
     }
-    .console-btn {
-      height: 42px;
+    .act-btn {
+      padding: 10px 4px;
+      border: none;
       border-radius: 8px;
-      border: 1.5px solid;
       font-weight: 900;
       font-size: 11px;
       cursor: pointer;
-      padding: 0 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
-      transition: all 0.15s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
     }
-    .console-btn:disabled {
+    .act-btn:disabled {
       opacity: 0.35;
       cursor: not-allowed;
-      filter: grayscale(85%);
+      filter: grayscale(80%);
     }
-    .btn-pack-red {
-      background: linear-gradient(180deg, #7f1d1d, #450a0a);
-      border-color: #dc2626;
-      color: #fff;
+    .btn-pack { background: linear-gradient(180deg, #dc2626, #991b1b); color: #fff; border: 1px solid #ef4444; }
+    .btn-see { background: linear-gradient(180deg, #2563eb, #1e40af); color: #fff; border: 1px solid #60a5fa; }
+    .btn-chaal { background: linear-gradient(180deg, #f59e0b, #b45309); color: #111; border: 1px solid #fbbf24; }
+    .btn-side { background: linear-gradient(180deg, #9333ea, #6b21a8); color: #fff; border: 1px solid #c084fc; }
+    .btn-show { background: linear-gradient(180deg, #16a34a, #15803d); color: #fff; border: 1px solid #4ade80; }
+
+    /* SideShow Animated Screen */
+    .sideshow-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
     }
-    .btn-sideshow-metal {
-      background: linear-gradient(180deg, #374151, #1f2937);
-      border-color: #9ca3af;
-      color: #fff;
+    .vs-box {
+      width: 90%;
+      background: #111827;
+      border: 3px solid #ffd700;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 0 30px #ffd700;
     }
-    .btn-chaal-gold {
-      background: linear-gradient(180deg, #f59e0b, #b45309);
-      border-color: #ffd700;
-      color: #000;
-      min-width: 100px;
+    .vs-logo {
+      font-size: 38px;
+      font-weight: 900;
+      color: #ef4444;
+      text-shadow: 0 0 15px #ef4444;
+      margin: 8px 0;
     }
-    .btn-show-green {
-      background: linear-gradient(180deg, #16a34a, #14532d);
-      border-color: #4ade80;
-      color: #fff;
-      min-width: 90px;
+    .vs-players {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .vs-card-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
     }
 
-    /* SIDESHOW OVERLAY */
-    .sideshow-modal {
+    /* Modal Overlay */
+    .modal {
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.85);
@@ -475,45 +396,20 @@
       display: none;
       align-items: center;
       justify-content: center;
+      padding: 14px;
     }
-    .sideshow-box {
-      width: 320px;
-      background: #111827;
-      border: 3px solid #ffd700;
-      border-radius: 16px;
-      padding: 18px;
-      text-align: center;
-      box-shadow: 0 0 35px #ffd700;
-    }
-    .vs-sign {
-      font-size: 34px;
-      font-weight: 900;
-      color: #ef4444;
-      text-shadow: 0 0 15px #ef4444;
-      margin: 8px 0;
-    }
-
-    /* GENERIC MODALS */
-    .app-modal {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 120;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .app-modal-card {
-      background: #1e1117;
+    .modal-box {
+      background: #131c31;
       border: 2px solid #ffd700;
       border-radius: 14px;
       padding: 16px;
       width: 100%;
       max-width: 320px;
       text-align: center;
+      box-shadow: 0 0 25px rgba(255,215,0,0.4);
     }
-    .modal-m-btn {
+    .m-title { font-size: 15px; font-weight: 800; color: #ffd700; margin-bottom: 12px; }
+    .m-btn {
       width: 100%;
       padding: 9px;
       margin-top: 8px;
@@ -523,133 +419,646 @@
       font-size: 12px;
       cursor: pointer;
     }
-    .m-gold { background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; }
-    .m-blue { background: #0284c7; color: #fff; }
-    .m-close { background: #475569; color: #fff; }
+    .m-btn.gold { background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; }
+    .m-btn.blue { background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; }
+    .m-btn.close { background: #334155; color: #fff; margin-top: 10px; }
 
-    /* AUTO ROUND COUNTDOWN */
-    .round-timer-banner {
+    /* Round Countdown */
+    .round-countdown {
       position: absolute;
-      top: 50%;
+      top: 48%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 56px;
+      font-size: 54px;
       font-weight: 900;
       color: #ffd700;
-      text-shadow: 0 0 30px rgba(255,215,0,0.9);
-      z-index: 95;
+      text-shadow: 0 0 25px rgba(255,215,0,0.9);
+      z-index: 90;
       display: none;
     }
   </style>
 </head>
 <body>
 
-<div class="game-viewport">
-  <div class="top-curtain-border"></div>
-
-  <!-- HUD Header -->
-  <div class="hud-header">
+<div class="wrapper">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="title-box">♠ TEEN PATTI LIVE</div>
     <div style="display:flex; gap:6px;">
-      <div class="hud-btn" onclick="openModal('langModal')">🌐</div>
-      <div class="hud-btn text-pill" onclick="openModal('coinsModal')">🪙 +FREE COINS</div>
-    </div>
-    <div style="display:flex; gap:6px;">
-      <div class="hud-btn" onclick="openDealerTip()">🎁</div>
-      <div class="hud-btn" onclick="openModal('wdModal')">🏦</div>
+      <button class="pill gold" onclick="openModal('coinsModal')">🪙 +FREE COINS</button>
+      <button class="pill" onclick="openModal('langModal')">🌐 <span id="curLangTxt">ENG</span></button>
     </div>
   </div>
 
-  <!-- Table Stage -->
-  <div class="table-stage">
-    <div class="oval-table">
-      <div class="table-neon-rim"></div>
-      <div class="table-watermark">TEEN PATTI LIVE</div>
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-inner-rim"></div>
 
-      <!-- Top Live Dealer -->
-      <div class="dealer-seat" onclick="openDealerTip()">
-        <div class="dealer-img-ring">👩‍💼</div>
-        <div class="dealer-tip-btn">❤️ TIP</div>
-        <div class="dealer-balloon" id="dealerSpeech">Place your bets!</div>
+    <!-- Live Dealer Top -->
+    <div class="dealer-wrap" onclick="openModal('giftModal')">
+      <div class="dealer-avatar">👩‍💼</div>
+      <div class="dealer-name">SIMRAN (DEALER)</div>
+      <div class="dealer-bubble" id="dealerBubble">Place your bets!</div>
+    </div>
+
+    <!-- Opponents Row -->
+    <div class="opponents-grid" id="opponentsWrap"></div>
+
+    <!-- Center Pot -->
+    <div class="table-center">
+      <div class="pot-pill">
+        <div class="pot-label">TOTAL POT</div>
+        <div class="pot-val" id="potTxt">🪙 500</div>
       </div>
+      <div class="table-subinfo" id="subInfoTxt">Round in progress</div>
+    </div>
 
-      <!-- Center Pot & Chips -->
-      <div class="table-center-pot">
-        <div class="pot-plate">
-          <span style="font-size:10px; color:#ffd700;">🪙 POT:</span>
-          <span style="font-size:16px; font-weight:900; color:#ffd700;" id="tablePotTxt">6,000</span>
+    <!-- User Cards on Felt -->
+    <div class="user-felt-area">
+      <div class="cards-row" id="userCardsWrap"></div>
+      <div class="eval-badge" id="evalTxt">Tap SEE to check cards</div>
+    </div>
+
+    <!-- SideShow VS Modal -->
+    <div class="sideshow-overlay" id="sideShowScreen">
+      <div class="vs-box">
+        <div style="font-size:12px; color:#ffd700; font-weight:800;">⚔️ SIDESHOW COMPARISON ⚔️</div>
+        <div class="vs-logo">VS</div>
+        <div class="vs-players">
+          <div class="vs-card-preview">
+            <div>YOU</div>
+            <div id="vsUserScore" style="color:#ffd700; margin-top:4px;">...</div>
+          </div>
+          <div style="font-size:22px;">⚡</div>
+          <div class="vs-card-preview">
+            <div id="vsBotName">BOT</div>
+            <div id="vsBotScore" style="color:#ffd700; margin-top:4px;">...</div>
+          </div>
         </div>
-        <div class="pot-chips-pile">
-          <div class="chip-token chip-red">100</div>
-          <div class="chip-token chip-green">500</div>
-          <div class="chip-token chip-gold">1K</div>
+        <div id="vsResultText" style="font-size:13px; font-weight:800; color:#4ade80;">Evaluating...</div>
+      </div>
+    </div>
+
+    <div class="round-countdown" id="roundCountdown">3</div>
+  </div>
+
+  <!-- Bottom Panel -->
+  <div class="bottom-bar">
+    <div class="me-row">
+      <div class="me-profile" onclick="document.getElementById('photoInput').click()">
+        <div class="me-avatar" id="myAvatarBox">👤</div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+        <div class="me-details">
+          <div class="me-name" id="myNameTxt">YOU (+PHOTO)</div>
+          <div class="me-coins" id="myCoinsTxt">🪙 10,000</div>
         </div>
       </div>
-
-      <!-- Opponents (Exact positions around oval table) -->
-      <div class="player-spot spot-left-top" id="seat0">
-        <div class="player-avatar-box">
-          <span>🧑‍💼</span>
-          <div class="dealer-d-badge">D</div>
-        </div>
-        <div class="player-name-tag">Ramesh Rao</div>
-        <div class="player-coins-pill">🪙 9,750</div>
-        <div class="player-seen-badge" id="tag0">BLIND</div>
+      <div style="display:flex; gap:6px;">
+        <button class="pill" onclick="openModal('giftModal')">🎁 GIFT</button>
+        <button class="pill" onclick="openModal('wdModal')">🏦 WITHDRAW</button>
       </div>
+    </div>
 
-      <div class="player-spot spot-left-mid" id="seat1">
-        <div class="player-avatar-box"><span>🧔</span></div>
-        <div class="player-name-tag">Naveen Ra..</div>
-        <div class="player-coins-pill">🪙 19,050</div>
-        <div class="player-seen-badge" id="tag1">BLIND</div>
-      </div>
-
-      <div class="player-spot spot-right-top" id="seat2">
-        <div class="player-avatar-box"><span>👩</span></div>
-        <div class="player-name-tag">Priya S.</div>
-        <div class="player-coins-pill">🪙 14,200</div>
-        <div class="player-seen-badge" id="tag2">BLIND</div>
-      </div>
-
-      <div class="player-spot spot-right-mid" id="seat3">
-        <div class="player-avatar-box"><span>🧑‍🦱</span></div>
-        <div class="player-name-tag">guest44074..</div>
-        <div class="player-coins-pill">🪙 12,165</div>
-        <div class="player-seen-badge" id="tag3">BLIND</div>
-      </div>
-
-      <!-- User Center Bottom Cards -->
-      <div class="user-table-zone">
-        <div class="cards-hand-row" id="userCardsRow">
-          <!-- Cards rendered by JS -->
-        </div>
-        <button class="btn-see-cards-overlay" id="btnSeeCards" onclick="userAction('SEE')">👁️ SEE</button>
-        <div class="hand-strength-pill" id="handRankBadge">Blind Player</div>
-      </div>
-
+    <div class="action-grid">
+      <button class="act-btn btn-pack" id="btnPack" onclick="userAction('PACK')">PACK</button>
+      <button class="act-btn btn-see" id="btnSee" onclick="userAction('SEE')">SEE</button>
+      <button class="act-btn btn-chaal" id="btnChaal" onclick="userAction('CHAAL')">
+        <span id="chaalTitle">CHAAL</span>
+        <span id="chaalCost" style="font-size:10px;">(100)</span>
+      </button>
+      <button class="act-btn btn-side" id="btnSide" onclick="userAction('SIDESHOW')">SIDE SHOW</button>
+      <button class="act-btn btn-show" id="btnShow" onclick="userAction('SHOW')" style="display:none;">SHOW</button>
     </div>
   </div>
 
-  <!-- User Profile Overlay (Bottom Left) -->
-  <div class="user-profile-anchor" onclick="document.getElementById('photoInp').click()">
-    <div class="u-avatar-ring" id="userAvatarBox">👤</div>
-    <input type="file" id="photoInp" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-    <div>
-      <div style="font-size:11px; font-weight:800;" id="uNameDisplay">YOU (+PHOTO)</div>
-      <div style="font-size:13px; font-weight:900; color:#ffd700;" id="uCoinsDisplay">🪙 75,380</div>
+  <!-- Free Coins Hub Modal -->
+  <div class="modal" id="coinsModal">
+    <div class="modal-box">
+      <div class="m-title">🎁 FREE COINS & REWARDS</div>
+      <button class="m-btn gold" onclick="addBonus(2500, 'Daily Bonus')">📅 Daily Bonus (+2,500)</button>
+      <button class="m-btn gold" onclick="watchVideoAd()">📺 Watch Video Ad (+5,000)</button>
+      <button class="m-btn blue" onclick="shareWhatsApp()">📲 WhatsApp Refer (+10,000)</button>
+      <button class="m-btn gold" onclick="addBonus(2000, 'Emergency Udhaar')">🤝 Emergency Udhaar (+2,000)</button>
+      <button class="m-btn close" onclick="closeModals()">Close</button>
     </div>
   </div>
 
-  <!-- Bottom Console Buttons -->
-  <div class="bottom-action-console">
-    <button class="console-btn btn-pack-red" id="bPack" onclick="userAction('PACK')">PACK</button>
-    <button class="console-btn btn-sideshow-metal" id="bSide" onclick="userAction('SIDESHOW')">SIDE SHOW</button>
-    <button class="console-btn btn-chaal-gold" id="bChaal" onclick="userAction('CHAAL')">
-      <span id="chaalTitleTxt">BLIND</span>
-      <span id="chaalCostTxt" style="font-size:10px;">(800)</span>
-    </button>
-    <button class="console-btn btn-show-green" id="bShow" onclick="userAction('SHOW')" style="display:none;">SHOW</button>
+  <!-- Gift Modal -->
+  <div class="modal" id="giftModal">
+    <div class="modal-box">
+      <div class="m-title">🎁 SEND GIFT</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin:8px 0;">
+        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Rose', 50)">🌹<br>50</button>
+        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Beer', 200)">🍺<br>200</button>
+        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Diamond', 500)">💎<br>500</button>
+      </div>
+      <button class="m-btn close" onclick="closeModals()">Close</button>
+    </div>
   </div>
 
-  <!-- SideShow Screen -->
-  <div class="sideshow-modal" id="sideShowModal">
-    <div
+  <!-- Language Modal -->
+  <div class="modal" id="langModal">
+    <div class="modal-box">
+      <div class="m-title">🌐 SELECT LANGUAGE</div>
+      <button class="m-btn blue" onclick="changeLang('en')">English</button>
+      <button class="m-btn blue" onclick="changeLang('hi')">हिन्दी (Hindi)</button>
+      <button class="m-btn blue" onclick="changeLang('pa')">ਪੰਜਾਬੀ (Punjabi)</button>
+      <button class="m-btn close" onclick="closeModals()">Close</button>
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div class="modal" id="wdModal">
+    <div class="modal-box">
+      <div class="m-title">🏦 WITHDRAW WALLET</div>
+      <input type="text" placeholder="UPI ID (e.g. mobile@upi)" style="width:100%; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#fff; font-size:12px; margin-bottom:8px;">
+      <button class="m-btn gold" onclick="alert('Withdrawal request submitted!'); closeModals();">Submit</button>
+      <button class="m-btn close" onclick="closeModals()">Cancel</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ================= AUDIO SYNTHESIZER ================= */
+var audioCtx = null;
+function playSnd(type) {
+  try {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    if (!audioCtx) return;
+
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    var now = audioCtx.currentTime;
+
+    if (type === 'chip') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(1400, now + 0.05);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+      osc.start(now); osc.stop(now + 0.05);
+    } else if (type === 'win') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523, now);
+      osc.frequency.exponentialRampToValueAtTime(1046, now + 0.3);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now); osc.stop(now + 0.3);
+    } else if (type === 'deal') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.linearRampToValueAtTime(120, now + 0.08);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+      osc.start(now); osc.stop(now + 0.08);
+    }
+  } catch(e){}
+}
+
+/* ================= GAME STATE & LOGIC ================= */
+var suits = ['♠','♥','♦','♣'];
+var ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+var currentLang = 'en';
+var langTexts = {
+  en: { chaal: 'CHAAL', blind: 'BLIND', pack: 'PACK', see: 'SEE', show: 'SHOW', side: 'SIDE SHOW' },
+  hi: { chaal: 'चाल', blind: 'ब्लाइंड', pack: 'पैक', see: 'देखें', show: 'शो', side: 'साइड शो' },
+  pa: { chaal: 'ਚਾਲ', blind: 'ਬਲਾਇੰਡ', pack: 'ਪੈਕ', see: 'ਵੇਖੋ', show: 'ਸ਼ੋਅ', side: 'ਸਾਈਡ ਸ਼ੋਅ' }
+};
+
+var userCoins = 10000;
+var pot = 0;
+var boot = 100;
+var stake = 100;
+var userIsSeen = false;
+var userFolded = false;
+var isMyTurn = false;
+var turnIndex = 0;
+var gameActive = false;
+var roundCount = 0;
+
+var bots = [
+  { id: 0, name: 'Rohit', coins: 9500, isSeen: false, folded: false, cards: [] },
+  { id: 1, name: 'Priya', coins: 10500, isSeen: false, folded: false, cards: [] },
+  { id: 2, name: 'Vikram', coins: 8800, isSeen: false, folded: false, cards: [] },
+  { id: 3, name: 'Harpreet', coins: 9700, isSeen: false, folded: false, cards: [] }
+];
+var userCards = [];
+
+function makeDeck() {
+  var deck = [];
+  for (var s = 0; s < suits.length; s++) {
+    for (var r = 0; r < ranks.length; r++) {
+      deck.push({ suit: suits[s], rank: ranks[r], val: r + 2, isRed: (suits[s]==='♥'||suits[s]==='♦') });
+    }
+  }
+  return deck.sort(function() { return Math.random() - 0.5; });
+}
+
+function evaluateHand(cards) {
+  if (!cards || cards.length < 3) return { score: 0, title: 'High Card' };
+  var v = [cards[0].val, cards[1].val, cards[2].val].sort(function(a,b){ return b - a; });
+  var trail = (v[0] === v[1] && v[1] === v[2]);
+  var flush = (cards[0].suit === cards[1].suit && cards[1].suit === cards[2].suit);
+  var seq = (v[0]-v[1]===1 && v[1]-v[2]===1) || (v[0]===14 && v[1]===3 && v[2]===2);
+  var pair = (v[0]===v[1] || v[1]===v[2] || v[0]===v[2]);
+
+  if (trail) return { score: 6000 + v[0], title: 'Trail (Set)' };
+  if (flush && seq) return { score: 5000 + v[0], title: 'Pure Seq' };
+  if (seq) return { score: 4000 + v[0], title: 'Sequence' };
+  if (flush) return { score: 3000 + v[0], title: 'Color (Flush)' };
+  if (pair) return { score: 2000 + v[0], title: 'Pair' };
+  return { score: 1000 + v[0], title: 'High Card ' + cards[0].rank };
+}
+
+function renderUI() {
+  document.getElementById('potTxt').textContent = '🪙 ' + pot.toLocaleString();
+  document.getElementById('myCoinsTxt').textContent = '🪙 ' + userCoins.toLocaleString();
+
+  // Render Bots
+  var oWrap = document.getElementById('opponentsWrap');
+  oWrap.innerHTML = '';
+  for (var i = 0; i < bots.length; i++) {
+    var b = bots[i];
+    var div = document.createElement('div');
+    var isThinking = (turnIndex === i && !b.folded && !isMyTurn);
+    div.className = 'seat ' + (b.folded ? 'folded ' : '') + (isThinking ? 'active' : '');
+    
+    var tagClass = b.isSeen ? 'seen' : '';
+    var tagText = b.isSeen ? '👁️ SEEN' : 'BLIND';
+    if (b.folded) {
+      tagText = 'PACKED';
+      tagClass = '';
+    } else if (isThinking) {
+      tagClass = 'think';
+      tagText = 'THINKING...';
+    }
+
+    div.innerHTML = '<div class="avatar-circle">👤</div>' +
+      '<div class="p-name">' + b.name + '</div>' +
+      '<div class="p-coins">🪙 ' + b.coins.toLocaleString() + '</div>' +
+      '<div class="p-tag ' + tagClass + '">' + tagText + '</div>' +
+      '<div class="bot-cards-mini"><div class="mini-card"></div><div class="mini-card"></div><div class="mini-card"></div></div>';
+    oWrap.appendChild(div);
+  }
+
+  // Render User Cards
+  var uWrap = document.getElementById('userCardsWrap');
+  uWrap.innerHTML = '';
+  for (var j = 0; j < userCards.length; j++) {
+    var c = userCards[j];
+    var cEl = document.createElement('div');
+    if (!userIsSeen) {
+      cEl.className = 'card back';
+      cEl.textContent = '🂠';
+    } else {
+      cEl.className = 'card ' + (c.isRed ? 'red' : 'black');
+      cEl.innerHTML = '<div>' + c.rank + c.suit + '</div>' +
+        '<div class="c-suit-big">' + c.suit + '</div>' +
+        '<div class="c-bot-turn">' + c.rank + c.suit + '</div>';
+    }
+    uWrap.appendChild(cEl);
+  }
+
+  document.getElementById('evalTxt').textContent = userIsSeen ? evaluateHand(userCards).title : 'Tap SEE to check cards';
+
+  // Control Buttons
+  var t = langTexts[currentLang];
+  var betCost = userIsSeen ? stake * 2 : stake;
+  var bChaal = document.getElementById('btnChaal');
+  var bSee = document.getElementById('btnSee');
+  var bPack = document.getElementById('btnPack');
+  var bSide = document.getElementById('btnSide');
+  var bShow = document.getElementById('btnShow');
+
+  document.getElementById('chaalTitle').textContent = userIsSeen ? t.chaal : t.blind;
+  document.getElementById('chaalCost').textContent = '(' + betCost + ')';
+  bPack.textContent = t.pack;
+  bSee.textContent = t.see;
+  bSide.textContent = t.side;
+  bShow.textContent = t.show;
+
+  bSee.disabled = userIsSeen || userFolded;
+
+  var activeRemaining = (userFolded ? 0 : 1) + bots.filter(function(x){ return !x.folded; }).length;
+
+  if (isMyTurn && !userFolded) {
+    bChaal.disabled = false;
+    bPack.disabled = false;
+
+    if (activeRemaining === 2) {
+      bShow.style.display = 'flex';
+      bSide.style.display = 'none';
+      bShow.disabled = false;
+    } else {
+      bShow.style.display = 'none';
+      bSide.style.display = 'flex';
+      bSide.disabled = !userIsSeen;
+    }
+  } else {
+    bChaal.disabled = true;
+    bPack.disabled = true;
+    bSide.disabled = true;
+    bShow.disabled = true;
+  }
+}
+
+/* ================= GAME CONTROLLER & SMART AI ================= */
+function startRound() {
+  var d = makeDeck();
+  pot = 0;
+  stake = boot;
+  userIsSeen = false;
+  userFolded = false;
+  turnIndex = 0;
+  roundCount = 0;
+  gameActive = true;
+  isMyTurn = false;
+
+  playSnd('deal');
+
+  for (var i = 0; i < bots.length; i++) {
+    bots[i].folded = false;
+    bots[i].isSeen = false;
+    bots[i].coins = Math.max(0, bots[i].coins - boot);
+    bots[i].cards = [d.pop(), d.pop(), d.pop()];
+    pot += boot;
+  }
+  userCoins = Math.max(0, userCoins - boot);
+  pot += boot;
+  userCards = [d.pop(), d.pop(), d.pop()];
+
+  document.getElementById('dealerBubble').textContent = 'Cards dealt! Boot 🪙100 collected.';
+  document.getElementById('subInfoTxt').textContent = 'Round started';
+
+  renderUI();
+  processTurn();
+}
+
+function processTurn() {
+  if (!gameActive) return;
+
+  var remaining = (userFolded ? 0 : 1) + bots.filter(function(x){ return !x.folded; }).length;
+  if (remaining <= 1) {
+    var winner = !userFolded ? 'YOU' : bots.filter(function(x){ return !x.folded; })[0].name;
+    finishRound(winner);
+    return;
+  }
+
+  // User Turn: Table stops completely and waits for user's action
+  if (turnIndex >= bots.length) {
+    if (userFolded) {
+      turnIndex = 0;
+      processTurn();
+      return;
+    }
+    isMyTurn = true;
+    document.getElementById('dealerBubble').textContent = 'Your turn! Chaal, Pack or Side Show.';
+    document.getElementById('subInfoTxt').textContent = 'Waiting for your move...';
+    renderUI();
+    return; // STOP! Do not proceed automatically
+  }
+
+  // Bot Turn
+  isMyTurn = false;
+  var bot = bots[turnIndex];
+  if (bot.folded) {
+    turnIndex++;
+    processTurn();
+    return;
+  }
+
+  renderUI();
+  document.getElementById('subInfoTxt').textContent = bot.name + ' is thinking...';
+
+  // Realistic thinking delay
+  setTimeout(function() {
+    if (!gameActive || bot.folded) return;
+
+    roundCount++;
+    // Bots see cards after 1 or 2 turns
+    if (!bot.isSeen && (roundCount > 2 || Math.random() > 0.4)) {
+      bot.isSeen = true;
+    }
+
+    var evalResult = evaluateHand(bot.cards);
+    var score = evalResult.score;
+    var shouldFold = false;
+
+    // Smart logic: Decisions based strictly on hand strength
+    if (bot.isSeen) {
+      // If hand is only a low High Card (< Queen)
+      if (score < 1012) {
+        // High chance of folding on weak cards
+        if (Math.random() < 0.75) shouldFold = true;
+      } else if (score < 2000) {
+        // Ace or King high: 40% fold if pot is getting high
+        if (pot > 800 && Math.random() < 0.45) shouldFold = true;
+      }
+      // If bot has Pair (score >= 2000), Color, Seq, Trail - they will definitely play
+    }
+
+    if (shouldFold) {
+      bot.folded = true;
+      document.getElementById('dealerBubble').textContent = bot.name + ' packed (weak cards).';
+    } else {
+      var cost = bot.isSeen ? stake * 2 : stake;
+      bot.coins = Math.max(0, bot.coins - cost);
+      pot += cost;
+      playSnd('chip');
+      document.getElementById('dealerBubble').textContent = bot.name + ' played ' + (bot.isSeen ? 'Chaal' : 'Blind');
+    }
+
+    turnIndex++;
+    renderUI();
+    processTurn();
+  }, 1400 + Math.random() * 600);
+}
+
+/* ================= USER ACTIONS ================= */
+function userAction(act) {
+  if (act === 'SEE') {
+    userIsSeen = true;
+    playSnd('deal');
+    renderUI();
+    return;
+  }
+
+  if (act === 'PACK') {
+    userFolded = true;
+    isMyTurn = false;
+    document.getElementById('dealerBubble').textContent = 'You packed this round.';
+    renderUI();
+    turnIndex = 0;
+    processTurn();
+    return;
+  }
+
+  if (act === 'CHAAL') {
+    var cost = userIsSeen ? stake * 2 : stake;
+    if (userCoins < cost) {
+      alert('Not enough coins! Get coins from +FREE COINS.');
+      openModal('coinsModal');
+      return;
+    }
+    userCoins -= cost;
+    pot += cost;
+    playSnd('chip');
+    isMyTurn = false;
+    renderUI();
+    turnIndex = 0;
+    processTurn();
+    return;
+  }
+
+  if (act === 'SIDESHOW') {
+    var seenBots = bots.filter(function(b){ return !b.folded && b.isSeen; });
+    if (seenBots.length === 0) {
+      alert('Side show needs at least 1 other SEEN player!');
+      return;
+    }
+    var target = seenBots[seenBots.length - 1];
+    var myScore = evaluateHand(userCards).score;
+    var botScore = evaluateHand(target.cards).score;
+
+    var ss = document.getElementById('sideShowScreen');
+    ss.style.display = 'flex';
+    document.getElementById('vsBotName').textContent = target.name;
+    document.getElementById('vsUserScore').textContent = evaluateHand(userCards).title;
+    document.getElementById('vsBotScore').textContent = evaluateHand(target.cards).title;
+
+    setTimeout(function() {
+      if (myScore >= botScore) {
+        target.folded = true;
+        document.getElementById('vsResultText').textContent = '🎉 You WON! ' + target.name + ' packed.';
+      } else {
+        userFolded = true;
+        document.getElementById('vsResultText').textContent = '❌ ' + target.name + ' had better hand! You packed.';
+      }
+      setTimeout(function() {
+        ss.style.display = 'none';
+        isMyTurn = false;
+        turnIndex = 0;
+        renderUI();
+        processTurn();
+      }, 1500);
+    }, 1200);
+    return;
+  }
+
+  if (act === 'SHOW') {
+    var activeBots = bots.filter(function(b){ return !b.folded; });
+    var topBot = activeBots[0];
+    var mySc = evaluateHand(userCards).score;
+    var botSc = evaluateHand(topBot.cards).score;
+    if (mySc >= botSc) {
+      finishRound('YOU');
+    } else {
+      finishRound(topBot.name);
+    }
+  }
+}
+
+function finishRound(winnerName) {
+  gameActive = false;
+  isMyTurn = false;
+  playSnd('win');
+
+  if (winnerName === 'YOU') {
+    userCoins += pot;
+    document.getElementById('dealerBubble').textContent = '🏆 YOU WON 🪙' + pot.toLocaleString() + '!';
+  } else {
+    for (var i = 0; i < bots.length; i++) {
+      if (bots[i].name === winnerName) bots[i].coins += pot;
+    }
+    document.getElementById('dealerBubble').textContent = '🏆 ' + winnerName + ' won 🪙' + pot.toLocaleString() + '!';
+  }
+  renderUI();
+
+  // 3... 2... 1 Countdown
+  var cnt = 3;
+  var cBox = document.getElementById('roundCountdown');
+  cBox.style.display = 'block';
+  cBox.textContent = cnt;
+  var timer = setInterval(function() {
+    cnt--;
+    if (cnt > 0) {
+      cBox.textContent = cnt;
+    } else {
+      clearInterval(timer);
+      cBox.style.display = 'none';
+      startRound();
+    }
+  }, 1000);
+}
+
+/* ================= MODALS & EXTRA FEATURES ================= */
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModals() {
+  var modals = document.querySelectorAll('.modal');
+  for (var i = 0; i < modals.length; i++) modals[i].style.display = 'none';
+}
+
+function addBonus(amt, label) {
+  userCoins += amt;
+  playSnd('win');
+  alert('🎉 ' + label + ': +' + amt.toLocaleString() + ' Coins added!');
+  closeModals();
+  renderUI();
+}
+
+function watchVideoAd() {
+  closeModals();
+  document.getElementById('dealerBubble').textContent = '📺 Playing sponsor video ad (3s)...';
+  setTimeout(function() {
+    addBonus(5000, 'Video Ad Reward');
+  }, 3000);
+}
+
+function shareWhatsApp() {
+  var url = encodeURIComponent('Play Teen Patti Live Club with me! ' + window.location.href);
+  window.open('https://api.whatsapp.com/send?text=' + url, '_blank');
+  addBonus(10000, 'Referral Bonus');
+}
+
+function sendGift(gift, cost) {
+  if (userCoins < cost) { alert('Not enough coins!'); return; }
+  userCoins -= cost;
+  playSnd('win');
+  document.getElementById('dealerBubble').textContent = 'Simran thanks you for the ' + gift + '! ❤️';
+  closeModals();
+  renderUI();
+}
+
+function changeLang(l) {
+  currentLang = l;
+  document.getElementById('curLangTxt').textContent = l.toUpperCase();
+  closeModals();
+  renderUI();
+}
+
+function handlePhotoUpload(e) {
+  var file = e.target.files[0];
+  if (file) {
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      document.getElementById('myAvatarBox').innerHTML = '<img src="' + evt.target.result + '" style="width:100%; height:100%; object-fit:cover;">';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Auto-start
+window.onload = function() {
+  startRound();
+};
+</script>
+</body>
+</html>
