@@ -194,3 +194,12 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+// Live Multiplayer Room Logic
+io.on('connection', (socket) => {
+    socket.on('joinRoom', (data) => {
+        const room = data.room || 'table-1';
+        socket.join(room);
+        const count = io.sockets.adapter.rooms.get(room)?.size || 1;
+        io.to(room).emit('gameState', { activePlayers: count });
+    });
+});
