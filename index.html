@@ -1089,7 +1089,14 @@ socket.on('gameState', function(data) {
     }
     renderUI();
 });
-</script>
+// Screen par Free Coins Button apne aap add karne ka code
+window.addEventListener('DOMContentLoaded', function() {
+    var btn = document.createElement('button');
+    btn.innerHTML = '🎬 Free Coins (+5,000)';
+    btn.onclick = watchVideoAd;
+    btn.style.cssText = 'position:fixed; top:15px; right:15px; z-index:9999; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:bold; padding:8px 14px; border-radius:20px; border:2px solid #ffd700; box-shadow:0 4px 10px rgba(0,0,0,0.5); cursor:pointer; font-size:13px;';
+    document.body.appendChild(btn);
+});
 
 </script>
 </body>
