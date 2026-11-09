@@ -1083,20 +1083,18 @@ function reqSideShow() {
     }
 }
 
-// Final Showdown: Match ke aakhir mein sabhi khiladiyon ke patte kholna
+// Final Showdown: Match ke aakhir mein sabhi khiladiyon ke patte kholna 
 function showCards() {
     playSound('card');
-    // Sabhi active players ke card screen par reveal karna
     let cards = document.querySelectorAll('.card.hidden, .card.back');
     cards.forEach(c => c.classList.remove('hidden', 'back'));
-    
     setTimeout(() => {
         playSound('win');
         alert('🏆 Khel Khatam! Winner ke patte samne aa chuke hain.');
     }, 1000);
 }
-  
 </script>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 // Live Multiplayer Connection
@@ -1107,11 +1105,10 @@ var currentRoom = new URLSearchParams(window.location.search).get('room') || 'ta
 socket.emit('joinRoom', { room: currentRoom, name: 'Player' });
 
 function shareWhatsApp() {
-    var randomRoom = 'room-' + Math.floor(1000 + Math.random() * 9000);
-    var shareUrl = window.location.origin + '?room=' + randomRoom;
+    var room = currentRoom || ('room-' + Math.floor(1000 + Math.random() * 9000));
+    var shareUrl = window.location.origin + window.location.pathname + '?room=' + room;
     var msg = encodeURIComponent('मेरे साथ तीन पत्ती खेलो! टेबल लिंक: ' + shareUrl);
     window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
-    window.location.href = shareUrl;
 }
 
 // Update game from server
@@ -1121,14 +1118,6 @@ socket.on('gameState', function(data) {
         return;
     }
     renderUI();
-});
-// Screen par Free Coins Button apne aap add karne ka code
-window.addEventListener('DOMContentLoaded', function() {
-    var btn = document.createElement('button');
-    btn.innerHTML = '🎬 Free Coins (+5,000)';
-    btn.onclick = watchVideoAd;
-    btn.style.cssText = 'position:fixed; top:15px; right:15px; z-index:9999; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:bold; padding:8px 14px; border-radius:20px; border:2px solid #ffd700; box-shadow:0 4px 10px rgba(0,0,0,0.5); cursor:pointer; font-size:13px;';
-    document.body.appendChild(btn);
 });
 
 </script>
