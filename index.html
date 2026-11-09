@@ -1030,13 +1030,46 @@ function playSound(type) {
         sounds[type].play().catch(function(e){ console.log('Audio tap wait'); });
     }
 }
-
+// Realistic 15-Second Demo Video Ad Player
 function watchVideoAd() {
     closeModals();
-    playSound('coin');
-    alert('Vigyapan dekha gaya! 5,000 Coins aapke account mein jod diye gaye.');
-    addBonus(5000, 'Video Ad Reward');
+    
+    var adModal = document.createElement('div');
+    adModal.id = 'demoAdModal';
+    adModal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-family:sans-serif; text-align:center; padding:15px;';
+    
+    adModal.innerHTML = `
+        <div style="background:#1e293b; border:2px solid #ffd700; border-radius:14px; max-width:340px; width:100%; padding:20px; box-shadow:0 0 25px rgba(255,215,0,0.3);">
+            <div style="font-size:13px; color:#f59e0b; font-weight:bold; margin-bottom:8px;">📢 SPONSORED ADVERTISEMENT</div>
+            <div id="adTimerBox" style="font-size:18px; font-weight:bold; margin-bottom:12px; color:#38bdf8;">Reward in: <span id="adCount">15</span>s</div>
+            <div style="width:100%; height:180px; background:#0f172a; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #64748b; margin-bottom:15px;">
+                <div style="font-size:36px; margin-bottom:6px;">🎮</div>
+                <div style="font-size:15px; font-weight:bold; color:#f8fafc;">Super Teen Patti Pro</div>
+                <div style="font-size:12px; color:#94a3b8; margin-top:4px;">Download & Play Online Now!</div>
+            </div>
+            <div style="font-size:12px; color:#94a3b8;">Vigyapan poora hone tak intezar karein...</div>
+        </div>
+    `;
+    document.body.appendChild(adModal);
+
+    var timeLeft = 15;
+    var timer = setInterval(function() {
+        timeLeft--;
+        var countSpan = document.getElementById('adCount');
+        if (countSpan) countSpan.innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            var modal = document.getElementById('demoAdModal');
+            if (modal) modal.remove();
+            
+            playSound('coin');
+            alert('🎉 Shaandar! Vigyapan poora dekha gaya. 5,000 Coins jod diye gaye!');
+            addBonus(5000, 'Video Ad Reward');
+        }
+    }, 1000);
 }
+
 // Side Show: Dono khiladiyon ke cards aapas mein dikhana
 function reqSideShow() {
     playSound('sideshow');
