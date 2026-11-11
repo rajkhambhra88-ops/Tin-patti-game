@@ -43,7 +43,6 @@
         .btn-share-small {
             background: #3498db; border: none; padding: 6px 12px; border-radius: 5px;
             color: white; font-size: 12px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         /* 🌟 लॉबी (टेबल चुनने की स्क्रीन) 🌟 */
@@ -71,15 +70,9 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
         .table-card:active { transform: scale(0.98); }
-        .table-card.locked {
-            border-color: #555; opacity: 0.7; cursor: not-allowed;
-            background: linear-gradient(135deg, #333 0%, #111 100%);
-        }
         .table-card h3 { color: #e94560; font-size: 18px; margin-bottom: 5px; }
-        .table-card.locked h3 { color: #777; }
         .table-card p { color: #aaa; font-size: 12px; margin-bottom: 5px;}
         .entry-fee { color: #27ae60; font-weight: bold; font-size: 15px; }
-        .lock-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; }
 
         /* 🌟 गेम टेबल एरिया 🌟 */
         .game-play-area {
@@ -208,34 +201,31 @@
         <h2>टेबल चुनें (Select Table)</h2>
         
         <!-- बिगिनर टेबल -->
-        <div class="table-card" id="table-100" onclick="joinTable(100, 'table-default')">
+        <div class="table-card" onclick="joinTable(100, 'table-default')">
             <h3>बिगिनर (Beginner)</h3>
             <p>कम दांव, नए खिलाड़ियों के लिए</p>
             <span class="entry-fee">बूट (Boot): ₹100</span>
         </div>
 
         <!-- प्रो टेबल -->
-        <div class="table-card" id="table-10000" onclick="joinTable(10000, 'table-pro')">
+        <div class="table-card" onclick="joinTable(10000, 'table-pro')">
             <h3>प्रो टेबल (Pro)</h3>
-            <p>बड़े दांव, बड़ा मुकाबला</p>
+            <p>बड़े दांव, बड़ा मुकाबला (न्यूनतम ₹10,000 चाहिए)</p>
             <span class="entry-fee">बूट (Boot): ₹10,000</span>
-            <span class="lock-icon" id="lock-10000">🔒</span>
         </div>
 
         <!-- वीआईपी टेबल -->
-        <div class="table-card" id="table-100000" onclick="joinTable(100000, 'table-vip')">
+        <div class="table-card" onclick="joinTable(100000, 'table-vip')">
             <h3>वीआईपी (VIP)</h3>
-            <p>हाई रोलर्स के लिए</p>
+            <p>हाई रोलर्स के लिए (न्यूनतम ₹1 लाख चाहिए)</p>
             <span class="entry-fee">बूट (Boot): ₹1,00,000</span>
-            <span class="lock-icon" id="lock-100000">🔒</span>
         </div>
 
         <!-- किंग टेबल -->
-        <div class="table-card" id="table-2000000" onclick="joinTable(2000000, 'table-king')">
+        <div class="table-card" onclick="joinTable(2000000, 'table-king')">
             <h3>किंग (King)</h3>
-            <p>सिर्फ असली सुल्तानों के लिए</p>
+            <p>सिर्फ असली सुल्तानों के लिए (न्यूनतम ₹20 लाख चाहिए)</p>
             <span class="entry-fee">बूट (Boot): ₹20,00,000</span>
-            <span class="lock-icon" id="lock-2000000">🔒</span>
         </div>
     </div>
 
@@ -307,7 +297,6 @@
     let seenCards = false;
     let bootAmount = 100; 
     
-    // बॉट्स के सिक्के (शुरुआत में 0, टेबल जॉइन करने पर सेट होंगे)
     let botCoins = { p1: 0, p2: 0, p3: 0 };
 
     const suits = ['♠', '♥', '♦', '♣'];
@@ -333,45 +322,15 @@
     function updateCoins() {
         coinDisplay.textContent = formatMoney(coins);
         localStorage.setItem('teenPattiCoins', coins);
-        updateLobbyLocks();
-    }
-
-    // लॉक (Lock) सिस्टम अपडेट करना
-    function updateLobbyLocks() {
-        // ₹10,000 वाली टेबल
-        if (coins >= 10000) {
-            document.getElementById('lock-10000').style.display = 'none';
-            document.getElementById('table-10000').classList.remove('locked');
-        } else {
-            document.getElementById('lock-10000').style.display = 'block';
-            document.getElementById('table-10000').classList.add('locked');
-        }
-
-        // ₹1,00,000 वाली टेबल
-        if (coins >= 100000) {
-            document.getElementById('lock-100000').style.display = 'none';
-            document.getElementById('table-100000').classList.remove('locked');
-        } else {
-            document.getElementById('lock-100000').style.display = 'block';
-            document.getElementById('table-100000').classList.add('locked');
-        }
-
-        // ₹20,00,000 वाली टेबल
-        if (coins >= 2000000) {
-            document.getElementById('lock-2000000').style.display = 'none';
-            document.getElementById('table-2000000').classList.remove('locked');
-        } else {
-            document.getElementById('lock-2000000').style.display = 'block';
-            document.getElementById('table-2000000').classList.add('locked');
-        }
     }
 
     // ==========================================
-    // 🌟 टेबल जॉइन करना 🌟
+    // 🌟 टेबल जॉइन करना (चेक के साथ) 🌟
     // ==========================================
     function joinTable(fee, tableClass) {
+        // अगर सिक्के कम हैं तो अलर्ट दिखाएं
         if (coins < fee) {
-            alert("आपके पास इस टेबल के लिए पर्याप्त सिक्के नहीं हैं!\nआपको " + formatMoney(fee) + " सिक्कों की आवश्यकता है।");
+            alert("आपके पास इस टेबल के लिए पर्याप्त सिक्के नहीं हैं!\nआपको कम से कम " + formatMoney(fee) + " सिक्कों की आवश्यकता है।");
             return;
         }
         
@@ -381,7 +340,7 @@
         const tableArea = document.getElementById('tableArea');
         tableArea.className = 'table-area ' + tableClass;
 
-        // बॉट्स के सिक्के सेट करें (आपके सिक्कों से थोड़ा कम या ज्यादा, टेबल के हिसाब से)
+        // बॉट्स के सिक्के सेट करें (टेबल के हिसाब से)
         botCoins.p1 = fee * 10 + Math.floor(Math.random() * fee * 5);
         botCoins.p2 = fee * 8 + Math.floor(Math.random() * fee * 5);
         botCoins.p3 = fee * 12 + Math.floor(Math.random() * fee * 5);
@@ -427,7 +386,7 @@
 
     function initGame() {
         coins -= bootAmount;
-        pot = bootAmount * 4; // 4 खिलाड़ी
+        pot = bootAmount * 4; 
         updateCoins();
         potDisplay.textContent = formatMoney(pot);
 
@@ -442,7 +401,6 @@
 
         renderCards();
         
-        // सभी को इनएक्टिव करें, सिर्फ यूजर को एक्टिव दिखाएं
         document.querySelectorAll('.player').forEach(el => el.classList.remove('active-turn'));
         document.getElementById('player-you').classList.add('active-turn');
 
@@ -486,7 +444,6 @@
         pot += botBet;
         potDisplay.textContent = formatMoney(pot);
         
-        // बॉट को एक्टिव दिखाएं (रैंडमली)
         const bots = ['player-p1', 'player-p2', 'player-p3'];
         const randomBot = bots[Math.floor(Math.random() * bots.length)];
         document.getElementById(randomBot).classList.add('active-turn');
@@ -520,7 +477,6 @@
         setTimeout(backToLobby, 2500);
     }
 
-    // कार्ड रैंकिंग
     function evaluateHand(hand) {
         let r1 = ranks.indexOf(hand[0].rank) + 2;
         let r2 = ranks.indexOf(hand[1].rank) + 2;
@@ -577,7 +533,6 @@
             }
         }
 
-        // विनर को हाइलाइट करें
         document.getElementById('player-' + winnerObj.id).classList.add('active-turn');
 
         if (winnerObj.name === 'You') {
@@ -613,7 +568,9 @@
         document.querySelectorAll('.player').forEach(el => el.classList.remove('active-turn'));
     }
 
-    // शेयर फंक्शन (+2000 सिक्के)
+    // ==========================================
+    // 🌟 शेयर फंक्शन (+2000 सिक्के) 🌟
+    // ==========================================
     function shareGame() {
         const gameLink = window.location.href;
         if (navigator.share) {
@@ -628,4 +585,29 @@
             }).catch((error) => console.log('शेयर रद्द किया गया', error));
         } else {
             navigator.clipboard.writeText(gameLink).then(() => {
-                coins += 200
+                coins += 2000;
+                updateCoins();
+                alert("🎉 लिंक कॉपी हो गया! आपको +2000 सिक्के मिले!");
+            });
+        }
+    }
+
+    // वीडियो कंट्रोल
+    function closeVideo() {
+        document.getElementById('videoBox').style.display = 'none';
+        localStorage.setItem('videoShown', 'true');
+    }
+
+    // ==========================================
+    // 🌟 पेज लोड (सबसे जरुरी हिस्सा) 🌟
+    // ==========================================
+    window.onload = () => {
+        updateCoins();
+        if (!localStorage.getItem('videoShown')) {
+            document.getElementById('videoBox').style.display = 'flex';
+        }
+    };
+</script>
+
+</body>
+</html>
