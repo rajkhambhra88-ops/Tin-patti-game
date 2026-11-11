@@ -127,7 +127,6 @@
             transition: all 0.3s;
         }
         
-        /* जीतने वाले का इफेक्ट */
         .winner-glow {
             box-shadow: 0 0 30px 10px #f1c40f, inset 0 0 20px #f1c40f;
             animation: winnerPulse 1.5s infinite;
@@ -150,7 +149,6 @@
         .player.active-turn img { border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; transform: scale(1.15); }
         .player.packed img { filter: grayscale(100%) opacity(0.5); }
         .player.packed .name { text-decoration: line-through; color: #888; }
-        .player.packed .bet-info { display: none; }
 
         /* 🌟 टाइमर 🌟 */
         .timer-circle {
@@ -166,12 +164,6 @@
 
         .name { font-size: 12px; color: #fff; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 10px; margin-top: 3px; white-space: nowrap;}
         .bot-coins { font-size: 10px; color: #f1c40f; background: rgba(0,0,0,0.6); padding: 2px 5px; border-radius: 5px; margin-top: 2px;}
-        
-        .bet-info {
-            position: absolute; top: 75px; background: rgba(241, 196, 15, 0.9);
-            color: #000; font-size: 11px; font-weight: bold; padding: 2px 8px;
-            border-radius: 10px; display: none; white-space: nowrap; z-index: 6;
-        }
 
         /* 🌟 गिफ्ट बटन 🌟 */
         .gift-btn {
@@ -237,25 +229,25 @@
             text-shadow: 1px 1px 3px #000; pointer-events: none; padding: 0 10px; z-index: 2;
         }
 
-        /* 🌟 उड़ते हुए सिक्के और टेक्स्ट 🌟 */
+        /* 🌟 उड़ते हुए सिक्के और टेक्स्ट (टेबल के बीच में) 🌟 */
         .flying-coin {
             position: absolute; color: #f1c40f; font-size: 24px; font-weight: bold;
             z-index: 50; pointer-events: none;
-            animation: flyToPot 0.8s ease-in forwards;
+            animation: flyToCenter 0.8s ease-in forwards;
         }
-        @keyframes flyToPot {
+        @keyframes flyToCenter {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.5); opacity: 0; top: 25%; left: 50%; }
+            100% { transform: scale(0.5); opacity: 0; top: 45%; left: 50%; }
         }
 
         .floating-text {
-            position: absolute; color: #f1c40f; font-size: 18px; font-weight: bold;
+            position: absolute; color: #f1c40f; font-size: 20px; font-weight: bold;
             text-shadow: 1px 1px 3px #000; z-index: 60; pointer-events: none;
-            animation: floatUpText 1s ease-out forwards;
+            animation: floatUpText 1.2s ease-out forwards;
         }
         @keyframes floatUpText {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
         }
 
         /* 🌟 पॉप-अप (रिजल्ट) 🌟 */
@@ -380,7 +372,6 @@
                     </div>
                     <div class="name">Arjun</div>
                     <div class="bot-coins" id="coins-p1">₹0</div>
-                    <div class="bet-info" id="bet-p1"></div>
                     <div class="cards-container" id="p1-cards"></div>
                 </div>
 
@@ -394,7 +385,6 @@
                     </div>
                     <div class="name">Gurpreet</div>
                     <div class="bot-coins" id="coins-p2">₹0</div>
-                    <div class="bet-info" id="bet-p2"></div>
                     <div class="cards-container" id="p2-cards"></div>
                 </div>
 
@@ -408,7 +398,6 @@
                     </div>
                     <div class="name">Kavya</div>
                     <div class="bot-coins" id="coins-p3">₹0</div>
-                    <div class="bet-info" id="bet-p3"></div>
                     <div class="cards-container" id="p3-cards"></div>
                 </div>
 
@@ -420,7 +409,6 @@
                         <div class="timer-circle" id="timer-you">30</div>
                     </div>
                     <div class="name">You</div>
-                    <div class="bet-info" id="bet-you"></div>
                     <div class="cards-container" id="player-cards"></div>
                 </div>
 
@@ -455,19 +443,20 @@
 </div>
 
 <script>
-    // 🌟 साउंड इफेक्ट्स (Base64 या ऑनलाइन लिंक) 🌟
+    // 🌟 सभी क्रियाओं के लिए अलग-अलग साउंड इफेक्ट्स 🌟
     const sounds = {
-        bet: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'), // चाल चलने की आवाज (कॉइन)
-        sideShow: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'), // साइड शो की आवाज (मैजिक)
-        win: new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'), // जीतने की आवाज (तालियां)
-        click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3') // सामान्य क्लिक
+        bet: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'), // सिक्के गिरना
+        see: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'), // कार्ड पलटना
+        sideShow: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'), // मैजिक/चैलेंज
+        pack: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'), // बटन क्लिक
+        win: new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'), // जीत की तालियां
+        click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3') 
     };
     
-    // साउंड चलाने का सेफ तरीका
     function playSound(soundName) {
         try {
             sounds[soundName].currentTime = 0;
-            sounds[soundName].play().catch(e => console.log("Audio play blocked by browser", e));
+            sounds[soundName].play().catch(e => console.log("Audio blocked", e));
         } catch(e) {}
     }
 
@@ -509,9 +498,8 @@
         localStorage.setItem('teenPattiCoins', coins);
     }
 
-    // 🌟 सिक्के गिरने और टेक्स्ट दिखने का एनिमेशन 🌟
+    // 🌟 चाल का एनिमेशन (टेबल के बीच में) 🌟
     function animateBet(fromElement, amount) {
-        // साउंड बजाएं
         playSound('bet');
 
         let coin = document.createElement('div');
@@ -531,13 +519,13 @@
         coin.style.left = startLeft + 'px';
         coin.style.top = startTop + 'px';
         
-        text.style.left = startLeft + 'px';
-        text.style.top = (startTop - 20) + 'px';
+        text.style.left = '50%';
+        text.style.top = '45%';
         
         tableCircle.appendChild(coin);
         tableCircle.appendChild(text);
         
-        setTimeout(() => { coin.remove(); text.remove(); }, 800);
+        setTimeout(() => { coin.remove(); text.remove(); }, 1200);
     }
 
     function sendGift(playerName) {
@@ -606,14 +594,12 @@
         activeBots = ['p1', 'p2', 'p3']; 
         botTurnIndex = 0;
 
-        // विनर इफेक्ट हटाएं
         document.querySelectorAll('.avatar-box').forEach(el => el.classList.remove('winner-glow'));
         document.querySelectorAll('.winner-crown').forEach(el => el.style.display = 'none');
 
         document.querySelectorAll('.player').forEach(el => {
             el.classList.remove('active-turn', 'packed');
             el.querySelector('.cards-container').innerHTML = ''; 
-            el.querySelector('.bet-info').style.display = 'none';
         });
         document.getElementById('popupOverlay').style.display = 'none';
         centerCardsArea.style.display = 'none';
@@ -685,6 +671,7 @@
         }
     }
 
+    // 🌟 यूजर का टर्न (शो का नियम यहाँ लागू है) 🌟
     function startUserTurn() {
         if (!gameActive) return;
         
@@ -699,7 +686,14 @@
         document.getElementById('btnPlay').disabled = false;
         document.getElementById('btnSee').disabled = false;
         document.getElementById('btnPack').disabled = false;
-        document.getElementById('btnShow').disabled = false;
+        
+        // 🌟 शो का नियम: सिर्फ 2 खिलाड़ी बचने पर ही शो दिखेगा
+        let totalPlayersLeft = activeBots.length + (document.getElementById('player-you').classList.contains('packed') ? 0 : 1);
+        if (totalPlayersLeft === 2 && activeBots.length > 0) {
+            document.getElementById('btnShow').disabled = false;
+        } else {
+            document.getElementById('btnShow').disabled = true;
+        }
         
         if (seenCards && activeBots.length > 0) {
             document.getElementById('btnSide').disabled = false;
@@ -732,15 +726,9 @@
         updateCoins();
         potDisplay.textContent = formatMoney(pot);
         
-        // एनिमेशन और साउंड
         animateBet(document.getElementById('player-you'), bet);
         
-        let betInfo = document.getElementById('bet-you');
-        betInfo.textContent = "₹" + formatMoney(bet);
-        betInfo.style.display = 'block';
-
-        let playType = seenCards ? "Seen" : "Blind";
-        msgBoard.textContent = "आपने " + formatMoney(bet) + " (" + playType + ") लगाए।";
+        msgBoard.textContent = "आपने " + formatMoney(bet) + " लगाए।";
         
         disableButtons();
         document.getElementById('player-you').classList.remove('active-turn');
@@ -749,13 +737,22 @@
     }
 
     function seeCards() {
-        playSound('click');
+        playSound('see');
         seenCards = true;
         renderCards();
         document.getElementById('btnSee').disabled = true;
         msgBoard.textContent = "आपने कार्ड देख लिए हैं!";
         document.getElementById('btnPlay').innerText = "BET (Seen)";
-        document.getElementById('btnSide').disabled = false;
+        
+        // शो का नियम चेक
+        let totalPlayersLeft = activeBots.length + 1;
+        if (totalPlayersLeft === 2 && activeBots.length > 0) {
+            document.getElementById('btnShow').disabled = false;
+        }
+        
+        if (activeBots.length > 0) {
+            document.getElementById('btnSide').disabled = false;
+        }
     }
 
     function sideShow() {
@@ -813,7 +810,7 @@
 
     function packGame() {
         if (!gameActive) return;
-        playSound('click');
+        playSound('pack');
         clearInterval(timerInterval);
         document.getElementById('player-you').classList.add('packed');
         document.getElementById('player-you').classList.remove('active-turn');
@@ -908,10 +905,6 @@
             potDisplay.textContent = formatMoney(pot);
             
             animateBet(document.getElementById('player-' + botId), botBet);
-
-            let betInfo = document.getElementById('bet-' + botId);
-            betInfo.textContent = "₹" + formatMoney(botBet);
-            betInfo.style.display = 'block';
             
             document.getElementById('player-' + botId).classList.remove('active-turn');
             
@@ -984,15 +977,12 @@
         return 0;
     }
 
-    // 🌟 जीतने वाले का इफेक्ट और साउंड 🌟
     function declareWinner(winnerId) {
         playSound('win');
         
-        // सभी से इफेक्ट हटाएं
         document.querySelectorAll('.avatar-box').forEach(el => el.classList.remove('winner-glow'));
         document.querySelectorAll('.winner-crown').forEach(el => el.style.display = 'none');
         
-        // विनर को इफेक्ट दें
         let avatarBox = document.getElementById('avatar-' + winnerId);
         let crown = document.getElementById('crown-' + winnerId);
         
@@ -1000,8 +990,17 @@
         if (crown) crown.style.display = 'block';
     }
 
+    // 🌟 SHOW (सिर्फ 2 खिलाड़ी होने पर) 🌟
     function showCards() {
         if (!gameActive) return;
+        
+        // डबल चेक: अगर 2 से ज्यादा खिलाड़ी हैं तो शो नहीं होगा
+        let totalPlayersLeft = activeBots.length + (document.getElementById('player-you').classList.contains('packed') ? 0 : 1);
+        if (totalPlayersLeft > 2) {
+            alert("शो सिर्फ तब मांगा जा सकता है जब सिर्फ 2 खिलाड़ी बचे हों!");
+            return;
+        }
+
         playSound('click');
         clearInterval(timerInterval);
         gameActive = false;
@@ -1018,6 +1017,9 @@
             { id: 'p3', name: 'Kavya', hand: botHands.p3, eval: evaluateHand(botHands.p3) }
         ];
 
+        // सिर्फ एक्टिव खिलाड़ियों को रखें
+        hands = hands.filter(h => h.id === 'you' ? !document.getElementById('player-you').classList.contains('packed') : activeBots.includes(h.id));
+
         let winnerObj = hands[0];
         for (let i = 1; i < hands.length; i++) {
             if (compareHands(hands[i].hand, winnerObj.hand) === 1) {
@@ -1025,7 +1027,6 @@
             }
         }
 
-        // विनर एफेक्ट कॉल करें
         declareWinner(winnerObj.id);
 
         let popupHTML = '';
@@ -1061,7 +1062,6 @@
             document.getElementById('popupOverlay').style.display = 'none';
             document.querySelectorAll('.player').forEach(el => el.classList.remove('active-turn', 'packed'));
             
-            // नया राउंड शुरू होने से पहले इफेक्ट हटाएं
             document.querySelectorAll('.avatar-box').forEach(el => el.classList.remove('winner-glow'));
             document.querySelectorAll('.winner-crown').forEach(el => el.style.display = 'none');
             
