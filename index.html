@@ -2,366 +2,510 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teen Patti - सिक्का संस्करण</title>
-    <!-- Google Ad Placement API (विज्ञापन के लिए) -->
-    <script async
-            data-adbreak-test="on"
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-            crossorigin="anonymous">
-    </script>
-    <script>
-        window.adsbygoogle = window.adsbygoogle || [];
-        const adBreak = adConfig = (o) => { adsbygoogle.push(o); };
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teen Patti - Playable Game</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a2e;
+            background: radial-gradient(circle, #1a1a2e 0%, #0b132b 100%);
             color: #e0e0e0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            flex-direction: column;
             overflow: hidden;
         }
-        .container {
-            text-align: center;
+        .game-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            max-height: 800px;
             background: #16213e;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
             border: 2px solid #e94560;
-            width: 340px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
         }
-        .title {
-            font-size: 28px;
-            color: #e94560;
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px #000;
+
+        /* 🌟 हेडर और सिक्के 🌟 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #e94560;
+            z-index: 10;
         }
-        .coin-display {
-            font-size: 22px;
-            margin: 15px 0;
-            background: #0f3460;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #e94560;
+        .coin-box { font-size: 16px; font-weight: bold; color: #f1c40f; }
+        .coin-box span { color: #fff; }
+        .title { font-size: 18px; color: #e94560; font-weight: bold; }
+        .btn-share-small {
+            background: #3498db; border: none; padding: 6px 12px; border-radius: 5px;
+            color: white; font-size: 12px; cursor: pointer; font-weight: bold;
         }
-        .coin-display span {
-            color: #f1c40f;
-            font-weight: bold;
+
+        /* 🌟 टेबल का डिज़ाइन 🌟 */
+        .table-area {
+            flex: 1;
+            position: relative;
+            background: #0f5132; /* हरा टेबल */
+            border-radius: 50% 50% 0 0;
+            margin: 10px;
+            border: 5px solid #4a2c13;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 🌟 खिलाड़ियों की जगह 🌟 */
+        .player {
+            position: absolute;
+            text-align: center;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .player .avatar {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: #ccc; border: 2px solid #f1c40f;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; font-weight: bold; color: #333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .player .name { font-size: 12px; color: #fff; margin-top: 5px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+        
+        .p1 { top: 10px; left: 10px; } /* Arjun */
+        .p2 { top: 10px; right: 10px; } /* Gurpreet */
+        .p3 { top: 50%; right: 10px; transform: translateY(-50%); } /* Kavya */
+        .p4 { bottom: 10px; left: 50%; transform: translateX(-50%); } /* You */
+
+        /* 🌟 कार्ड्स का डिज़ाइन 🌟 */
+        .cards-container {
+            display: flex; gap: 3px; margin-top: 5px; justify-content: center;
+        }
+        .card {
+            width: 30px; height: 45px; border-radius: 4px;
+            background: #fff; color: #000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+        .card.red { color: #e94560; }
+        .card.back { background: linear-gradient(45deg, #800000, #4a0000); border: 1px solid #f1c40f; }
+        .card.back::after { content: "★"; color: #f1c40f; font-size: 18px; }
+
+        /* आपके कार्ड थोड़े बड़े होंगे */
+        .big-cards .card { width: 50px; height: 70px; font-size: 16px; }
+
+        /* 🌟 पॉट और मैसेज 🌟 */
+        .pot-area {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 5px 20px; border-radius: 20px;
+            border: 2px solid #f1c40f; color: #f1c40f; font-weight: bold; font-size: 18px;
+        }
+        .msg-board {
+            position: absolute; bottom: 25%; width: 100%; text-align: center;
+            font-size: 14px; color: #fff; font-weight: bold;
+            text-shadow: 1px 1px 3px #000; pointer-events: none;
+            padding: 0 10px;
+        }
+
+        /* 🌟 कंट्रोल बटन्स 🌟 */
+        .controls {
+            padding: 10px;
+            background: #0b132b;
+            border-top: 1px solid #e94560;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .action-row {
+            display: flex; justify-content: space-between; gap: 10px;
         }
         .btn {
-            background: #e94560;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            margin: 8px 0;
-            border-radius: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            font-weight: bold;
+            flex: 1; padding: 12px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: bold; color: white; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;
         }
-        .btn:hover {
-            background: #c0392b;
-            transform: scale(1.02);
-        }
-        .btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn:active { transform: scale(0.95); }
+        .btn-play { background: #27ae60; }
+        .btn-see { background: #2980b9; }
+        .btn-pack { background: #c0392b; }
+        .btn-show { background: #8e44ad; }
+        .btn-side { background: #d35400; }
+        .btn:disabled { background: #555; cursor: not-allowed; transform: none; opacity: 0.6; }
 
-        /* 🌟 विज्ञापन/वीडियो बॉक्स का डिज़ाइन 🌟 */
-        .ad-container {
-            margin: 15px 0;
-            position: relative;
-            width: 100%;
-            padding: 3px;
-            border-radius: 15px;
-            background: linear-gradient(45deg, #f1c40f, #e94560, #0f3460, #f1c40f);
-            background-size: 300% 300%;
-            animation: gradientBorder 3s ease infinite;
-            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+        /* 🌟 वीडियो बॉक्स (आपका वीडियो यहाँ है) 🌟 */
+        .video-box {
+            display: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 100;
+            flex-direction: column; justify-content: center; align-items: center;
         }
-
-        @keyframes gradientBorder {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .video-box iframe {
+            width: 100%; height: 70vh; border: none;
         }
-
-        .ad-box-inner {
-            background: #0b132b;
-            border-radius: 12px;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            padding-bottom: 56.25%; /* 16:9 वीडियो रेश्यो */
-            height: 0;
-        }
-
-        .ad-box-inner iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .ad-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(233, 69, 96, 0.9);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            z-index: 3;
-            letter-spacing: 1px;
-            pointer-events: none;
-        }
-
-        .msg {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #aaa;
-            min-height: 20px;
-        }
-
-        .btn-ad {
-            background: #27ae60;
-            margin-top: 10px;
-        }
-        .btn-ad:hover {
-            background: #2ecc71;
-        }
-        
-        /* 🌟 नया रिफिल बटन 🌟 */
-        .btn-refill {
-            background: #f39c12;
-            display: none; /* शुरुआत में छिपा हुआ */
-            animation: pulse 1.5s infinite;
-        }
-        .btn-refill:hover {
-            background: #e67e22;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .btn-share {
-            background: #3498db;
-            margin-top: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-share:hover {
-            background: #2980b9;
-        }
-        .btn-share svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
+        .close-video {
+            margin-top: 20px; padding: 12px 30px; background: #e94560;
+            color: white; border: none; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="title">Teen Patti</div>
-    
-    <div class="coin-display">
-        आपके सिक्के: <span id="coinDisplay">10000</span>
+<div class="game-container">
+    <!-- हेडर -->
+    <div class="header">
+        <div class="coin-box">🪙 <span id="coinDisplay">10000</span></div>
+        <div class="title">Teen Patti</div>
+        <button class="btn-share-small" onclick="shareGame()">शेयर +2000</button>
     </div>
 
-    <!-- खेल बटन -->
-    <button class="btn" onclick="playGame()" id="playBtn">
-        खेल शुरू करें (100 सिक्के लागत)
-    </button>
+    <!-- गेम टेबल -->
+    <div class="table-area">
+        <!-- खिलाड़ी 1 (Arjun) -->
+        <div class="player p1">
+            <div class="avatar" style="background: #87CEEB;">A</div>
+            <div class="name">Arjun</div>
+            <div class="cards-container" id="p1-cards"></div>
+        </div>
 
-    <!-- 🌟 रिफिल बटन (सिर्फ तब दिखेगा जब सिक्के 100 से कम होंगे) 🌟 -->
-    <button class="btn btn-refill" onclick="showRefillOptions()" id="refillBtn">
-        🎁 10,000 सिक्कों का रिफिल लें
-    </button>
+        <!-- खिलाड़ी 2 (Gurpreet) -->
+        <div class="player p2">
+            <div class="avatar" style="background: #F4A460;">G</div>
+            <div class="name">Gurpreet</div>
+            <div class="cards-container" id="p2-cards"></div>
+        </div>
 
-    <!-- =========================================
-         🌟 वीडियो बॉक्स (यहाँ अपना वीडियो डालें) 🌟
-         ========================================= -->
-    <div class="ad-container" id="adBox">
-        <div class="ad-badge">GAME PROMO</div>
-        <div class="ad-box-inner">
-            <!-- 👇 यहाँ अपने YouTube वीडियो का ID डालें 👇 -->
-            <!-- अभी के लिए मैंने एक डेमो वीडियो लगाया है, आप इसे अपने गेम के वीडियो से बदल सकते हैं -->
-            <iframe 
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0&autoplay=0" 
-                title="Game Promo Video" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-            </iframe>
+        <!-- खिलाड़ी 3 (Kavya) -->
+        <div class="player p3">
+            <div class="avatar" style="background: #FFB6C1;">K</div>
+            <div class="name">Kavya</div>
+            <div class="cards-container" id="p3-cards"></div>
+        </div>
+
+        <!-- आप (You) -->
+        <div class="player p4">
+            <div class="avatar" style="background: #90EE90;">Y</div>
+            <div class="name">You</div>
+            <div class="cards-container big-cards" id="player-cards"></div>
+        </div>
+
+        <!-- पॉट और मैसेज -->
+        <div class="pot-area">POT: ₹<span id="potDisplay">0</span></div>
+        <div class="msg-board" id="msgBoard">गेम शुरू करने के लिए PLAY दबाएं</div>
+    </div>
+
+    <!-- कंट्रोल्स -->
+    <div class="controls">
+        <div class="action-row">
+            <button class="btn btn-play" id="btnPlay" onclick="handlePlayBtn()">PLAY</button>
+            <button class="btn btn-see" id="btnSee" onclick="seeCards()" disabled>SEE Cards</button>
+        </div>
+        <div class="action-row">
+            <button class="btn btn-pack" id="btnPack" onclick="packGame()" disabled>PACK</button>
+            <button class="btn btn-show" id="btnShow" onclick="showCards()" disabled>SHOW</button>
         </div>
     </div>
 
-    <!-- विज्ञापन देखकर सिक्के प्राप्त करने का बटन -->
-    <button class="btn btn-ad" onclick="watchAdForCoins()" id="adBtn">
-        📺 विज्ञापन देखें +500 सिक्के
-    </button>
-
-    <!-- शेयर बटन (+2000 सिक्के) -->
-    <button class="btn btn-share" onclick="shareGame()" id="shareBtn">
-        <svg viewBox="0 0 24 24">
-            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-        </svg>
-        गेम शेयर करें (+2000 सिक्के)
-    </button>
-
-    <div class="msg" id="message"></div>
+    <!-- 🌟 वीडियो पॉप-अप (आपका Shorts वीडियो यहाँ लगा है) 🌟 -->
+    <div class="video-box" id="videoBox">
+        <!-- 
+            आपके द्वारा दिए गए लिंक (6apIgne1I8I) को यहाँ लगा दिया गया है।
+        -->
+        <iframe src="https://www.youtube.com/embed/6apIgne1I8I?rel=0&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <button class="close-video" onclick="closeVideo()">वीडियो बंद करें और खेलें</button>
+    </div>
 </div>
 
 <script>
     // ==========================================
-    // 🌟 सिक्कों का लॉजिक (स्मार्ट तरीका) 🌟
+    // 🌟 गेम का डेटा 🌟
     // ==========================================
-    // शुरुआत में 10,000 सिक्के दें (सिर्फ पहली बार जब गेम ओपन हो)
-    let coins = parseInt(localStorage.getItem('teenPattiCoins'));
-    if (isNaN(coins)) {
-        coins = 10000; 
-    }
+    let coins = parseInt(localStorage.getItem('teenPattiCoins')) || 10000;
+    let pot = 0;
+    let gameActive = false;
+    let seenCards = false;
+    let bootAmount = 100;
+    
+    const suits = ['♠', '♥', '♦', '♣'];
+    const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    let deck = [];
+    let playerHand = [];
+    let botHands = { p1: [], p2: [], p3: [] };
 
     const coinDisplay = document.getElementById('coinDisplay');
-    const messageEl = document.getElementById('message');
-    const refillBtn = document.getElementById('refillBtn');
-    const playBtn = document.getElementById('playBtn');
+    const potDisplay = document.getElementById('potDisplay');
+    const msgBoard = document.getElementById('msgBoard');
 
-    // स्क्रीन अपडेट करने का फंक्शन
-    function updateCoinDisplay() {
+    // सिक्के अपडेट करें
+    function updateCoins() {
         coinDisplay.textContent = coins;
         localStorage.setItem('teenPattiCoins', coins);
+    }
 
-        // अगर सिक्के 100 से कम हो जाएं, तो रिफिल बटन दिखाएं और खेलने का बटन छिपा दें
-        if (coins < 100) {
-            refillBtn.style.display = 'block';
-            playBtn.style.display = 'none';
-        } else {
-            refillBtn.style.display = 'none';
-            playBtn.style.display = 'block';
+    // डेक बनाएं और शफल करें
+    function createDeck() {
+        deck = [];
+        for (let s of suits) {
+            for (let r of ranks) {
+                deck.push({ suit: s, rank: r });
+            }
+        }
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
         }
     }
 
-    // खेल खेलने का बटन
-    function playGame() {
-        if (coins < 100) {
-            messageEl.textContent = "सिक्के कम हैं, कृपया रिफिल करें!";
-            updateCoinDisplay();
+    // कार्ड का HTML बनाएं
+    function cardHTML(card, isHidden = false) {
+        if (isHidden) return `<div class="card back"></div>`;
+        let colorClass = (card.suit === '♥' || card.suit === '♦') ? 'red' : '';
+        return `<div class="card ${colorClass}">
+                    <div>${card.rank}</div>
+                    <div>${card.suit}</div>
+                </div>`;
+    }
+
+    // कार्ड्स को स्क्रीन पर दिखाएं
+    function renderCards() {
+        document.getElementById('player-cards').innerHTML = playerHand.map(c => cardHTML(c, !seenCards)).join('');
+        document.getElementById('p1-cards').innerHTML = botHands.p1.map(() => cardHTML(null, true)).join('');
+        document.getElementById('p2-cards').innerHTML = botHands.p2.map(() => cardHTML(null, true)).join('');
+        document.getElementById('p3-cards').innerHTML = botHands.p3.map(() => cardHTML(null, true)).join('');
+    }
+
+    // ==========================================
+    // 🌟 कार्ड रैंकिंग (Teen Patti Rules) 🌟
+    // ==========================================
+    function evaluateHand(hand) {
+        let r1 = ranks.indexOf(hand[0].rank) + 2;
+        let r2 = ranks.indexOf(hand[1].rank) + 2;
+        let r3 = ranks.indexOf(hand[2].rank) + 2;
+        let ranksArr = [r1, r2, r3].sort((a, b) => b - a);
+
+        let isFlush = (hand[0].suit === hand[1].suit && hand[1].suit === hand[2].suit);
+        let isSequence = (ranksArr[0] - 1 === ranksArr[1] && ranksArr[1] - 1 === ranksArr[2]);
+        if (ranksArr[0] === 14 && ranksArr[1] === 3 && ranksArr[2] === 2) isSequence = true;
+        let isTrail = (r1 === r2 && r2 === r3);
+
+        if (isTrail) return { rank: 6, name: "Trail", val: ranksArr };
+        if (isSequence && isFlush) return { rank: 5, name: "Pure Sequence", val: ranksArr };
+        if (isSequence) return { rank: 4, name: "Sequence", val: ranksArr };
+        if (isFlush) return { rank: 3, name: "Color", val: ranksArr };
+        if (r1 === r2 || r2 === r3 || r1 === r3) return { rank: 2, name: "Pair", val: ranksArr };
+        return { rank: 1, name: "High Card", val: ranksArr };
+    }
+
+    function compareHands(handA, handB) {
+        let evalA = evaluateHand(handA);
+        let evalB = evaluateHand(handB);
+        if (evalA.rank > evalB.rank) return 1;
+        if (evalA.rank < evalB.rank) return -1;
+        for (let i = 0; i < 3; i++) {
+            if (evalA.val[i] > evalB.val[i]) return 1;
+            if (evalA.val[i] < evalB.val[i]) return -1;
+        }
+        return 0;
+    }
+
+    // ==========================================
+    // 🌟 गेम फ्लो कंट्रोल 🌟
+    // ==========================================
+    
+    // PLAY बटन को हैंडल करें (शुरू करने या फिर से खेलने के लिए)
+    function handlePlayBtn() {
+        if (document.getElementById('btnPlay').innerText === "PLAY AGAIN" || document.getElementById('btnPlay').innerText === "PLAY") {
+            if (coins < 100) {
+                alert("सिक्के कम हैं! कृपया गेम शेयर करके 2000 सिक्के कमाएं।");
+                return;
+            }
+            initGame();
+        }
+    }
+
+    function initGame() {
+        coins -= bootAmount;
+        pot = bootAmount * 4;
+        updateCoins();
+        potDisplay.textContent = pot;
+
+        createDeck();
+        playerHand = [deck.pop(), deck.pop(), deck.pop()];
+        botHands.p1 = [deck.pop(), deck.pop(), deck.pop()];
+        botHands.p2 = [deck.pop(), deck.pop(), deck.pop()];
+        botHands.p3 = [deck.pop(), deck.pop(), deck.pop()];
+
+        seenCards = false;
+        gameActive = true;
+
+        renderCards();
+
+        document.getElementById('btnPlay').disabled = true;
+        document.getElementById('btnPlay').innerText = "PLAY";
+        document.getElementById('btnSee').disabled = false;
+        document.getElementById('btnPack').disabled = false;
+        document.getElementById('btnShow').disabled = false;
+
+        msgBoard.innerHTML = "आपकी बारी!<br>कार्ड देखें या दांव लगाएं।";
+        
+        // दांव लगाने का बटन (ब्लाइंड/चाल) - PLAY बटन अब दांव लगाने का काम करेगा
+        document.getElementById('btnPlay').onclick = function() {
+            playBet();
+        };
+    }
+
+    function playBet() {
+        if (!gameActive) return;
+        let bet = seenCards ? 200 : 100;
+        if (coins < bet) {
+            msgBoard.textContent = "सिक्के कम हैं!";
             return;
         }
-        coins -= 100;
-        updateCoinDisplay();
-        messageEl.textContent = "खेल शुरू... (यहाँ आपका गेम लॉजिक चलेगा)";
+        coins -= bet;
+        pot += bet;
+        updateCoins();
+        potDisplay.textContent = pot;
+        msgBoard.textContent = "आपने " + bet + " सिक्के लगाए।";
+        
+        // बॉट की बारी
+        document.getElementById('btnPlay').disabled = true;
+        setTimeout(botTurn, 1000);
     }
 
-    // 🌟 रिफिल का विकल्प दिखाना 🌟
-    function showRefillOptions() {
-        messageEl.innerHTML = "10,000 सिक्के पाने के लिए कोई एक विकल्प चुनें:<br>1. नीचे 'विज्ञापन देखें' पर क्लिक करें।<br>2. या 'गेम शेयर करें' पर क्लिक करें।";
-    }
+    function botTurn() {
+        if (!gameActive) return;
+        
+        let botBet = Math.floor(Math.random() * 3 + 1) * 100;
+        pot += botBet;
+        potDisplay.textContent = pot;
+        msgBoard.textContent = "अन्य खिलाड़ियों ने दांव लगाया।";
 
-    // ==========================================
-    // 🌟 विज्ञापन देखकर 10,000 सिक्के (रिफिल) या 500 सिक्के 🌟
-    // ==========================================
-    function watchAdForCoins() {
-        // अगर सिक्के 100 से कम हैं (यानी रिफिल की जरूरत है), तो 10,000 दें, वरना 500
-        let rewardAmount = (coins < 100) ? 10000 : 500;
-        
-        messageEl.textContent = "विज्ञापन लोड हो रहा है...";
-        
-        // असली विज्ञापन का लॉजिक (टेस्ट मोड)
-        adBreak({
-            type: 'reward',
-            name: 'coin_reward',
-            beforeAd: () => {
-                messageEl.textContent = "विज्ञापन चल रहा है...";
-            },
-            afterAd: () => {
-                messageEl.textContent = "विज्ञापन समाप्त, इनाम दे रहे हैं...";
-            },
-            beforeReward: (showAdFn) => {
-                showAdFn();
-            },
-            adViewed: () => {
-                coins += rewardAmount;
-                updateCoinDisplay();
-                messageEl.textContent = "🎉 बधाई हो! आपको +" + rewardAmount + " सिक्के मिले!";
-            },
-            adDismissed: () => {
-                messageEl.textContent = "विज्ञापन पूरा नहीं देखा, इनाम नहीं मिला।";
-            },
-            adError: (error) => {
-                console.error('Ad error:', error);
-                // अगर विज्ञापन लोड न हो (जैसे टेस्ट में), तो डेमो के लिए तुरंत सिक्के दे दें
-                messageEl.textContent = "विज्ञापन लोड नहीं हो सका (टेस्ट मोड)। डेमो के लिए सिक्के दे रहे हैं...";
-                setTimeout(() => {
-                    coins += rewardAmount;
-                    updateCoinDisplay();
-                    messageEl.textContent = "🎉 डेमो इनाम: आपको +" + rewardAmount + " सिक्के मिले!";
-                }, 1500);
+        setTimeout(() => {
+            if(gameActive) {
+                document.getElementById('btnPlay').disabled = false;
+                document.getElementById('btnPlay').innerText = "BET";
+                msgBoard.textContent = "आपकी बारी! दांव लगाएं या कार्ड दिखाएं।";
             }
-        });
+        }, 800);
+    }
+
+    function seeCards() {
+        seenCards = true;
+        renderCards();
+        document.getElementById('btnSee').disabled = true;
+        msgBoard.textContent = "आपने कार्ड देख लिए हैं (अब दांव 200 का होगा)।";
+    }
+
+    function packGame() {
+        if (!gameActive) return;
+        gameActive = false;
+        msgBoard.textContent = "आपने गेम छोड़ दिया (Pack)।";
+        resetGameButtons();
+    }
+
+    function showCards() {
+        if (!gameActive) return;
+        gameActive = false;
+        
+        seenCards = true;
+        document.getElementById('p1-cards').innerHTML = botHands.p1.map(c => cardHTML(c)).join('');
+        document.getElementById('p2-cards').innerHTML = botHands.p2.map(c => cardHTML(c)).join('');
+        document.getElementById('p3-cards').innerHTML = botHands.p3.map(c => cardHTML(c)).join('');
+        renderCards();
+
+        let hands = [
+            { name: 'You', hand: playerHand, eval: evaluateHand(playerHand) },
+            { name: 'Arjun', hand: botHands.p1, eval: evaluateHand(botHands.p1) },
+            { name: 'Gurpreet', hand: botHands.p2, eval: evaluateHand(botHands.p2) },
+            { name: 'Kavya', hand: botHands.p3, eval: evaluateHand(botHands.p3) }
+        ];
+
+        let winnerObj = hands[0];
+        for (let i = 1; i < hands.length; i++) {
+            if (compareHands(hands[i].hand, winnerObj.hand) === 1) {
+                winnerObj = hands[i];
+            }
+        }
+
+        if (winnerObj.name === 'You') {
+            coins += pot;
+            updateCoins();
+            msgBoard.innerHTML = `🎉 आप जीत गए! (${winnerObj.eval.name})<br>आपको ${pot} सिक्के मिले!`;
+        } else {
+            msgBoard.innerHTML = `😔 ${winnerObj.name} जीत गए! (${winnerObj.eval.name})`;
+        }
+        
+        pot = 0;
+        potDisplay.textContent = 0;
+        resetGameButtons();
+    }
+
+    function resetGameButtons() {
+        document.getElementById('btnSee').disabled = true;
+        document.getElementById('btnPack').disabled = true;
+        document.getElementById('btnShow').disabled = true;
+        
+        setTimeout(() => {
+            document.getElementById('btnPlay').disabled = false;
+            document.getElementById('btnPlay').innerText = "PLAY AGAIN";
+            // रीसेट करने के लिए ओरिजिनल फंक्शन वापस लगाएं
+            document.getElementById('btnPlay').onclick = function() {
+                initGame();
+            };
+        }, 3000);
     }
 
     // ==========================================
-    // 🌟 शेयर करने पर 2000 सिक्के 🌟
+    // 🌟 शेयर फंक्शन (+2000 सिक्के) 🌟
     // ==========================================
     function shareGame() {
         const gameLink = window.location.href;
-        // अगर सिक्के 100 से कम हैं, तो शेयर करने पर 10,000 दें, वरना 2000
-        let rewardAmount = (coins < 100) ? 10000 : 2000;
-
         if (navigator.share) {
             navigator.share({
                 title: 'Teen Patti गेम',
                 text: 'मेरे साथ Teen Patti खेलें और 10,000 मुफ्त सिक्के पाएं!',
                 url: gameLink
             }).then(() => {
-                giveShareReward(rewardAmount);
-            }).catch((error) => {
-                console.log('शेयर रद्द किया गया', error);
-            });
+                coins += 2000;
+                updateCoins();
+                alert("🎉 शेयर करने के लिए धन्यवाद! आपको +2000 सिक्के मिले!");
+            }).catch((error) => console.log('शेयर रद्द किया गया', error));
         } else {
-            // अगर मोबाइल में शेयर सपोर्ट नहीं है तो लिंक कॉपी करें
             navigator.clipboard.writeText(gameLink).then(() => {
-                giveShareReward(rewardAmount);
-            }).catch(() => {
-                messageEl.textContent = "लिंक कॉपी करने में समस्या हुई।";
+                coins += 2000;
+                updateCoins();
+                alert("🎉 लिंक कॉपी हो गया! आपको +2000 सिक्के मिले!");
             });
         }
     }
 
-    function giveShareReward(amount) {
-        coins += amount;
-        updateCoinDisplay();
-        messageEl.textContent = "🎉 शेयर करने के लिए धन्यवाद! आपको +" + amount + " सिक्के मिले!";
+    // ==========================================
+    // 🌟 वीडियो कंट्रोल 🌟
+    // ==========================================
+    function closeVideo() {
+        document.getElementById('videoBox').style.display = 'none';
+        localStorage.setItem('videoShown', 'true');
     }
 
     // पेज लोड होने पर
     window.onload = () => {
-        updateCoinDisplay();
+        updateCoins();
+        // अगर पहले वीडियो नहीं देखा है तो दिखाएं
+        if (!localStorage.getItem('videoShown')) {
+            document.getElementById('videoBox').style.display = 'flex';
+        }
     };
 </script>
 
