@@ -142,7 +142,6 @@
         .name { font-size: 11px; color: #fff; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 10px; margin-top: 2px; white-space: nowrap;}
         .bot-coins { font-size: 9px; color: #f1c40f; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 5px; margin-top: 1px;}
         
-        /* यहाँ दिखेगा कि किसने कितना दांव लगाया */
         .bet-info {
             position: absolute; top: 65px; background: rgba(241, 196, 15, 0.9);
             color: #000; font-size: 10px; font-weight: bold; padding: 2px 6px;
@@ -151,7 +150,6 @@
         }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
 
-        /* पोजीशन */
         .p1 { top: 10px; left: 50%; transform: translateX(-50%); } 
         .p2 { top: 35%; right: 5px; } 
         .p3 { bottom: 20%; right: 20px; } 
@@ -293,7 +291,6 @@
                 <div class="pot-area">POT: ₹<span id="potDisplay">0</span></div>
                 <div class="msg-board" id="msgBoard">खेल शुरू हो रहा है...</div>
 
-                <!-- खिलाड़ी 1 -->
                 <div class="player p1" id="player-p1">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=87CEEB" alt="Arjun">
@@ -305,7 +302,6 @@
                     <div class="cards-container" id="p1-cards"></div>
                 </div>
 
-                <!-- खिलाड़ी 2 -->
                 <div class="player p2" id="player-p2">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Gurpreet&backgroundColor=F4A460" alt="Gurpreet">
@@ -317,7 +313,6 @@
                     <div class="cards-container" id="p2-cards"></div>
                 </div>
 
-                <!-- खिलाड़ी 3 -->
                 <div class="player p3" id="player-p3">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kavya&backgroundColor=FFB6C1" alt="Kavya">
@@ -329,7 +324,6 @@
                     <div class="cards-container" id="p3-cards"></div>
                 </div>
 
-                <!-- आप (You) -->
                 <div class="player p4" id="player-you">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=You&backgroundColor=90EE90" alt="You">
@@ -343,7 +337,6 @@
             </div>
         </div>
 
-        <!-- कंट्रोल्स -->
         <div class="controls">
             <div class="action-row">
                 <button class="btn btn-play" id="btnPlay" onclick="playAction()" disabled>PLAY</button>
@@ -357,7 +350,6 @@
         </div>
     </div>
 
-    <!-- 🌟 पॉप-अप (साइड शो / शो) 🌟 -->
     <div class="popup-overlay" id="popupOverlay">
         <div class="popup-content">
             <div class="popup-title" id="popupTitle">रिजल्ट</div>
@@ -366,14 +358,12 @@
         </div>
     </div>
 
-    <!-- वीडियो पॉप-अप -->
     <div class="video-box" id="videoBox">
         <iframe src="https://www.youtube.com/embed/6apIgne1I8I?rel=0&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         <button class="close-video" onclick="closeVideo()">वीडियो बंद करें और खेलें</button>
     </div>
- </div>
-</div>  
-    
+</div>
+ 
 <script>
     let coins = parseInt(localStorage.getItem('teenPattiCoins')) || 10000;
     let pot = 0;
@@ -411,7 +401,6 @@
         localStorage.setItem('teenPattiCoins', coins);
     }
 
-    // 🌟 सिक्के उड़ने का एनिमेशन 🌟
     function animateCoin(fromElement) {
         let coin = document.createElement('div');
         coin.className = 'flying-coin';
@@ -508,7 +497,6 @@
         startUserTurn();
     }
 
-    // 🌟 टाइमर और डिस्क्वालिफिकेशन 🌟
     function startTimer(playerId) {
         clearInterval(timerInterval);
         timeLeft = 10;
@@ -610,7 +598,6 @@
         document.getElementById('btnSide').disabled = false;
     }
 
-    // 🌟 साइड शो का सही लॉजिक 🌟
     function sideShow() {
         if (!gameActive || activeBots.length === 0) return;
         clearInterval(timerInterval);
@@ -672,7 +659,6 @@
         setTimeout(backToLobby, 2500);
     }
 
-    // 🌟 बॉट्स का टर्न 🌟
     function nextBotTurn() {
         if (!gameActive) return;
         
@@ -708,7 +694,6 @@
             pot += botBet;
             potDisplay.textContent = formatMoney(pot);
             
-            // सिक्के का एनिमेशन बॉट के लिए
             animateCoin(document.getElementById('player-' + botId));
 
             let betInfo = document.getElementById('bet-' + botId);
@@ -748,7 +733,6 @@
         }
     }
 
-    // कार्ड रैंकिंग
     function evaluateHand(hand) {
         let r1 = ranks.indexOf(hand[0].rank) + 2;
         let r2 = ranks.indexOf(hand[1].rank) + 2;
@@ -780,7 +764,6 @@
         return 0;
     }
 
-    // 🌟 SHOW (सभी के कार्ड) 🌟
     function showCards() {
         if (!gameActive) return;
         clearInterval(timerInterval);
@@ -804,7 +787,6 @@
             }
         }
 
-        // पॉप-अप में सभी के कार्ड दिखाएं
         let popupHTML = '';
         hands.forEach(h => {
             let isWinner = (h.name === winnerObj.name) ? 'winner-row' : '';
