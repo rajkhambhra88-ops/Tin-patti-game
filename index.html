@@ -44,10 +44,14 @@
         .coin-box { font-size: 15px; font-weight: bold; color: #f1c40f; }
         .coin-box span { color: #fff; }
         .title { font-size: 16px; color: #e94560; font-weight: bold; letter-spacing: 1px; }
-        .btn-share-small {
-            background: #3498db; border: none; padding: 5px 10px; border-radius: 5px;
+        
+        /* 🌟 शेयर बटन (अलग पॉइंट) 🌟 */
+        .btn-share-header {
+            background: #3498db; border: none; padding: 6px 12px; border-radius: 5px;
             color: white; font-size: 12px; cursor: pointer; font-weight: bold;
+            animation: pulseShare 2s infinite;
         }
+        @keyframes pulseShare { 0% { transform: scale(1); } 50% { transform: scale(1.05); box-shadow: 0 0 10px #3498db; } 100% { transform: scale(1); } }
 
         /* 🌟 लॉबी 🌟 */
         .lobby {
@@ -75,7 +79,7 @@
         .table-card p { color: #aaa; font-size: 11px; margin-bottom: 5px;}
         .entry-fee { color: #27ae60; font-weight: bold; font-size: 14px; }
 
-        /* 🌟 गेम टेबल एरिया (छोटा किया गया) 🌟 */
+        /* 🌟 गेम टेबल एरिया 🌟 */
         .game-play-area {
             display: none; 
             flex-direction: column;
@@ -95,8 +99,8 @@
         }
         
         .table-circle {
-            width: 85%;
-            height: 80%;
+            width: 92%;
+            height: 85%;
             background: radial-gradient(circle, #117b4b 0%, #064325 100%);
             border-radius: 50%;
             border: 6px solid #4a2c13;
@@ -107,7 +111,7 @@
             align-items: center;
         }
 
-        /* 🌟 खिलाड़ी 🌟 */
+        /* 🌟 खिलाड़ी (बड़ा साइज) 🌟 */
         .player {
             position: absolute;
             text-align: center;
@@ -120,36 +124,46 @@
         
         .avatar-box { position: relative; }
         .player img {
-            width: 40px; height: 40px; border-radius: 50%;
-            border: 2px solid #fff; object-fit: cover;
+            width: 55px; height: 55px; border-radius: 50%;
+            border: 3px solid #fff; object-fit: cover;
             background: #fff;
         }
         
-        .player.active-turn img { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; transform: scale(1.1); }
+        .player.active-turn img { border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; transform: scale(1.15); }
         .player.packed img { filter: grayscale(100%) opacity(0.5); }
         .player.packed .name { text-decoration: line-through; color: #888; }
         .player.packed .bet-info { display: none; }
 
         /* 🌟 टाइमर (30 सेकंड) 🌟 */
         .timer-circle {
-            position: absolute; top: -8px; right: -8px;
-            width: 22px; height: 22px; border-radius: 50%;
+            position: absolute; top: -10px; right: -10px;
+            width: 26px; height: 26px; border-radius: 50%;
             background: #e94560; color: #fff;
             display: flex; justify-content: center; align-items: center;
-            font-size: 11px; font-weight: bold; border: 2px solid #fff;
+            font-size: 13px; font-weight: bold; border: 2px solid #fff;
             display: none; z-index: 5;
         }
         .player.active-turn .timer-circle { display: flex; animation: pulseTimer 1s infinite; }
         @keyframes pulseTimer { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
-        .name { font-size: 10px; color: #fff; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 8px; margin-top: 2px; white-space: nowrap;}
-        .bot-coins { font-size: 8px; color: #f1c40f; background: rgba(0,0,0,0.6); padding: 1px 3px; border-radius: 5px; margin-top: 1px;}
+        .name { font-size: 12px; color: #fff; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 10px; margin-top: 3px; white-space: nowrap;}
+        .bot-coins { font-size: 10px; color: #f1c40f; background: rgba(0,0,0,0.6); padding: 2px 5px; border-radius: 5px; margin-top: 2px;}
         
         .bet-info {
-            position: absolute; top: 55px; background: rgba(241, 196, 15, 0.9);
-            color: #000; font-size: 9px; font-weight: bold; padding: 2px 5px;
-            border-radius: 8px; display: none; white-space: nowrap; z-index: 6;
+            position: absolute; top: 75px; background: rgba(241, 196, 15, 0.9);
+            color: #000; font-size: 11px; font-weight: bold; padding: 2px 8px;
+            border-radius: 10px; display: none; white-space: nowrap; z-index: 6;
         }
+
+        /* 🌟 गिफ्ट बटन 🌟 */
+        .gift-btn {
+            position: absolute; bottom: -15px; right: -15px;
+            background: #e94560; border: 2px solid #fff; border-radius: 50%;
+            width: 24px; height: 24px; font-size: 12px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 7; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .gift-btn:active { transform: scale(0.9); }
 
         /* 🌟 पोजीशन 🌟 */
         .p1 { top: 10px; left: 50%; transform: translateX(-50%); } 
@@ -160,35 +174,47 @@
         .p1 .cards-container { top: 100%; }
         .p2 .cards-container { top: 100%; left: 50%; }
         .p3 .cards-container { top: 100%; left: 50%; }
-        .p4 .cards-container { top: -55px; } 
+        .p4 .cards-container { top: -75px; } 
 
-        /* 🌟 कार्ड्स 🌟 */
-        .cards-container { display: flex; gap: 2px; margin-top: 2px; justify-content: center; position: absolute; left: 50%; transform: translateX(-50%); z-index: 4;}
+        /* 🌟 कार्ड्स (बड़े साइज) 🌟 */
+        .cards-container { display: flex; gap: 3px; margin-top: 2px; justify-content: center; position: absolute; left: 50%; transform: translateX(-50%); z-index: 4;}
         .card {
-            width: 20px; height: 30px; border-radius: 3px;
+            width: 28px; height: 42px; border-radius: 4px;
             background: #fff; color: #000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            font-size: 8px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
             animation: dealCard 0.3s ease-out;
         }
         @keyframes dealCard { from { transform: translateY(-15px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         
         .card.red { color: #e94560; }
         .card.back { background: linear-gradient(45deg, #800000, #4a0000); border: 1px solid #f1c40f; }
-        .card.back::after { content: "★"; color: #f1c40f; font-size: 10px; }
+        .card.back::after { content: "★"; color: #f1c40f; font-size: 14px; }
         
-        .p4 .card { width: 32px; height: 45px; font-size: 12px; }
+        .p4 .card { width: 45px; height: 65px; font-size: 18px; }
+
+        /* 🌟 सेंटर कार्ड्स (साइड शो के लिए टेबल पर) 🌟 */
+        .center-cards-area {
+            display: none; position: absolute; top: 45%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.9); border: 2px solid #f1c40f; border-radius: 10px;
+            padding: 8px 15px; z-index: 20; flex-direction: column; gap: 8px; width: 80%;
+        }
+        .center-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 5px;}
+        .center-row:last-child { border-bottom: none; padding-bottom: 0;}
+        .center-name { font-size: 12px; font-weight: bold; color: #fff;}
+        .center-card-wrapper { display: flex; gap: 3px; }
+        .center-card-wrapper .card { width: 25px; height: 38px; font-size: 10px; }
 
         /* 🌟 पॉट और मैसेज 🌟 */
         .pot-area {
-            position: absolute; top: 45%; transform: translateY(-50%);
+            position: absolute; top: 25%;
             background: rgba(0,0,0,0.9); padding: 4px 15px; border-radius: 15px;
             border: 2px solid #f1c40f; color: #f1c40f; font-weight: bold; font-size: 14px;
             z-index: 2;
         }
         .msg-board {
-            position: absolute; bottom: 15%; width: 100%; text-align: center;
-            font-size: 12px; color: #fff; font-weight: bold;
+            position: absolute; bottom: 25%; width: 100%; text-align: center;
+            font-size: 13px; color: #fff; font-weight: bold;
             text-shadow: 1px 1px 3px #000; pointer-events: none; padding: 0 10px; z-index: 2;
         }
 
@@ -200,10 +226,10 @@
         }
         @keyframes flyToPot {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.5); opacity: 0; top: 45%; left: 50%; }
+            100% { transform: scale(0.5); opacity: 0; top: 25%; left: 50%; }
         }
 
-        /* 🌟 पॉप-अप (साइड शो और शो) 🌟 */
+        /* 🌟 पॉप-अप (रिजल्ट के लिए) 🌟 */
         .popup-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); z-index: 50;
@@ -224,11 +250,11 @@
         .popup-cards .card { width: 22px; height: 32px; font-size: 9px; }
         .winner-row { background: rgba(39, 174, 96, 0.3); border-radius: 5px; padding: 5px; border: 1px solid #27ae60; }
         .popup-btn {
-            margin-top: 15px; padding: 8px 15px; background: #27ae60; border: none;
+            margin-top: 15px; padding: 10px 15px; background: #27ae60; border: none;
             border-radius: 8px; color: white; font-weight: bold; font-size: 14px; cursor: pointer; width: 100%;
         }
 
-        /* 🌟 कंट्रोल बटन्स (बड़े साइज़ में) 🌟 */
+        /* 🌟 कंट्रोल बटन्स 🌟 */
         .controls {
             padding: 10px; 
             background: #0b132b;
@@ -241,10 +267,8 @@
         }
         .action-row { display: flex; justify-content: space-between; gap: 6px; }
         .btn {
-            flex: 1; padding: 16px 4px; /* बटन बड़े किए गए */
-            border: none; border-radius: 10px;
-            font-size: 13px; /* फॉन्ट बड़ा किया गया */
-            font-weight: bold; color: white; cursor: pointer;
+            flex: 1; padding: 16px 4px; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: bold; color: white; cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;
             text-align: center; text-transform: uppercase;
         }
@@ -267,6 +291,16 @@
             margin-top: 20px; padding: 10px 25px; background: #e94560;
             color: white; border: none; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer;
         }
+
+        /* गिफ्ट मैसेज */
+        .gift-anim {
+            position: absolute; font-size: 30px; z-index: 60; pointer-events: none;
+            animation: floatUp 1.5s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -275,7 +309,8 @@
     <div class="header">
         <div class="coin-box">🪙 <span id="coinDisplay">10000</span></div>
         <div class="title">Teen Patti</div>
-        <button class="btn-share-small" onclick="shareGame()">+2000</button>
+        <!-- 🌟 अलग शेयर पॉइंट 🌟 -->
+        <button class="btn-share-header" onclick="shareGame()">🔗 शेयर +2000</button>
     </div>
 
     <!-- 🌟 लॉबी 🌟 -->
@@ -305,10 +340,15 @@
                 <div class="pot-area">POT: ₹<span id="potDisplay">0</span></div>
                 <div class="msg-board" id="msgBoard">खेल शुरू हो रहा है...</div>
 
+                <!-- सेंटर कार्ड्स (साइड शो के लिए) -->
+                <div class="center-cards-area" id="centerCardsArea"></div>
+
+                <!-- खिलाड़ी 1 -->
                 <div class="player p1" id="player-p1">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=87CEEB" alt="Arjun">
                         <div class="timer-circle" id="timer-p1">30</div>
+                        <div class="gift-btn" onclick="sendGift('Arjun')">🎁</div>
                     </div>
                     <div class="name">Arjun</div>
                     <div class="bot-coins" id="coins-p1">₹0</div>
@@ -316,10 +356,12 @@
                     <div class="cards-container" id="p1-cards"></div>
                 </div>
 
+                <!-- खिलाड़ी 2 -->
                 <div class="player p2" id="player-p2">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Gurpreet&backgroundColor=F4A460" alt="Gurpreet">
                         <div class="timer-circle" id="timer-p2">30</div>
+                        <div class="gift-btn" onclick="sendGift('Gurpreet')">🎁</div>
                     </div>
                     <div class="name">Gurpreet</div>
                     <div class="bot-coins" id="coins-p2">₹0</div>
@@ -327,10 +369,12 @@
                     <div class="cards-container" id="p2-cards"></div>
                 </div>
 
+                <!-- खिलाड़ी 3 -->
                 <div class="player p3" id="player-p3">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kavya&backgroundColor=FFB6C1" alt="Kavya">
                         <div class="timer-circle" id="timer-p3">30</div>
+                        <div class="gift-btn" onclick="sendGift('Kavya')">🎁</div>
                     </div>
                     <div class="name">Kavya</div>
                     <div class="bot-coins" id="coins-p3">₹0</div>
@@ -338,6 +382,7 @@
                     <div class="cards-container" id="p3-cards"></div>
                 </div>
 
+                <!-- आप (You) -->
                 <div class="player p4" id="player-you">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=You&backgroundColor=90EE90" alt="You">
@@ -351,7 +396,7 @@
             </div>
         </div>
 
-        <!-- 🌟 कंट्रोल्स (बड़े बटन) 🌟 -->
+        <!-- 🌟 कंट्रोल्स 🌟 -->
         <div class="controls">
             <div class="action-row">
                 <button class="btn btn-play" id="btnPlay" onclick="playAction()" disabled>PLAY</button>
@@ -385,7 +430,7 @@
     let gameActive = false;
     let seenCards = false; 
     let bootAmount = 100; 
-    let currentTableFee = 100; // कौन सी टेबल पर खेल रहे हैं
+    let currentTableFee = 100;
     
     let botCoins = { p1: 0, p2: 0, p3: 0 };
     let botHands = { p1: [], p2: [], p3: [] };
@@ -394,7 +439,7 @@
     let activeBots = ['p1', 'p2', 'p3']; 
     let botTurnIndex = 0;
     let timerInterval;
-    let timeLeft = 30; // 30 सेकंड का टाइमर
+    let timeLeft = 30; 
     let botsOnlyMode = false; 
 
     const suits = ['♠', '♥', '♦', '♣'];
@@ -405,6 +450,7 @@
     const potDisplay = document.getElementById('potDisplay');
     const msgBoard = document.getElementById('msgBoard');
     const tableCircle = document.getElementById('tableCircle');
+    const centerCardsArea = document.getElementById('centerCardsArea');
 
     function formatMoney(amount) {
         if (amount >= 10000000) return (amount / 10000000).toFixed(1) + ' Cr';
@@ -432,6 +478,33 @@
         tableCircle.appendChild(coin);
         
         setTimeout(() => { coin.remove(); }, 800);
+    }
+
+    // 🌟 गिफ्ट भेजने का फंक्शन 🌟
+    function sendGift(playerName) {
+        if (!gameActive) {
+            alert("गिफ्ट सिर्फ गेम के दौरान भेजे जा सकते हैं!");
+            return;
+        }
+        let gifts = ['🌹', '🍫', '🧸', '💎', '👑'];
+        let randomGift = gifts[Math.floor(Math.random() * gifts.length)];
+        
+        // एनिमेशन दिखाएं
+        let giftAnim = document.createElement('div');
+        giftAnim.className = 'gift-anim';
+        giftAnim.innerText = randomGift;
+        
+        let playerElement = document.getElementById('player-' + (playerName === 'Arjun' ? 'p1' : playerName === 'Gurpreet' ? 'p2' : 'p3'));
+        let rect = playerElement.getBoundingClientRect();
+        let tableRect = tableCircle.getBoundingClientRect();
+        
+        giftAnim.style.left = (rect.left - tableRect.left + 20) + 'px';
+        giftAnim.style.top = (rect.top - tableRect.top) + 'px';
+        
+        tableCircle.appendChild(giftAnim);
+        setTimeout(() => { giftAnim.remove(); }, 1500);
+        
+        msgBoard.innerHTML = `आपने ${playerName} को ${randomGift} गिफ्ट भेजा!`;
     }
 
     function joinTable(fee) {
@@ -480,6 +553,7 @@
             el.querySelector('.bet-info').style.display = 'none';
         });
         document.getElementById('popupOverlay').style.display = 'none';
+        centerCardsArea.style.display = 'none';
 
         renderCards();
         
@@ -516,7 +590,6 @@
         if(activeBots.includes('p3')) document.getElementById('p3-cards').innerHTML = botHands.p3.map(() => cardHTML(null, true)).join('');
     }
 
-    // 🌟 30 सेकंड का टाइमर 🌟
     function startTimer(playerId) {
         clearInterval(timerInterval);
         timeLeft = 30;
@@ -620,6 +693,7 @@
         document.getElementById('btnSide').disabled = false;
     }
 
+    // 🌟 साइड शो (टेबल के बीच में कार्ड खुलेंगे) 🌟
     function sideShow() {
         if (!gameActive || activeBots.length === 0) return;
         clearInterval(timerInterval);
@@ -639,33 +713,35 @@
             } else {
                 msgBoard.innerHTML = `${targetName} ने चैलेंज एक्सेप्ट कर लिया!`;
                 
-                showPopup("साइड शो (Side Show)", `
-                    <div class="popup-row winner-row">
-                        <div class="popup-name">You</div>
-                        <div class="popup-cards">${playerHand.map(c => cardHTML(c)).join('')}</div>
+                // टेबल के बीच में कार्ड दिखाएं
+                centerCardsArea.style.display = 'flex';
+                centerCardsArea.innerHTML = `
+                    <div class="center-row winner-row">
+                        <div class="center-name">You</div>
+                        <div class="center-card-wrapper">${playerHand.map(c => cardHTML(c)).join('')}</div>
                     </div>
-                    <div class="popup-row">
-                        <div class="popup-name">${targetName}</div>
-                        <div class="popup-cards">${botHands[targetBot].map(c => cardHTML(c)).join('')}</div>
+                    <div class="center-row">
+                        <div class="center-name">${targetName}</div>
+                        <div class="center-card-wrapper">${botHands[targetBot].map(c => cardHTML(c)).join('')}</div>
                     </div>
-                `);
+                `;
 
                 if (compareHands(playerHand, botHands[targetBot]) === 1) {
                     setTimeout(() => {
-                        closePopup();
+                        centerCardsArea.style.display = 'none';
                         msgBoard.innerHTML = `🎉 आप जीत गए! ${targetName} आउट।`;
                         packBot(targetBot, true);
-                    }, 2000);
+                    }, 2500);
                 } else {
                     setTimeout(() => {
-                        closePopup();
+                        centerCardsArea.style.display = 'none';
                         msgBoard.innerHTML = `😔 आप हार गए! ${targetName} के कार्ड बड़े थे।`;
                         document.getElementById('player-you').classList.add('packed');
                         document.getElementById('player-you').classList.remove('active-turn');
                         botsOnlyMode = true;
                         botTurnIndex = 0;
                         nextBotTurn();
-                    }, 2000);
+                    }, 2500);
                 }
             }
         }, 1500);
@@ -720,6 +796,7 @@
         }, 1200);
     }
 
+    // 🌟 बॉट्स का साइड शो (टेबल के बीच में) 🌟
     function botDecision(botId) {
         if (!activeBots.includes(botId)) return;
         clearInterval(timerInterval);
@@ -736,25 +813,26 @@
             
             msgBoard.innerHTML = `${botName} ने ${targetName} को साइड शो दिया!`;
             
-            showPopup("साइड शो (Bots)", `
-                <div class="popup-row">
-                    <div class="popup-name">${botName}</div>
-                    <div class="popup-cards">${botHands[botId].map(c => cardHTML(c)).join('')}</div>
+            centerCardsArea.style.display = 'flex';
+            centerCardsArea.innerHTML = `
+                <div class="center-row">
+                    <div class="center-name">${botName}</div>
+                    <div class="center-card-wrapper">${botHands[botId].map(c => cardHTML(c)).join('')}</div>
                 </div>
-                <div class="popup-row">
-                    <div class="popup-name">${targetName}</div>
-                    <div class="popup-cards">${botHands[targetBot].map(c => cardHTML(c)).join('')}</div>
+                <div class="center-row">
+                    <div class="center-name">${targetName}</div>
+                    <div class="center-card-wrapper">${botHands[targetBot].map(c => cardHTML(c)).join('')}</div>
                 </div>
-            `);
+            `;
             
             setTimeout(() => {
-                closePopup();
+                centerCardsArea.style.display = 'none';
                 if (compareHands(botHands[botId], botHands[targetBot]) === 1) {
                     packBot(targetBot, true);
                 } else {
                     packBot(botId, true);
                 }
-            }, 2000);
+            }, 2500);
             
         } else {
             let botBet = bootAmount * (Math.floor(Math.random() * 2) + 1);
@@ -839,6 +917,7 @@
         return 0;
     }
 
+    // 🌟 SHOW (सभी के कार्ड पॉपअप में) 🌟
     function showCards() {
         if (!gameActive) return;
         clearInterval(timerInterval);
@@ -847,6 +926,7 @@
         seenCards = true;
         renderCards();
         disableButtons();
+        centerCardsArea.style.display = 'none';
 
         let hands = [
             { id: 'you', name: 'You', hand: playerHand, eval: evaluateHand(playerHand) },
@@ -889,12 +969,12 @@
         setTimeout(() => { closePopup(); endRound(); }, 3500);
     }
 
-    // 🌟 राउंड खत्म होने का फंक्शन (5 सेकंड बाद नया राउंड) 🌟
     function endRound() {
         gameActive = false;
         setTimeout(() => {
             document.getElementById('popupOverlay').style.display = 'none';
             document.querySelectorAll('.player').forEach(el => el.classList.remove('active-turn', 'packed'));
+            centerCardsArea.style.display = 'none';
             msgBoard.innerHTML = "नया राउंड 5 सेकंड में शुरू हो रहा है...";
             
             let countdown = 5;
@@ -903,7 +983,7 @@
                 msgBoard.innerHTML = `नया राउंड ${countdown} सेकंड में शुरू हो रहा है...`;
                 if(countdown <= 0) {
                     clearInterval(cdInterval);
-                    startNewRound(); // नया राउंड शुरू
+                    startNewRound(); 
                 }
             }, 1000);
         }, 1500);
