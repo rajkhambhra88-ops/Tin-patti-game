@@ -75,7 +75,7 @@
         .table-card p { color: #aaa; font-size: 11px; margin-bottom: 5px;}
         .entry-fee { color: #27ae60; font-weight: bold; font-size: 14px; }
 
-        /* 🌟 गेम टेबल एरिया 🌟 */
+        /* 🌟 गेम टेबल एरिया (छोटा किया गया) 🌟 */
         .game-play-area {
             display: none; 
             flex-direction: column;
@@ -87,7 +87,7 @@
         
         .table-bg {
             flex: 1;
-            margin: 5px 10px;
+            margin: 5px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -95,8 +95,8 @@
         }
         
         .table-circle {
-            width: 95%;
-            height: 95%;
+            width: 85%;
+            height: 80%;
             background: radial-gradient(circle, #117b4b 0%, #064325 100%);
             border-radius: 50%;
             border: 6px solid #4a2c13;
@@ -130,12 +130,13 @@
         .player.packed .name { text-decoration: line-through; color: #888; }
         .player.packed .bet-info { display: none; }
 
+        /* 🌟 टाइमर (30 सेकंड) 🌟 */
         .timer-circle {
             position: absolute; top: -8px; right: -8px;
-            width: 20px; height: 20px; border-radius: 50%;
+            width: 22px; height: 22px; border-radius: 50%;
             background: #e94560; color: #fff;
             display: flex; justify-content: center; align-items: center;
-            font-size: 10px; font-weight: bold; border: 2px solid #fff;
+            font-size: 11px; font-weight: bold; border: 2px solid #fff;
             display: none; z-index: 5;
         }
         .player.active-turn .timer-circle { display: flex; animation: pulseTimer 1s infinite; }
@@ -150,7 +151,7 @@
             border-radius: 8px; display: none; white-space: nowrap; z-index: 6;
         }
 
-        /* 🌟 पोजीशन (आमने-सामने) 🌟 */
+        /* 🌟 पोजीशन 🌟 */
         .p1 { top: 10px; left: 50%; transform: translateX(-50%); } 
         .p2 { top: 40%; left: 5px; } 
         .p3 { top: 40%; right: 5px; } 
@@ -227,7 +228,7 @@
             border-radius: 8px; color: white; font-weight: bold; font-size: 14px; cursor: pointer; width: 100%;
         }
 
-        /* 🌟 कंट्रोल बटन्स 🌟 */
+        /* 🌟 कंट्रोल बटन्स (बड़े साइज़ में) 🌟 */
         .controls {
             padding: 10px; 
             background: #0b132b;
@@ -240,10 +241,12 @@
         }
         .action-row { display: flex; justify-content: space-between; gap: 6px; }
         .btn {
-            flex: 1; padding: 12px 2px; border: none; border-radius: 8px;
-            font-size: 11px; font-weight: bold; color: white; cursor: pointer;
+            flex: 1; padding: 16px 4px; /* बटन बड़े किए गए */
+            border: none; border-radius: 10px;
+            font-size: 13px; /* फॉन्ट बड़ा किया गया */
+            font-weight: bold; color: white; cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;
-            text-align: center;
+            text-align: center; text-transform: uppercase;
         }
         .btn:active { transform: scale(0.95); }
         .btn-play { background: #27ae60; }
@@ -305,7 +308,7 @@
                 <div class="player p1" id="player-p1">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=87CEEB" alt="Arjun">
-                        <div class="timer-circle" id="timer-p1">10</div>
+                        <div class="timer-circle" id="timer-p1">30</div>
                     </div>
                     <div class="name">Arjun</div>
                     <div class="bot-coins" id="coins-p1">₹0</div>
@@ -316,7 +319,7 @@
                 <div class="player p2" id="player-p2">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Gurpreet&backgroundColor=F4A460" alt="Gurpreet">
-                        <div class="timer-circle" id="timer-p2">10</div>
+                        <div class="timer-circle" id="timer-p2">30</div>
                     </div>
                     <div class="name">Gurpreet</div>
                     <div class="bot-coins" id="coins-p2">₹0</div>
@@ -327,7 +330,7 @@
                 <div class="player p3" id="player-p3">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kavya&backgroundColor=FFB6C1" alt="Kavya">
-                        <div class="timer-circle" id="timer-p3">10</div>
+                        <div class="timer-circle" id="timer-p3">30</div>
                     </div>
                     <div class="name">Kavya</div>
                     <div class="bot-coins" id="coins-p3">₹0</div>
@@ -338,7 +341,7 @@
                 <div class="player p4" id="player-you">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=You&backgroundColor=90EE90" alt="You">
-                        <div class="timer-circle" id="timer-you">10</div>
+                        <div class="timer-circle" id="timer-you">30</div>
                     </div>
                     <div class="name">You</div>
                     <div class="bet-info" id="bet-you"></div>
@@ -348,6 +351,7 @@
             </div>
         </div>
 
+        <!-- 🌟 कंट्रोल्स (बड़े बटन) 🌟 -->
         <div class="controls">
             <div class="action-row">
                 <button class="btn btn-play" id="btnPlay" onclick="playAction()" disabled>PLAY</button>
@@ -381,6 +385,7 @@
     let gameActive = false;
     let seenCards = false; 
     let bootAmount = 100; 
+    let currentTableFee = 100; // कौन सी टेबल पर खेल रहे हैं
     
     let botCoins = { p1: 0, p2: 0, p3: 0 };
     let botHands = { p1: [], p2: [], p3: [] };
@@ -389,7 +394,7 @@
     let activeBots = ['p1', 'p2', 'p3']; 
     let botTurnIndex = 0;
     let timerInterval;
-    let timeLeft = 10;
+    let timeLeft = 30; // 30 सेकंड का टाइमर
     let botsOnlyMode = false; 
 
     const suits = ['♠', '♥', '♦', '♣'];
@@ -435,19 +440,53 @@
             return;
         }
         bootAmount = fee; 
+        currentTableFee = fee;
         
-        botCoins.p1 = fee * 10 + Math.floor(Math.random() * fee * 5);
-        botCoins.p2 = fee * 8 + Math.floor(Math.random() * fee * 5);
-        botCoins.p3 = fee * 12 + Math.floor(Math.random() * fee * 5);
+        document.getElementById('lobbyScreen').style.display = 'none';
+        document.getElementById('gameScreen').style.display = 'flex';
+        
+        startNewRound();
+    }
+
+    function startNewRound() {
+        coins -= bootAmount;
+        pot = bootAmount * 4; 
+        updateCoins();
+        potDisplay.textContent = formatMoney(pot);
+
+        botCoins.p1 = bootAmount * 10 + Math.floor(Math.random() * bootAmount * 5);
+        botCoins.p2 = bootAmount * 8 + Math.floor(Math.random() * bootAmount * 5);
+        botCoins.p3 = bootAmount * 12 + Math.floor(Math.random() * bootAmount * 5);
         
         document.getElementById('coins-p1').textContent = "🪙 " + formatMoney(botCoins.p1);
         document.getElementById('coins-p2').textContent = "🪙 " + formatMoney(botCoins.p2);
         document.getElementById('coins-p3').textContent = "🪙 " + formatMoney(botCoins.p3);
 
-        document.getElementById('lobbyScreen').style.display = 'none';
-        document.getElementById('gameScreen').style.display = 'flex';
+        createDeck();
+        playerHand = [deck.pop(), deck.pop(), deck.pop()];
+        botHands.p1 = [deck.pop(), deck.pop(), deck.pop()];
+        botHands.p2 = [deck.pop(), deck.pop(), deck.pop()];
+        botHands.p3 = [deck.pop(), deck.pop(), deck.pop()];
+
+        seenCards = false;
+        gameActive = true;
+        botsOnlyMode = false;
+        activeBots = ['p1', 'p2', 'p3']; 
+        botTurnIndex = 0;
+
+        document.querySelectorAll('.player').forEach(el => {
+            el.classList.remove('active-turn', 'packed');
+            el.querySelector('.cards-container').innerHTML = ''; 
+            el.querySelector('.bet-info').style.display = 'none';
+        });
+        document.getElementById('popupOverlay').style.display = 'none';
+
+        renderCards();
         
-        initGame();
+        const btnPlay = document.getElementById('btnPlay');
+        btnPlay.innerText = "PLAY";
+        
+        startUserTurn();
     }
 
     function createDeck() {
@@ -477,42 +516,10 @@
         if(activeBots.includes('p3')) document.getElementById('p3-cards').innerHTML = botHands.p3.map(() => cardHTML(null, true)).join('');
     }
 
-    function initGame() {
-        coins -= bootAmount;
-        pot = bootAmount * 4; 
-        updateCoins();
-        potDisplay.textContent = formatMoney(pot);
-
-        createDeck();
-        playerHand = [deck.pop(), deck.pop(), deck.pop()];
-        botHands.p1 = [deck.pop(), deck.pop(), deck.pop()];
-        botHands.p2 = [deck.pop(), deck.pop(), deck.pop()];
-        botHands.p3 = [deck.pop(), deck.pop(), deck.pop()];
-
-        seenCards = false;
-        gameActive = true;
-        botsOnlyMode = false;
-        activeBots = ['p1', 'p2', 'p3']; 
-        botTurnIndex = 0;
-
-        document.querySelectorAll('.player').forEach(el => {
-            el.classList.remove('active-turn', 'packed');
-            el.querySelector('.cards-container').innerHTML = ''; 
-            el.querySelector('.bet-info').style.display = 'none';
-        });
-        document.getElementById('popupOverlay').style.display = 'none';
-
-        renderCards();
-        
-        const btnPlay = document.getElementById('btnPlay');
-        btnPlay.innerText = "BET (Blind)";
-        
-        startUserTurn();
-    }
-
+    // 🌟 30 सेकंड का टाइमर 🌟
     function startTimer(playerId) {
         clearInterval(timerInterval);
-        timeLeft = 10;
+        timeLeft = 30;
         document.getElementById('timer-' + playerId).textContent = timeLeft;
         
         timerInterval = setInterval(() => {
@@ -569,7 +576,7 @@
             document.getElementById('btnPlay').innerText = "BET (Seen)";
         } else {
             msgBoard.innerHTML = "आपकी बारी! (Blind)";
-            document.getElementById('btnPlay').innerText = "BET (Blind)";
+            document.getElementById('btnPlay').innerText = "PLAY";
         }
     }
 
@@ -648,7 +655,7 @@
                         closePopup();
                         msgBoard.innerHTML = `🎉 आप जीत गए! ${targetName} आउट।`;
                         packBot(targetBot, true);
-                    }, 3000);
+                    }, 2000);
                 } else {
                     setTimeout(() => {
                         closePopup();
@@ -658,7 +665,7 @@
                         botsOnlyMode = true;
                         botTurnIndex = 0;
                         nextBotTurn();
-                    }, 3000);
+                    }, 2000);
                 }
             }
         }, 1500);
@@ -680,17 +687,14 @@
     function nextBotTurn() {
         if (!gameActive) return;
         
-        // अगर सिर्फ 1 बॉट बचा है और आप आउट हैं
         if (activeBots.length === 1 && document.getElementById('player-you').classList.contains('packed')) {
             let winnerBot = activeBots[0];
             let winnerName = winnerBot === 'p1' ? 'Arjun' : winnerBot === 'p2' ? 'Gurpreet' : 'Kavya';
             msgBoard.innerHTML = `🎉 ${winnerName} जीत गया! (बाकी सब आउट)`;
-            gameActive = false;
-            setTimeout(backToLobby, 3000);
+            endRound();
             return;
         }
         
-        // अगर सिर्फ 1 बॉट बचा है और आप खेल रहे हैं (तो आपकी बारी)
         if (activeBots.length === 1 && !document.getElementById('player-you').classList.contains('packed')) {
             startUserTurn();
             return;
@@ -723,18 +727,15 @@
         let handEval = evaluateHand(botHands[botId]);
         let randomAction = Math.random();
         
-        // बॉट्स का स्मार्ट लॉजिक
         if (handEval.rank === 1 && randomAction < 0.4) {
             packBot(botId, false);
         } else if (botsOnlyMode && activeBots.length === 2 && randomAction < 0.7) {
-            // सिर्फ 2 बॉट बचे हैं, तो साइड शो
             let targetBot = activeBots.find(id => id !== botId);
             let targetName = targetBot === 'p1' ? 'Arjun' : targetBot === 'p2' ? 'Gurpreet' : 'Kavya';
             let botName = botId === 'p1' ? 'Arjun' : botId === 'p2' ? 'Gurpreet' : 'Kavya';
             
             msgBoard.innerHTML = `${botName} ने ${targetName} को साइड शो दिया!`;
             
-            // साइड शो में सिर्फ उन दोनों के कार्ड दिखेंगे
             showPopup("साइड शो (Bots)", `
                 <div class="popup-row">
                     <div class="popup-name">${botName}</div>
@@ -753,7 +754,7 @@
                 } else {
                     packBot(botId, true);
                 }
-            }, 2500);
+            }, 2000);
             
         } else {
             let botBet = bootAmount * (Math.floor(Math.random() * 2) + 1);
@@ -784,15 +785,13 @@
         if (!isSideShow) msgBoard.textContent = "एक खिलाड़ी ने गेम छोड़ दिया।";
         
         if (activeBots.length === 0) {
-            // सारे बॉट आउट हो गए
             if (!document.getElementById('player-you').classList.contains('packed')) {
                 msgBoard.innerHTML = "🎉 सभी खिलाड़ियों ने गेम छोड़ दिया! आप जीत गए!";
                 coins += pot;
                 updateCoins();
                 potDisplay.textContent = 0;
                 disableButtons();
-                gameActive = false;
-                setTimeout(backToLobby, 3000);
+                endRound();
             }
         } else {
             if (botTurnIndex >= activeBots.length) botTurnIndex = 0;
@@ -840,7 +839,6 @@
         return 0;
     }
 
-    // 🌟 SHOW (सभी के कार्ड खुलेंगे) 🌟
     function showCards() {
         if (!gameActive) return;
         clearInterval(timerInterval);
@@ -888,7 +886,27 @@
         pot = 0;
         potDisplay.textContent = 0;
         
-        setTimeout(() => { closePopup(); backToLobby(); }, 4000);
+        setTimeout(() => { closePopup(); endRound(); }, 3500);
+    }
+
+    // 🌟 राउंड खत्म होने का फंक्शन (5 सेकंड बाद नया राउंड) 🌟
+    function endRound() {
+        gameActive = false;
+        setTimeout(() => {
+            document.getElementById('popupOverlay').style.display = 'none';
+            document.querySelectorAll('.player').forEach(el => el.classList.remove('active-turn', 'packed'));
+            msgBoard.innerHTML = "नया राउंड 5 सेकंड में शुरू हो रहा है...";
+            
+            let countdown = 5;
+            let cdInterval = setInterval(() => {
+                countdown--;
+                msgBoard.innerHTML = `नया राउंड ${countdown} सेकंड में शुरू हो रहा है...`;
+                if(countdown <= 0) {
+                    clearInterval(cdInterval);
+                    startNewRound(); // नया राउंड शुरू
+                }
+            }, 1000);
+        }, 1500);
     }
 
     function showPopup(title, bodyHTML) {
@@ -907,16 +925,6 @@
         document.getElementById('btnPack').disabled = true;
         document.getElementById('btnShow').disabled = true;
         document.getElementById('btnSide').disabled = true;
-    }
-
-    function backToLobby() {
-        gameActive = false;
-        botsOnlyMode = false;
-        document.getElementById('gameScreen').style.display = 'none';
-        document.getElementById('lobbyScreen').style.display = 'flex';
-        msgBoard.textContent = "";
-        document.getElementById('popupOverlay').style.display = 'none';
-        document.querySelectorAll('.player').forEach(el => el.classList.remove('active-turn', 'packed'));
     }
 
     function shareGame() {
