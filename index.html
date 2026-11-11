@@ -78,9 +78,7 @@
             transform: none;
         }
 
-        /* =========================================
-           🌟 खूबसूरत विज्ञापन बॉक्स का डिज़ाइन 🌟
-           ========================================= */
+        /* 🌟 विज्ञापन/वीडियो बॉक्स का डिज़ाइन 🌟 */
         .ad-container {
             margin: 15px 0;
             position: relative;
@@ -91,7 +89,6 @@
             background-size: 300% 300%;
             animation: gradientBorder 3s ease infinite;
             box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
-            display: none; 
         }
 
         @keyframes gradientBorder {
@@ -103,51 +100,38 @@
         .ad-box-inner {
             background: #0b132b;
             border-radius: 12px;
-            padding: 15px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100px;
             position: relative;
             overflow: hidden;
+            padding-bottom: 56.25%; /* 16:9 वीडियो रेश्यो */
+            height: 0;
         }
 
-        .ad-placeholder-text {
-            color: #7f8c8d;
-            font-size: 14px;
-            font-weight: normal;
-            z-index: 1;
-            text-align: center;
-        }
-        
-        .ad-placeholder-text strong {
-            color: #f1c40f;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-
-        .ad-real-content {
-            width: 100%;
-            height: 100%;
+        .ad-box-inner iframe {
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 2;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         .ad-badge {
             position: absolute;
             top: 5px;
             right: 5px;
-            background: rgba(233, 69, 96, 0.8);
+            background: rgba(233, 69, 96, 0.9);
             color: white;
             font-size: 10px;
             padding: 2px 6px;
             border-radius: 4px;
             z-index: 3;
             letter-spacing: 1px;
+            pointer-events: none;
         }
 
         .msg {
@@ -164,10 +148,23 @@
         .btn-ad:hover {
             background: #2ecc71;
         }
+        
+        /* 🌟 नया रिफिल बटन 🌟 */
+        .btn-refill {
+            background: #f39c12;
+            display: none; /* शुरुआत में छिपा हुआ */
+            animation: pulse 1.5s infinite;
+        }
+        .btn-refill:hover {
+            background: #e67e22;
+        }
 
-        /* =========================================
-           🌟 शेयर बटन का डिज़ाइन 🌟
-           ========================================= */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         .btn-share {
             background: #3498db;
             margin-top: 5px;
@@ -191,7 +188,6 @@
 <div class="container">
     <div class="title">Teen Patti</div>
     
-    <!-- सिक्का प्रदर्शन -->
     <div class="coin-display">
         आपके सिक्के: <span id="coinDisplay">10000</span>
     </div>
@@ -201,43 +197,49 @@
         खेल शुरू करें (100 सिक्के लागत)
     </button>
 
+    <!-- 🌟 रिफिल बटन (सिर्फ तब दिखेगा जब सिक्के 100 से कम होंगे) 🌟 -->
+    <button class="btn btn-refill" onclick="showRefillOptions()" id="refillBtn">
+        🎁 10,000 सिक्कों का रिफिल लें
+    </button>
+
     <!-- =========================================
-         🌟 विज्ञापन बॉक्स 🌟
+         🌟 वीडियो बॉक्स (यहाँ अपना वीडियो डालें) 🌟
          ========================================= -->
     <div class="ad-container" id="adBox">
-        <div class="ad-badge">AD</div>
+        <div class="ad-badge">GAME PROMO</div>
         <div class="ad-box-inner">
-            <div class="ad-placeholder-text">
-                <strong>यहाँ विज्ञापन आएगा</strong>
-                AdSense या अन्य विज्ञापन कोड यहाँ पेस्ट करें
-            </div>
-            <!-- असली विज्ञापन का कोड यहाँ जाएगा -->
-            <div class="ad-real-content" id="realAdSlot"></div>
+            <!-- 👇 यहाँ अपने YouTube वीडियो का ID डालें 👇 -->
+            <!-- अभी के लिए मैंने एक डेमो वीडियो लगाया है, आप इसे अपने गेम के वीडियो से बदल सकते हैं -->
+            <iframe 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0&autoplay=0" 
+                title="Game Promo Video" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
         </div>
     </div>
 
     <!-- विज्ञापन देखकर सिक्के प्राप्त करने का बटन -->
-    <button class="btn btn-ad" onclick="showRewardedAd()" id="adBtn">
+    <button class="btn btn-ad" onclick="watchAdForCoins()" id="adBtn">
         📺 विज्ञापन देखें +500 सिक्के
     </button>
 
-    <!-- =========================================
-         🌟 शेयर बटन (+5 सिक्के) 🌟
-         ========================================= -->
+    <!-- शेयर बटन (+2000 सिक्के) -->
     <button class="btn btn-share" onclick="shareGame()" id="shareBtn">
-        <!-- शेयर आइकॉन -->
         <svg viewBox="0 0 24 24">
             <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
         </svg>
-        गेम शेयर करें (+5 सिक्के)
+        गेम शेयर करें (+2000 सिक्के)
     </button>
 
     <div class="msg" id="message"></div>
 </div>
 
 <script>
-    // 🌟 1. शुरुआती सिक्कों की संख्या 10,000 कर दी गई है 🌟
-    // अगर localStorage में पहले से डेटा नहीं है, तो 10000 सेट होगा
+    // ==========================================
+    // 🌟 सिक्कों का लॉजिक (स्मार्ट तरीका) 🌟
+    // ==========================================
+    // शुरुआत में 10,000 सिक्के दें (सिर्फ पहली बार जब गेम ओपन हो)
     let coins = parseInt(localStorage.getItem('teenPattiCoins'));
     if (isNaN(coins)) {
         coins = 10000; 
@@ -245,65 +247,51 @@
 
     const coinDisplay = document.getElementById('coinDisplay');
     const messageEl = document.getElementById('message');
-    const adBtn = document.getElementById('adBtn');
-    const adBox = document.getElementById('adBox');
-    const shareBtn = document.getElementById('shareBtn');
+    const refillBtn = document.getElementById('refillBtn');
+    const playBtn = document.getElementById('playBtn');
 
+    // स्क्रीन अपडेट करने का फंक्शन
     function updateCoinDisplay() {
         coinDisplay.textContent = coins;
         localStorage.setItem('teenPattiCoins', coins);
+
+        // अगर सिक्के 100 से कम हो जाएं, तो रिफिल बटन दिखाएं और खेलने का बटन छिपा दें
+        if (coins < 100) {
+            refillBtn.style.display = 'block';
+            playBtn.style.display = 'none';
+        } else {
+            refillBtn.style.display = 'none';
+            playBtn.style.display = 'block';
+        }
     }
 
+    // खेल खेलने का बटन
     function playGame() {
         if (coins < 100) {
-            messageEl.textContent = "सिक्के कम हैं, विज्ञापन देखें या गेम शेयर करें!";
+            messageEl.textContent = "सिक्के कम हैं, कृपया रिफिल करें!";
+            updateCoinDisplay();
             return;
         }
         coins -= 100;
         updateCoinDisplay();
-        messageEl.textContent = "खेल शुरू... (डेमो)";
+        messageEl.textContent = "खेल शुरू... (यहाँ आपका गेम लॉजिक चलेगा)";
     }
 
-    // 🌟 2. शेयर करने पर 5 सिक्के देने का फंक्शन 🌟
-    function shareGame() {
-        // Web Share API का उपयोग (मोबाइल ब्राउज़र में नेटिव शेयर मेनू खुलेगा)
-        if (navigator.share) {
-            navigator.share({
-                title: 'Teen Patti गेम',
-                text: 'मेरे साथ Teen Patti खेलें और सिक्के जीतें!',
-                url: window.location.href // अपने गेम का लिंक डालें
-            }).then(() => {
-                // सफलतापूर्वक शेयर होने पर इनाम
-                giveShareReward();
-            }).catch((error) => {
-                // अगर यूजर शेयर कैंसिल कर देता है या एरर आता है
-                console.log('शेयर रद्द किया गया या विफल रहा', error);
-                // नोट: असली ऐप में आप यहाँ भी इनाम दे सकते हैं, पर ब्राउज़र में कैंसिल होने पर न दें
-            });
-        } else {
-            // अगर ब्राउज़र Web Share API सपोर्ट नहीं करता (जैसे कंप्यूटर पर)
-            // तो हम लिंक कॉपी कर सकते हैं और इनाम दे सकते हैं
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                messageEl.textContent = "लिंक कॉपी हो गया! अब इसे दोस्तों को भेजें।";
-                giveShareReward();
-            }).catch(() => {
-                messageEl.textContent = "शेयर करने में समस्या हुई।";
-            });
-        }
+    // 🌟 रिफिल का विकल्प दिखाना 🌟
+    function showRefillOptions() {
+        messageEl.innerHTML = "10,000 सिक्के पाने के लिए कोई एक विकल्प चुनें:<br>1. नीचे 'विज्ञापन देखें' पर क्लिक करें।<br>2. या 'गेम शेयर करें' पर क्लिक करें।";
     }
 
-    // इनाम देने का सहायक फंक्शन
-    function giveShareReward() {
-        coins += 5;
-        updateCoinDisplay();
-        messageEl.textContent = "🎉 शेयर करने के लिए धन्यवाद! आपको +5 सिक्के मिले।";
-    }
-
-    function showRewardedAd() {
+    // ==========================================
+    // 🌟 विज्ञापन देखकर 10,000 सिक्के (रिफिल) या 500 सिक्के 🌟
+    // ==========================================
+    function watchAdForCoins() {
+        // अगर सिक्के 100 से कम हैं (यानी रिफिल की जरूरत है), तो 10,000 दें, वरना 500
+        let rewardAmount = (coins < 100) ? 10000 : 500;
+        
         messageEl.textContent = "विज्ञापन लोड हो रहा है...";
-        adBtn.disabled = true;
-        adBox.style.display = 'block';
-
+        
+        // असली विज्ञापन का लॉजिक (टेस्ट मोड)
         adBreak({
             type: 'reward',
             name: 'coin_reward',
@@ -317,27 +305,63 @@
                 showAdFn();
             },
             adViewed: () => {
-                coins += 500;
+                coins += rewardAmount;
                 updateCoinDisplay();
-                messageEl.textContent = "🎉 बधाई हो! 500 सिक्के मिले!";
-                adBtn.disabled = false;
+                messageEl.textContent = "🎉 बधाई हो! आपको +" + rewardAmount + " सिक्के मिले!";
             },
             adDismissed: () => {
                 messageEl.textContent = "विज्ञापन पूरा नहीं देखा, इनाम नहीं मिला।";
-                adBtn.disabled = false;
             },
             adError: (error) => {
                 console.error('Ad error:', error);
-                messageEl.textContent = "विज्ञापन लोड नहीं हो सका (टेस्ट मोड)।";
-                adBtn.disabled = false;
+                // अगर विज्ञापन लोड न हो (जैसे टेस्ट में), तो डेमो के लिए तुरंत सिक्के दे दें
+                messageEl.textContent = "विज्ञापन लोड नहीं हो सका (टेस्ट मोड)। डेमो के लिए सिक्के दे रहे हैं...";
+                setTimeout(() => {
+                    coins += rewardAmount;
+                    updateCoinDisplay();
+                    messageEl.textContent = "🎉 डेमो इनाम: आपको +" + rewardAmount + " सिक्के मिले!";
+                }, 1500);
             }
         });
+    }
+
+    // ==========================================
+    // 🌟 शेयर करने पर 2000 सिक्के 🌟
+    // ==========================================
+    function shareGame() {
+        const gameLink = window.location.href;
+        // अगर सिक्के 100 से कम हैं, तो शेयर करने पर 10,000 दें, वरना 2000
+        let rewardAmount = (coins < 100) ? 10000 : 2000;
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'Teen Patti गेम',
+                text: 'मेरे साथ Teen Patti खेलें और 10,000 मुफ्त सिक्के पाएं!',
+                url: gameLink
+            }).then(() => {
+                giveShareReward(rewardAmount);
+            }).catch((error) => {
+                console.log('शेयर रद्द किया गया', error);
+            });
+        } else {
+            // अगर मोबाइल में शेयर सपोर्ट नहीं है तो लिंक कॉपी करें
+            navigator.clipboard.writeText(gameLink).then(() => {
+                giveShareReward(rewardAmount);
+            }).catch(() => {
+                messageEl.textContent = "लिंक कॉपी करने में समस्या हुई।";
+            });
+        }
+    }
+
+    function giveShareReward(amount) {
+        coins += amount;
+        updateCoinDisplay();
+        messageEl.textContent = "🎉 शेयर करने के लिए धन्यवाद! आपको +" + amount + " सिक्के मिले!";
     }
 
     // पेज लोड होने पर
     window.onload = () => {
         updateCoinDisplay();
-        adBox.style.display = 'block'; 
     };
 </script>
 
