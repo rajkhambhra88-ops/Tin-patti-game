@@ -1,1125 +1,292 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Teen Patti Live Club</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    body {
-      background: #090e18;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .wrapper {
-      width: 100%;
-      max-width: 440px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: radial-gradient(circle at 50% 20%, #17223b, #070b13 90%);
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teen Patti - सिक्का संस्करण</title>
+    <!-- Google Ad Placement API (विज्ञापन के लिए) -->
+    <script async
+            data-adbreak-test="on"
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+            crossorigin="anonymous">
+    </script>
+    <script>
+        window.adsbygoogle = window.adsbygoogle || [];
+        const adBreak = adConfig = (o) => { adsbygoogle.push(o); };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: #16213e;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border: 2px solid #e94560;
+            width: 340px;
+        }
+        .title {
+            font-size: 28px;
+            color: #e94560;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .coin-display {
+            font-size: 22px;
+            margin: 15px 0;
+            background: #0f3460;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e94560;
+        }
+        .coin-display span {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        .btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px 0;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #c0392b;
+            transform: scale(1.02);
+        }
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-    /* Top Bar */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: rgba(14, 21, 35, 0.95);
-      border-bottom: 1.5px solid #d4af37;
-      z-index: 10;
-    }
-    .title-box {
-      font-size: 13px;
-      font-weight: 800;
-      color: #ffd700;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .pill {
-      background: #1e293b;
-      border: 1px solid #ffd700;
-      color: #ffd700;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 14px;
-      cursor: pointer;
-    }
-    .pill.gold {
-      background: linear-gradient(135deg, #ffd700, #b8860b);
-      color: #000;
-    }
+        /* =========================================
+           🌟 खूबसूरत विज्ञापन बॉक्स का डिज़ाइन 🌟
+           ========================================= */
+        .ad-container {
+            margin: 20px 0;
+            position: relative;
+            width: 100%;
+            padding: 3px;
+            border-radius: 15px;
+            /* गोल्डन और ब्लू ग्रेडिएंट बॉर्डर */
+            background: linear-gradient(45deg, #f1c40f, #e94560, #0f3460, #f1c40f);
+            background-size: 300% 300%;
+            animation: gradientBorder 3s ease infinite;
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+            display: none; /* शुरुआत में छिपा हुआ, विज्ञापन लोड होने पर दिखेगा */
+        }
 
-    /* Royal Blue Felt Table */
-    .table-container {
-      position: relative;
-      width: 95%;
-      margin: 8px auto;
-      height: 480px;
-      border-radius: 120px;
-      background: radial-gradient(ellipse at 50% 50%, #0d6982 0%, #084353 60%, #02232c 100%);
-      border: 6px solid #c59b27;
-      box-shadow: inset 0 0 35px #000, 0 0 20px rgba(197, 155, 39, 0.4);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0 10px;
-    }
-    .table-inner-rim {
-      position: absolute;
-      inset: 6px;
-      border: 1.5px dashed rgba(255, 215, 0, 0.25);
-      border-radius: 112px;
-      pointer-events: none;
-    }
+        @keyframes gradientBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    /* Dealer */
-    .dealer-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 5;
-      cursor: pointer;
-    }
-    .dealer-avatar {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      border: 2px solid #ffd700;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
-    }
-    .dealer-name {
-      font-size: 10px;
-      font-weight: 800;
-      color: #ffd700;
-      background: rgba(0,0,0,0.7);
-      padding: 1px 8px;
-      border-radius: 8px;
-      margin-top: -2px;
-      border: 1px solid rgba(255, 215, 0, 0.4);
-    }
-    .dealer-bubble {
-      font-size: 9.5px;
-      background: rgba(0,0,0,0.85);
-      color: #38bdf8;
-      border: 1px solid #0284c7;
-      padding: 2px 10px;
-      border-radius: 10px;
-      margin-top: 3px;
-      max-width: 220px;
-      text-align: center;
-      font-weight: 600;
-    }
+        .ad-box-inner {
+            background: #0b132b; /* अंदर का डार्क बैकग्राउंड */
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px; /* विज्ञापन के लिए जगह */
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* Opponents Row */
-    .opponents-grid {
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      padding: 0 8px;
-      z-index: 4;
-    }
-    .seat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 65px;
-      position: relative;
-      transition: all 0.2s;
-    }
-    .seat.active .avatar-circle {
-      border-color: #22c55e;
-      box-shadow: 0 0 14px #22c55e;
-      transform: scale(1.1);
-    }
-    .seat.folded {
-      opacity: 0.35;
-      filter: grayscale(80%);
-    }
-    .avatar-circle {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 2px solid #d4af37;
-      background: #1e293b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      overflow: hidden;
-    }
-    .p-name {
-      font-size: 9px;
-      font-weight: 800;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 65px;
-    }
-    .p-coins {
-      font-size: 9px;
-      color: #ffd700;
-      font-weight: 800;
-    }
-    .p-tag {
-      font-size: 8px;
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: rgba(0,0,0,0.85);
-      color: #94a3b8;
-      font-weight: 700;
-      margin-top: 1px;
-    }
-    .p-tag.seen { color: #38bdf8; border: 1px solid #0284c7; }
-    .p-tag.think { color: #facc15; animation: pulse 0.7s infinite alternate; }
-    @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+        /* विज्ञापन के अंदर का टेक्स्ट (जब तक असली विज्ञापन न लगे) */
+        .ad-placeholder-text {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: normal;
+            z-index: 1;
+            text-align: center;
+        }
+        
+        .ad-placeholder-text strong {
+            color: #f1c40f;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
 
-    .bot-cards-mini {
-      display: flex;
-      gap: 2px;
-      margin-top: 2px;
-    }
-    .mini-card {
-      width: 12px;
-      height: 18px;
-      border-radius: 2px;
-      background: linear-gradient(135deg, #880000, #400000);
-      border: 1px solid #ffd700;
-    }
+        /* असली विज्ञापन (iframe/ins) को फिट करने के लिए */
+        .ad-real-content {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
 
-    /* Pot Center */
-    .table-center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 3;
-      margin: auto 0;
-    }
-    .pot-pill {
-      background: rgba(0,0,0,0.85);
-      border: 2px solid #ffd700;
-      border-radius: 18px;
-      padding: 5px 16px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(255,215,0,0.3);
-    }
-    .pot-label { font-size: 8.5px; color: #94a3b8; font-weight: 800; }
-    .pot-val { font-size: 17px; color: #ffd700; font-weight: 900; }
-    .table-subinfo { font-size: 9.5px; color: #38bdf8; margin-top: 3px; font-weight: 600; }
+        /* विज्ञापन के ऊपर एक छोटा सा "AD" टैग */
+        .ad-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(233, 69, 96, 0.8);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 3;
+            letter-spacing: 1px;
+        }
 
-    /* User Cards on Felt */
-    .user-felt-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 6;
-      margin-bottom: 2px;
-    }
-    .cards-row {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .card {
-      width: 58px;
-      height: 82px;
-      background: #fff;
-      border: 2px solid #d4af37;
-      border-radius: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 4px;
-      font-weight: 900;
-      font-size: 13px;
-    }
-    .card.red { color: #dc2626; }
-    .card.black { color: #111; }
-    .card.back {
-      background: repeating-linear-gradient(45deg, #880000, #880000 6px, #4a0000 6px, #4a0000 12px);
-      border: 2px solid #ffd700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      color: #ffd700;
-    }
-    .c-suit-big { font-size: 24px; align-self: center; line-height: 1; }
-    .c-bot-turn { transform: rotate(180deg); }
-    .eval-badge {
-      font-size: 9.5px;
-      background: rgba(0,0,0,0.85);
-      color: #ffd700;
-      border: 1px solid #ffd700;
-      padding: 2px 10px;
-      border-radius: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
+        .msg {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #aaa;
+            min-height: 20px;
+        }
 
-    /* Bottom Control Bar */
-    .bottom-bar {
-      background: linear-gradient(180deg, #131c31, #080c14);
-      border-top: 1.5px solid #d4af37;
-      padding: 8px 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .me-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .me-profile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-    .me-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 2px solid #ffd700;
-      background: #1e293b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      overflow: hidden;
-    }
-    .me-details { display: flex; flex-direction: column; }
-    .me-name { font-size: 11px; font-weight: 800; }
-    .me-coins { font-size: 14px; font-weight: 900; color: #ffd700; }
-
-    /* Action Buttons Row */
-    .action-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.3fr 1.1fr;
-      gap: 6px;
-    }
-    .act-btn {
-      padding: 10px 4px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 900;
-      font-size: 11px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-    }
-    .act-btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-      filter: grayscale(80%);
-    }
-    .btn-pack { background: linear-gradient(180deg, #dc2626, #991b1b); color: #fff; border: 1px solid #ef4444; }
-    .btn-see { background: linear-gradient(180deg, #2563eb, #1e40af); color: #fff; border: 1px solid #60a5fa; }
-    .btn-chaal { background: linear-gradient(180deg, #f59e0b, #b45309); color: #111; border: 1px solid #fbbf24; }
-    .btn-side { background: linear-gradient(180deg, #9333ea, #6b21a8); color: #fff; border: 1px solid #c084fc; }
-    .btn-show { background: linear-gradient(180deg, #16a34a, #15803d); color: #fff; border: 1px solid #4ade80; }
-
-    /* SideShow Animated Screen */
-    .sideshow-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 80;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .vs-box {
-      width: 90%;
-      background: #111827;
-      border: 3px solid #ffd700;
-      border-radius: 16px;
-      padding: 18px;
-      text-align: center;
-      box-shadow: 0 0 30px #ffd700;
-    }
-    .vs-logo {
-      font-size: 38px;
-      font-weight: 900;
-      color: #ef4444;
-      text-shadow: 0 0 15px #ef4444;
-      margin: 8px 0;
-    }
-    .vs-players {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin: 14px 0;
-    }
-    .vs-card-preview {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    /* Modal Overlay */
-    .modal {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
-    }
-    .modal-box {
-      background: #131c31;
-      border: 2px solid #ffd700;
-      border-radius: 14px;
-      padding: 16px;
-      width: 100%;
-      max-width: 320px;
-      text-align: center;
-      box-shadow: 0 0 25px rgba(255,215,0,0.4);
-    }
-    .m-title { font-size: 15px; font-weight: 800; color: #ffd700; margin-bottom: 12px; }
-    .m-btn {
-      width: 100%;
-      padding: 9px;
-      margin-top: 8px;
-      border-radius: 6px;
-      border: none;
-      font-weight: 800;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .m-btn.gold { background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; }
-    .m-btn.blue { background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; }
-    .m-btn.close { background: #334155; color: #fff; margin-top: 10px; }
-
-    /* Round Countdown */
-    .round-countdown {
-      position: absolute;
-      top: 48%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 54px;
-      font-weight: 900;
-      color: #ffd700;
-      text-shadow: 0 0 25px rgba(255,215,0,0.9);
-      z-index: 90;
-      display: none;
-    }
-  </style>
+        .btn-ad {
+            background: #27ae60;
+            margin-top: 10px;
+        }
+        .btn-ad:hover {
+            background: #2ecc71;
+        }
+    </style>
 </head>
 <body>
 
-<div class="wrapper">
-  <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="title-box">♠ TEEN PATTI LIVE</div>
-    <div style="display:flex; gap:6px;">
-      <button class="pill gold" onclick="openModal('coinsModal')">🪙 +FREE COINS</button>
-      <button class="pill" onclick="openModal('langModal')">🌐 <span id="curLangTxt">ENG</span></button>
-    </div>
-  </div>
-
-  <!-- Table Container -->
-  <div class="table-container">
-    <div class="table-inner-rim"></div>
-
-    <!-- Live Dealer Top -->
-    <div class="dealer-wrap" onclick="openModal('giftModal')">
-      <div class="dealer-avatar">👩‍💼</div>
-      <div class="dealer-name">SIMRAN (DEALER)</div>
-      <div class="dealer-bubble" id="dealerBubble">Place your bets!</div>
+<div class="container">
+    <div class="title">Teen Patti</div>
+    
+    <div class="coin-display">
+        आपके सिक्के: <span id="coinDisplay">100</span>
     </div>
 
-    <!-- Opponents Row -->
-    <div class="opponents-grid" id="opponentsWrap"></div>
+    <button class="btn" onclick="playGame()" id="playBtn">
+        खेल शुरू करें (100 सिक्के लागत)
+    </button>
 
-    <!-- Center Pot -->
-    <div class="table-center">
-      <div class="pot-pill">
-        <div class="pot-label">TOTAL POT</div>
-        <div class="pot-val" id="potTxt">🪙 500</div>
-      </div>
-      <div class="table-subinfo" id="subInfoTxt">Round in progress</div>
-    </div>
-
-    <!-- User Cards on Felt -->
-    <div class="user-felt-area">
-      <div class="cards-row" id="userCardsWrap"></div>
-      <div class="eval-badge" id="evalTxt">Tap SEE to check cards</div>
-    </div>
-
-    <!-- SideShow VS Modal -->
-    <div class="sideshow-overlay" id="sideShowScreen">
-      <div class="vs-box">
-        <div style="font-size:12px; color:#ffd700; font-weight:800;">⚔️ SIDESHOW COMPARISON ⚔️</div>
-        <div class="vs-logo">VS</div>
-        <div class="vs-players">
-          <div class="vs-card-preview">
-            <div>YOU</div>
-            <div id="vsUserScore" style="color:#ffd700; margin-top:4px;">...</div>
-          </div>
-          <div style="font-size:22px;">⚡</div>
-          <div class="vs-card-preview">
-            <div id="vsBotName">BOT</div>
-            <div id="vsBotScore" style="color:#ffd700; margin-top:4px;">...</div>
-          </div>
+    <!-- =========================================
+         🌟 विज्ञापन बॉक्स यहाँ है 🌟
+         ========================================= -->
+    <div class="ad-container" id="adBox">
+        <div class="ad-badge">AD</div>
+        <div class="ad-box-inner">
+            <!-- जब तक असली विज्ञापन नहीं लगाते, यह टेक्स्ट दिखेगा -->
+            <div class="ad-placeholder-text">
+                <strong>यहाँ विज्ञापन आएगा</strong>
+                AdSense या अन्य विज्ञापन कोड यहाँ पेस्ट करें
+            </div>
+            
+            <!-- 
+                बाद में अपना विज्ञापन यहाँ लगाएं: 
+                उदाहरण के लिए Google AdSense का कोड:
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                     data-ad-slot="1234567890"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            -->
+            <div class="ad-real-content" id="realAdSlot">
+                <!-- असली विज्ञापन का कोड यहाँ जाएगा -->
+            </div>
         </div>
-        <div id="vsResultText" style="font-size:13px; font-weight:800; color:#4ade80;">Evaluating...</div>
-      </div>
     </div>
 
-    <div class="round-countdown" id="roundCountdown">3</div>
-  </div>
+    <button class="btn btn-ad" onclick="showRewardedAd()" id="adBtn">
+        📺 विज्ञापन देखें +500 सिक्के
+    </button>
 
-  <!-- Bottom Panel -->
-  <div class="bottom-bar">
-    <div class="me-row">
-      <div class="me-profile" onclick="document.getElementById('photoInput').click()">
-        <div class="me-avatar" id="myAvatarBox">👤</div>
-        <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
-        <div class="me-details">
-          <div class="me-name" id="myNameTxt">YOU (+PHOTO)</div>
-          <div class="me-coins" id="myCoinsTxt">🪙 10,000</div>
-        </div>
-      </div>
-      <div style="display:flex; gap:6px;">
-<button class="pill" onclick="openModal('giftModal')">🎁 GIFT</button>
-<button class="pill" onclick="openModal('wdModal')">🏛️ WITHDRAW</button>
-<button onclick="shareWhatsApp()" style="background:#25D366; color:#ffffff; border:none; padding:6px 12px; border-radius:20px; font-weight:bold; cursor:pointer; font-size:12px; margin-left:6px;">📲 Invite WhatsApp</button>
-      </div>
-    </div>
-
-    <div class="action-grid">
-      <button class="act-btn btn-pack" id="btnPack" onclick="userAction('PACK')">PACK</button>
-      <button class="act-btn btn-see" id="btnSee" onclick="userAction('SEE')">SEE</button>
-      <button class="act-btn btn-chaal" id="btnChaal" onclick="userAction('CHAAL')">
-        <span id="chaalTitle">CHAAL</span>
-        <span id="chaalCost" style="font-size:10px;">(100)</span>
-      </button>
-      <button class="act-btn btn-side" id="btnSide" onclick="userAction('SIDESHOW')">SIDE SHOW</button>
-      <button class="act-btn btn-show" id="btnShow" onclick="userAction('SHOW')" style="display:none;">SHOW</button>
-    </div>
-  </div>
-
-  <!-- Free Coins Hub Modal -->
-  <div class="modal" id="coinsModal">
-    <div class="modal-box">
-      <div class="m-title">🎁 FREE COINS & REWARDS</div>
-      <button class="m-btn gold" onclick="addBonus(2500, 'Daily Bonus')">📅 Daily Bonus (+2,500)</button>
-      <button class="m-btn gold" onclick="watchVideoAd()">📺 Watch Video Ad (+5,000)</button>
-      <button class="m-btn blue" onclick="shareWhatsApp()">📲 WhatsApp Refer (+10,000)</button>
-      <button class="m-btn gold" onclick="addBonus(2000, 'Emergency Udhaar')">🤝 Emergency Udhaar (+2,000)</button>
-      <button class="m-btn close" onclick="closeModals()">Close</button>
-    </div>
-  </div>
-
-  <!-- Gift Modal -->
-  <div class="modal" id="giftModal">
-    <div class="modal-box">
-      <div class="m-title">🎁 SEND GIFT</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin:8px 0;">
-        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Rose', 50)">🌹<br>50</button>
-        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Beer', 200)">🍺<br>200</button>
-        <button class="m-btn" style="background:#1e293b; color:#fff;" onclick="sendGift('Diamond', 500)">💎<br>500</button>
-      </div>
-      <button class="m-btn close" onclick="closeModals()">Close</button>
-    </div>
-  </div>
-
-  <!-- Language Modal -->
-  <div class="modal" id="langModal">
-    <div class="modal-box">
-      <div class="m-title">🌐 SELECT LANGUAGE</div>
-      <button class="m-btn blue" onclick="changeLang('en')">English</button>
-      <button class="m-btn blue" onclick="changeLang('hi')">हिन्दी (Hindi)</button>
-      <button class="m-btn blue" onclick="changeLang('pa')">ਪੰਜਾਬੀ (Punjabi)</button>
-      <button class="m-btn close" onclick="closeModals()">Close</button>
-    </div>
-  </div>
-
-  <!-- Withdraw Modal -->
-  <div class="modal" id="wdModal">
-    <div class="modal-box">
-      <div class="m-title">🏦 WITHDRAW WALLET</div>
-      <input type="text" placeholder="UPI ID (e.g. mobile@upi)" style="width:100%; padding:8px; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#fff; font-size:12px; margin-bottom:8px;">
-      <button class="m-btn gold" onclick="alert('Withdrawal request submitted!'); closeModals();">Submit</button>
-      <button class="m-btn close" onclick="closeModals()">Cancel</button>
-    </div>
-  </div>
-
+    <div class="msg" id="message"></div>
 </div>
 
 <script>
-/* ================= AUDIO SYNTHESIZER ================= */
-var audioCtx = null;
-function playSnd(type) {
-  try {
-    if (!audioCtx) {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) audioCtx = new AC();
-    }
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    if (!audioCtx) return;
+    let coins = parseInt(localStorage.getItem('teenPattiCoins')) || 100;
+    const coinDisplay = document.getElementById('coinDisplay');
+    const messageEl = document.getElementById('message');
+    const adBtn = document.getElementById('adBtn');
+    const adBox = document.getElementById('adBox');
 
-    var osc = audioCtx.createOscillator();
-    var gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    var now = audioCtx.currentTime;
-
-    if (type === 'chip') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(800, now);
-      osc.frequency.exponentialRampToValueAtTime(1400, now + 0.05);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
-      osc.start(now); osc.stop(now + 0.05);
-    } else if (type === 'win') {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(523, now);
-      osc.frequency.exponentialRampToValueAtTime(1046, now + 0.3);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-      osc.start(now); osc.stop(now + 0.3);
-    } else if (type === 'deal') {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(240, now);
-      osc.frequency.linearRampToValueAtTime(120, now + 0.08);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-      osc.start(now); osc.stop(now + 0.08);
-    }
-  } catch(e){}
-}
-
-/* ================= GAME STATE & LOGIC ================= */
-var suits = ['♠','♥','♦','♣'];
-var ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-
-var currentLang = 'en';
-var langTexts = {
-  en: { chaal: 'CHAAL', blind: 'BLIND', pack: 'PACK', see: 'SEE', show: 'SHOW', side: 'SIDE SHOW' },
-  hi: { chaal: 'चाल', blind: 'ब्लाइंड', pack: 'पैक', see: 'देखें', show: 'शो', side: 'साइड शो' },
-  pa: { chaal: 'ਚਾਲ', blind: 'ਬਲਾਇੰਡ', pack: 'ਪੈਕ', see: 'ਵੇਖੋ', show: 'ਸ਼ੋਅ', side: 'ਸਾਈਡ ਸ਼ੋਅ' }
-};
-
-var userCoins = 10000;
-var pot = 0;
-var boot = 100;
-var stake = 100;
-var userIsSeen = false;
-var userFolded = false;
-var isMyTurn = false;
-var turnIndex = 0;
-var gameActive = false;
-var roundCount = 0;
-
-var bots = [
-  { id: 0, name: 'Rohit', coins: 9500, isSeen: false, folded: false, cards: [] },
-  { id: 1, name: 'Priya', coins: 10500, isSeen: false, folded: false, cards: [] },
-  { id: 2, name: 'Vikram', coins: 8800, isSeen: false, folded: false, cards: [] },
-  { id: 3, name: 'Harpreet', coins: 9700, isSeen: false, folded: false, cards: [] }
-];
-var userCards = [];
-
-function makeDeck() {
-  var deck = [];
-  for (var s = 0; s < suits.length; s++) {
-    for (var r = 0; r < ranks.length; r++) {
-      deck.push({ suit: suits[s], rank: ranks[r], val: r + 2, isRed: (suits[s]==='♥'||suits[s]==='♦') });
-    }
-  }
-  return deck.sort(function() { return Math.random() - 0.5; });
-}
-
-function evaluateHand(cards) {
-  if (!cards || cards.length < 3) return { score: 0, title: 'High Card' };
-  var v = [cards[0].val, cards[1].val, cards[2].val].sort(function(a,b){ return b - a; });
-  var trail = (v[0] === v[1] && v[1] === v[2]);
-  var flush = (cards[0].suit === cards[1].suit && cards[1].suit === cards[2].suit);
-  var seq = (v[0]-v[1]===1 && v[1]-v[2]===1) || (v[0]===14 && v[1]===3 && v[2]===2);
-  var pair = (v[0]===v[1] || v[1]===v[2] || v[0]===v[2]);
-
-  if (trail) return { score: 6000 + v[0], title: 'Trail (Set)' };
-  if (flush && seq) return { score: 5000 + v[0], title: 'Pure Seq' };
-  if (seq) return { score: 4000 + v[0], title: 'Sequence' };
-  if (flush) return { score: 3000 + v[0], title: 'Color (Flush)' };
-  if (pair) return { score: 2000 + v[0], title: 'Pair' };
-  return { score: 1000 + v[0], title: 'High Card ' + cards[0].rank };
-}
-
-function renderUI() {
-  document.getElementById('potTxt').textContent = '🪙 ' + pot.toLocaleString();
-  document.getElementById('myCoinsTxt').textContent = '🪙 ' + userCoins.toLocaleString();
-
-  // Render Bots
-  var oWrap = document.getElementById('opponentsWrap');
-  oWrap.innerHTML = '';
-  for (var i = 0; i < bots.length; i++) {
-    var b = bots[i];
-    var div = document.createElement('div');
-    var isThinking = (turnIndex === i && !b.folded && !isMyTurn);
-    div.className = 'seat ' + (b.folded ? 'folded ' : '') + (isThinking ? 'active' : '');
-    
-    var tagClass = b.isSeen ? 'seen' : '';
-    var tagText = b.isSeen ? '👁️ SEEN' : 'BLIND';
-    if (b.folded) {
-      tagText = 'PACKED';
-      tagClass = '';
-    } else if (isThinking) {
-      tagClass = 'think';
-      tagText = 'THINKING...';
+    function updateCoinDisplay() {
+        coinDisplay.textContent = coins;
+        localStorage.setItem('teenPattiCoins', coins);
     }
 
-    div.innerHTML = '<div class="avatar-circle">👤</div>' +
-      '<div class="p-name">' + b.name + '</div>' +
-      '<div class="p-coins">🪙 ' + b.coins.toLocaleString() + '</div>' +
-      '<div class="p-tag ' + tagClass + '">' + tagText + '</div>' +
-      '<div class="bot-cards-mini"><div class="mini-card"></div><div class="mini-card"></div><div class="mini-card"></div></div>';
-    oWrap.appendChild(div);
-  }
-
-  // Render User Cards
-  var uWrap = document.getElementById('userCardsWrap');
-  uWrap.innerHTML = '';
-  for (var j = 0; j < userCards.length; j++) {
-    var c = userCards[j];
-    var cEl = document.createElement('div');
-    if (!userIsSeen) {
-      cEl.className = 'card back';
-      cEl.textContent = '🂠';
-    } else {
-      cEl.className = 'card ' + (c.isRed ? 'red' : 'black');
-      cEl.innerHTML = '<div>' + c.rank + c.suit + '</div>' +
-        '<div class="c-suit-big">' + c.suit + '</div>' +
-        '<div class="c-bot-turn">' + c.rank + c.suit + '</div>';
-    }
-    uWrap.appendChild(cEl);
-  }
-
-  document.getElementById('evalTxt').textContent = userIsSeen ? evaluateHand(userCards).title : 'Tap SEE to check cards';
-
-  // Control Buttons
-  var t = langTexts[currentLang];
-  var betCost = userIsSeen ? stake * 2 : stake;
-  var bChaal = document.getElementById('btnChaal');
-  var bSee = document.getElementById('btnSee');
-  var bPack = document.getElementById('btnPack');
-  var bSide = document.getElementById('btnSide');
-  var bShow = document.getElementById('btnShow');
-
-  document.getElementById('chaalTitle').textContent = userIsSeen ? t.chaal : t.blind;
-  document.getElementById('chaalCost').textContent = '(' + betCost + ')';
-  bPack.textContent = t.pack;
-  bSee.textContent = t.see;
-  bSide.textContent = t.side;
-  bShow.textContent = t.show;
-
-  bSee.disabled = userIsSeen || userFolded;
-
-  var activeRemaining = (userFolded ? 0 : 1) + bots.filter(function(x){ return !x.folded; }).length;
-
-  if (isMyTurn && !userFolded) {
-    bChaal.disabled = false;
-    bPack.disabled = false;
-
-    if (activeRemaining === 2) {
-      bShow.style.display = 'flex';
-      bSide.style.display = 'none';
-      bShow.disabled = false;
-    } else {
-      bShow.style.display = 'none';
-      bSide.style.display = 'flex';
-      bSide.disabled = !userIsSeen;
-    }
-  } else {
-    bChaal.disabled = true;
-    bPack.disabled = true;
-    bSide.disabled = true;
-    bShow.disabled = true;
-  }
-}
-
-/* ================= GAME CONTROLLER & SMART AI ================= */
-function startRound() {
-  var d = makeDeck();
-  pot = 0;
-  stake = boot;
-  userIsSeen = false;
-  userFolded = false;
-  turnIndex = 0;
-  roundCount = 0;
-  gameActive = true;
-  isMyTurn = false;
-
-  playSnd('deal');
-
-  for (var i = 0; i < bots.length; i++) {
-    bots[i].folded = false;
-    bots[i].isSeen = false;
-    bots[i].coins = Math.max(0, bots[i].coins - boot);
-    bots[i].cards = [d.pop(), d.pop(), d.pop()];
-    pot += boot;
-  }
-  userCoins = Math.max(0, userCoins - boot);
-  pot += boot;
-  userCards = [d.pop(), d.pop(), d.pop()];
-
-  document.getElementById('dealerBubble').textContent = 'Cards dealt! Boot 🪙100 collected.';
-  document.getElementById('subInfoTxt').textContent = 'Round started';
-
-  renderUI();
-  processTurn();
-}
-
-function processTurn() {
-  if (!gameActive) return;
-
-  var remaining = (userFolded ? 0 : 1) + bots.filter(function(x){ return !x.folded; }).length;
-  if (remaining <= 1) {
-    var winner = !userFolded ? 'YOU' : bots.filter(function(x){ return !x.folded; })[0].name;
-    finishRound(winner);
-    return;
-  }
-
-  // User Turn: Table stops completely and waits for user's action
-  if (turnIndex >= bots.length) {
-    if (userFolded) {
-      turnIndex = 0;
-      processTurn();
-      return;
-    }
-    isMyTurn = true;
-    document.getElementById('dealerBubble').textContent = 'Your turn! Chaal, Pack or Side Show.';
-    document.getElementById('subInfoTxt').textContent = 'Waiting for your move...';
-    renderUI();
-    return; // STOP! Do not proceed automatically
-  }
-
-  // Bot Turn
-  isMyTurn = false;
-  var bot = bots[turnIndex];
-  if (bot.folded) {
-    turnIndex++;
-    processTurn();
-    return;
-  }
-
-  renderUI();
-  document.getElementById('subInfoTxt').textContent = bot.name + ' is thinking...';
-
-  // Realistic thinking delay
-  setTimeout(function() {
-    if (!gameActive || bot.folded) return;
-
-    roundCount++;
-    // Bots see cards after 1 or 2 turns
-    if (!bot.isSeen && (roundCount > 2 || Math.random() > 0.4)) {
-      bot.isSeen = true;
-    }
-
-    var evalResult = evaluateHand(bot.cards);
-    var score = evalResult.score;
-    var shouldFold = false;
-
-    // Smart logic: Decisions based strictly on hand strength
-    if (bot.isSeen) {
-      // If hand is only a low High Card (< Queen)
-      if (score < 1012) {
-        // High chance of folding on weak cards
-        if (Math.random() < 0.75) shouldFold = true;
-      } else if (score < 2000) {
-        // Ace or King high: 40% fold if pot is getting high
-        if (pot > 800 && Math.random() < 0.45) shouldFold = true;
-      }
-      // If bot has Pair (score >= 2000), Color, Seq, Trail - they will definitely play
-    }
-
-    if (shouldFold) {
-      bot.folded = true;
-      document.getElementById('dealerBubble').textContent = bot.name + ' packed (weak cards).';
-    } else {
-      var cost = bot.isSeen ? stake * 2 : stake;
-      bot.coins = Math.max(0, bot.coins - cost);
-      pot += cost;
-      playSnd('chip');
-      document.getElementById('dealerBubble').textContent = bot.name + ' played ' + (bot.isSeen ? 'Chaal' : 'Blind');
-    }
-
-    turnIndex++;
-    renderUI();
-    processTurn();
-  }, 1400 + Math.random() * 600);
-}
-
-/* ================= USER ACTIONS ================= */
-function userAction(act) {
-  if (act === 'SEE') {
-    userIsSeen = true;
-    playSnd('deal');
-    renderUI();
-    return;
-  }
-
-  if (act === 'PACK') {
-    userFolded = true;
-    isMyTurn = false;
-    document.getElementById('dealerBubble').textContent = 'You packed this round.';
-    renderUI();
-    turnIndex = 0;
-    processTurn();
-    return;
-  }
-
-  if (act === 'CHAAL') {
-    var cost = userIsSeen ? stake * 2 : stake;
-    if (userCoins < cost) {
-      alert('Not enough coins! Get coins from +FREE COINS.');
-      openModal('coinsModal');
-      return;
-    }
-    userCoins -= cost;
-    pot += cost;
-    playSnd('chip');
-    isMyTurn = false;
-    renderUI();
-    turnIndex = 0;
-    processTurn();
-    return;
-  }
-
-  if (act === 'SIDESHOW') {
-    var seenBots = bots.filter(function(b){ return !b.folded && b.isSeen; });
-    if (seenBots.length === 0) {
-      alert('Side show needs at least 1 other SEEN player!');
-      return;
-    }
-    var target = seenBots[seenBots.length - 1];
-    var myScore = evaluateHand(userCards).score;
-    var botScore = evaluateHand(target.cards).score;
-
-    var ss = document.getElementById('sideShowScreen');
-    ss.style.display = 'flex';
-    document.getElementById('vsBotName').textContent = target.name;
-    document.getElementById('vsUserScore').textContent = evaluateHand(userCards).title;
-    document.getElementById('vsBotScore').textContent = evaluateHand(target.cards).title;
-
-    setTimeout(function() {
-      if (myScore >= botScore) {
-        target.folded = true;
-        document.getElementById('vsResultText').textContent = '🎉 You WON! ' + target.name + ' packed.';
-      } else {
-        userFolded = true;
-        document.getElementById('vsResultText').textContent = '❌ ' + target.name + ' had better hand! You packed.';
-      }
-      setTimeout(function() {
-        ss.style.display = 'none';
-        isMyTurn = false;
-        turnIndex = 0;
-        renderUI();
-        processTurn();
-      }, 1500);
-    }, 1200);
-    return;
-  }
-
-  if (act === 'SHOW') {
-    var activeBots = bots.filter(function(b){ return !b.folded; });
-    var topBot = activeBots[0];
-    var mySc = evaluateHand(userCards).score;
-    var botSc = evaluateHand(topBot.cards).score;
-    if (mySc >= botSc) {
-      finishRound('YOU');
-    } else {
-      finishRound(topBot.name);
-    }
-  }
-}
-
-function finishRound(winnerName) {
-  gameActive = false;
-  isMyTurn = false;
-  playSnd('win');
-
-  if (winnerName === 'YOU') {
-    userCoins += pot;
-    document.getElementById('dealerBubble').textContent = '🏆 YOU WON 🪙' + pot.toLocaleString() + '!';
-  } else {
-    for (var i = 0; i < bots.length; i++) {
-      if (bots[i].name === winnerName) bots[i].coins += pot;
-    }
-    document.getElementById('dealerBubble').textContent = '🏆 ' + winnerName + ' won 🪙' + pot.toLocaleString() + '!';
-  }
-  renderUI();
-
-  // 3... 2... 1 Countdown
-  var cnt = 3;
-  var cBox = document.getElementById('roundCountdown');
-  cBox.style.display = 'block';
-  cBox.textContent = cnt;
-  var timer = setInterval(function() {
-    cnt--;
-    if (cnt > 0) {
-      cBox.textContent = cnt;
-    } else {
-      clearInterval(timer);
-      cBox.style.display = 'none';
-      startRound();
-    }
-  }, 1000);
-}
-
-/* ================= MODALS & EXTRA FEATURES ================= */
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModals() {
-  var modals = document.querySelectorAll('.modal');
-  for (var i = 0; i < modals.length; i++) modals[i].style.display = 'none';
-}
-
-function addBonus(amt, label) {
-  userCoins += amt;
-  playSnd('win');
-  alert('🎉 ' + label + ': +' + amt.toLocaleString() + ' Coins added!');
-  closeModals();
-  renderUI();
-}
-
-// Har activity ke sound effects
-const sounds = {
-    chaal: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
-    card: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'),
-    win: new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'),
-    coin: new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3'),
-    sideshow: new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3')
-};
-
-function playSound(type) {
-    if (sounds[type]) {
-        sounds[type].currentTime = 0;
-        sounds[type].play().catch(function(e){ console.log('Audio tap wait'); });
-    }
-}
-// Realistic 15-Second Demo Video Ad Player
-function watchVideoAd() {
-    closeModals();
-    
-    var adModal = document.createElement('div');
-    adModal.id = 'demoAdModal';
-    adModal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-family:sans-serif; text-align:center; padding:15px;';
-    
-    adModal.innerHTML = `
-        <div style="background:#1e293b; border:2px solid #ffd700; border-radius:14px; max-width:340px; width:100%; padding:20px; box-shadow:0 0 25px rgba(255,215,0,0.3);">
-            <div style="font-size:13px; color:#f59e0b; font-weight:bold; margin-bottom:8px;">📢 SPONSORED ADVERTISEMENT</div>
-            <div id="adTimerBox" style="font-size:18px; font-weight:bold; margin-bottom:12px; color:#38bdf8;">Reward in: <span id="adCount">15</span>s</div>
-            <div style="width:100%; height:180px; background:#0f172a; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #64748b; margin-bottom:15px;">
-                <div style="font-size:36px; margin-bottom:6px;">🎮</div>
-                <div style="font-size:15px; font-weight:bold; color:#f8fafc;">Super Teen Patti Pro</div>
-                <div style="font-size:12px; color:#94a3b8; margin-top:4px;">Download & Play Online Now!</div>
-            </div>
-            <div style="font-size:12px; color:#94a3b8;">Vigyapan poora hone tak intezar karein...</div>
-        </div>
-    `;
-    document.body.appendChild(adModal);
-
-    var timeLeft = 15;
-    var timer = setInterval(function() {
-        timeLeft--;
-        var countSpan = document.getElementById('adCount');
-        if (countSpan) countSpan.innerText = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            var modal = document.getElementById('demoAdModal');
-            if (modal) modal.remove();
-            
-            playSound('coin');
-            alert('🎉 Shaandar! Vigyapan poora dekha gaya. 5,000 Coins jod diye gaye!');
-            addBonus(5000, 'Video Ad Reward');
+    function playGame() {
+        if (coins < 100) {
+            messageEl.textContent = "सिक्के कम हैं, विज्ञापन देखें!";
+            return;
         }
-    }, 1000);
-}
-
-// Side Show: Dono khiladiyon ke cards aapas mein dikhana
-function reqSideShow() {
-    playSound('sideshow');
-    alert('Side Show Request! Dono khiladiyon ke patte aapas mein match kiye ja rahe hain...');
-    // Samne wale ke patte reveal karne aur kamzor ko fold karne ka logic
-    if (typeof table !== 'undefined' && table.players) {
-        let opponent = table.players.find(p => p.id !== socket.id && !p.folded);
-        if (opponent) {
-            alert('Aapke patte aur ' + opponent.name + ' ke patte check ho gaye!');
-        }
+        coins -= 100;
+        updateCoinDisplay();
+        messageEl.textContent = "खेल शुरू... (डेमो)";
     }
-}
 
-// Final Showdown: Match ke aakhir mein sabhi khiladiyon ke patte kholna 
-function showCards() {
-    playSound('card');
-    let cards = document.querySelectorAll('.card.hidden, .card.back');
-    cards.forEach(c => c.classList.remove('hidden', 'back'));
-    setTimeout(() => {
-        playSound('win');
-        alert('🏆 Khel Khatam! Winner ke patte samne aa chuke hain.');
-    }, 1000);
-}
+    function showRewardedAd() {
+        messageEl.textContent = "विज्ञापन लोड हो रहा है...";
+        adBtn.disabled = true;
+        
+        // विज्ञापन बॉक्स को दिखाएं (एनिमेशन के साथ)
+        adBox.style.display = 'block';
+
+        adBreak({
+            type: 'reward',
+            name: 'coin_reward',
+            beforeAd: () => {
+                messageEl.textContent = "विज्ञापन चल रहा है...";
+            },
+            afterAd: () => {
+                messageEl.textContent = "विज्ञापन समाप्त, इनाम दे रहे हैं...";
+            },
+            beforeReward: (showAdFn) => {
+                showAdFn();
+            },
+            adViewed: () => {
+                coins += 500;
+                updateCoinDisplay();
+                messageEl.textContent = "🎉 बधाई हो! 500 सिक्के मिले!";
+                adBtn.disabled = false;
+                // इनाम मिलने के बाद बॉक्स को छिपा सकते हैं या दिखा सकते हैं
+                // adBox.style.display = 'none'; 
+            },
+            adDismissed: () => {
+                messageEl.textContent = "विज्ञापन पूरा नहीं देखा, इनाम नहीं मिला।";
+                adBtn.disabled = false;
+            },
+            adError: (error) => {
+                console.error('Ad error:', error);
+                messageEl.textContent = "विज्ञापन लोड नहीं हो सका (टेस्ट मोड)।";
+                adBtn.disabled = false;
+            }
+        });
+    }
+
+    // पेज लोड होने पर विज्ञापन बॉक्स दिखाएं (या आप इसे किसी बटन से कंट्रोल कर सकते हैं)
+    window.onload = () => {
+        updateCoinDisplay();
+        // अगर आप चाहते हैं कि बॉक्स हमेशा दिखे तो इसे 'block' कर दें
+        adBox.style.display = 'block'; 
+    };
 </script>
 
-<script src="/socket.io/socket.io.js"></script>
-<script>
-// Live Multiplayer Connection
-var socket = io();
-var currentRoom = new URLSearchParams(window.location.search).get('room') || 'table-1';
-
-// Join Table Room
-socket.emit('joinRoom', { room: currentRoom, name: 'Player' });
-
-function shareWhatsApp() {
-    var room = currentRoom || ('room-' + Math.floor(1000 + Math.random() * 9000));
-    var shareUrl = window.location.origin + window.location.pathname + '?room=' + room;
-    var msg = encodeURIComponent('मेरे साथ तीन पत्ती खेलो! टेबल लिंक: ' + shareUrl);
-    window.open('https://api.whatsapp.com/send?text=' + msg, '_blank');
-}
-
-// Update game from server
-socket.on('gameState', function(data) {
-    if (data.activePlayers < 2) {
-        document.getElementById('dealerBubble').innerText = 'Dost ka intezar hai... WhatsApp par invite karein!';
-        return;
-    }
-    renderUI();
-});
-
-</script>
 </body>
 </html>
